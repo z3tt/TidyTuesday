@@ -1,5 +1,5 @@
 ---
-title: "TidyTuesday 2019/17 - Animes"
+title: "TidyTuesday 2019/17 - Anime Data by MyAnimeList.net"
 author: "Cedric Scherer"
 date: "23rd of April 2019"
 output:

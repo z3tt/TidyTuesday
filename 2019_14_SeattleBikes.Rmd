@@ -1,0 +1,187 @@
+---
+title: "TidyTuesday 2019/14 - Seattle Bike Traffic by seattle.gov"
+author: "Cedric Scherer"
+date: "24th of April 2019"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(lubridate)
+library(RColorBrewer)
+
+## ggplot theme updates
+source("./theme/tidy_grey.R")
+```
+
+```{r data}
+df_bikes <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-02/bike_traffic.csv")
+```
+
+```{r data-proc}
+df_bikes_grouped <- df_bikes %>%
+  mutate(
+    date = mdy_hms(date),
+    hour = hour(date),
+    day = as.character(wday(date, label = T)),
+    term = if_else(day %in% c("Sa", "So"), "Weekend", "Weekday"),
+    month = month(date),
+    season = case_when(
+      month %in% 3:5 ~ 1,
+      month %in% 6:8 ~ 2,
+      month %in% 9:11 ~ 3,
+      month %in% c(12, 1, 2) ~ 4
+    ),
+    crossing = case_when(
+      crossing == "Broadway Cycle Track North Of E Union St" ~ "Broadway Cycle Track",
+      crossing == "39th Ave NE Greenway at NE 62nd St" ~ "39th Ave NE Greenway",
+      crossing == "NW 58th St Greenway at 22nd Ave" ~ "NW 58th St Greenway",
+      crossing == "Burke Gilman Trail" ~ "Burke Gilman Trail",
+      crossing == "Elliot Bay Trail" ~ "Elliot Bay Trail",
+      crossing == "Sealth Trail" ~ "Sealth Trail",
+      crossing == "MTS Trail" ~ "MTS Trail"
+    )
+  ) %>% 
+  filter(
+    bike_count < 2000,
+    year(date) < 2018
+  ) %>% 
+  group_by(crossing) %>% 
+  mutate(crossing_avg = mean(bike_count, na.rm = T))
+```
+
+```{r plot-month, fig.width = 14, fig.heigth = 4.8}
+df_bikes_month <- df_bikes_grouped %>% 
+  group_by(crossing, term, month, hour) %>% 
+  summarize(
+    bike_avg = mean(bike_count, na.rm = T),
+    crossing_avg = unique(crossing_avg)
+  ) %>% 
+  group_by(crossing, term, month, hour) %>% 
+  mutate(
+    diff = -((crossing_avg - bike_avg) / crossing_avg), 
+    diff = if_else(diff > 2.5, 2.5, diff)
+  ) %>% 
+  ungroup() %>% 
+  mutate(
+    month = factor(month, levels = 1:12, 
+                   labels = c("January", "February", "March", "April", "May", "June", "July", 
+                              "August", "September", "October", "November", "December")),
+    crossing = fct_reorder(crossing, -crossing_avg)
+  )
+
+average <- df_bikes_month %>% 
+  group_by(crossing, term) %>% 
+  filter(term == "Weekday") %>% 
+  summarize(avg = round(unique(crossing_avg), digits = 2)) %>% 
+  mutate(avg = paste0("yearly mean = ", avg))
+
+df_bikes_month %>% 
+  ggplot(aes(hour + 0.5, fct_rev(month))) +
+    geom_tile(aes(fill = diff)) +
+    geom_text(data = average, aes(label = avg), x = 12, y = 11.7, size = 2.2, 
+              hjust = 0.5, family = "Poppins", fontface = "plain", color = "grey20") +
+    scale_x_continuous(breaks = 0:24, expand = c(0, 0),
+                       labels = c("0", "", "", "", "", "", 
+                                  "6", "", "", "", "", "",
+                                  "12", "", "", "", "", "",
+                                  "18", "", "", "", "", "", "24")) +
+    scale_y_discrete(expand = c(0, 0)) +
+    #scale_fill_carto_c(palette = "TealRose", name = "BHourly bike count relative to yearly mean per crossing", 
+    scale_fill_distiller(palette = "RdYlGn", name = "Hourly bike count relative to yearly mean per crossing",
+                       limits = c(-1, 2.5),
+                       breaks = seq(-1, 2.5, by = 0.5), 
+                       labels = c("-1.0", "-0.5", "0.0", "0.5", "1.0", "1.5", "2.0", "\u22652.5"),
+                       guide = guide_colourbar(direction = "horizontal",
+                                               barheight = unit(2, units = "mm"), 
+                                               barwidth = unit(120, units = "mm"),
+                                               draw.ulim = FALSE, title.position = 'top',
+                                              title.hjust = 0.5, label.hjust = 0.5)) +
+    facet_grid(term ~ crossing) +
+    labs(x = "Hour of the day", y = NULL,
+         title = "Riding the green wave in Seattle",
+         subtitle = "Monthly bike traffic (2014-2018), based on data from seattle.gov\n",
+         caption = "Visualization by @CedScherer") +
+    theme(strip.text = element_text(face = "plain", size = 10, angle = 0),
+          panel.spacing.x = unit(10, "pt"), 
+          axis.text.x = element_text(family = "Roboto Mono", size = 8),
+          axis.text.y = element_text(size = 5.5),
+          axis.title.x = element_text(size = 12),
+          legend.title = element_text(size = 9.5),
+          legend.text = element_text(family = "Roboto Mono", size = 8),
+          legend.position = "bottom")
+
+ggsave("./plots/twitter/2019_14_bikes_month_twit.png", width = 14, height = 4.8, dpi = 250)
+ggsave("./plots/2019_14_bikes_month.png", width = 14, height = 4.8, dpi = 750)
+```
+
+```{r plot-season, fig.width = 14, fig.heigth = 4.8}
+df_bikes_grouped %>% 
+  mutate(season = factor(season, levels = 1:4, 
+                         labels = c("Spring\n(Mar-May)", 
+                                    "Summer\n(Jun-Aug)", 
+                                    "Autumn\n(Sep-Nov)", 
+                                    "Winter\n(Dec-Jan)"))) %>% 
+  group_by(crossing, term, season, hour) %>% 
+  summarize(
+    bike_avg = mean(bike_count, na.rm = T),
+    crossing_avg = unique(crossing_avg)
+  ) %>% 
+  group_by(crossing, term, season, hour) %>% 
+  mutate(
+    diff = -((crossing_avg - bike_avg) / crossing_avg), 
+    diff = if_else(diff > 2.5, 2.5, diff)
+  ) %>% 
+  ggplot(aes(hour + 0.5, fct_rev(term))) +
+    geom_tile(aes(fill = diff)) +
+    scale_x_continuous(breaks = 0:24, expand = c(0, 0),
+                       labels = c("0", "", "", "", "", "", 
+                                  "6", "", "", "", "", "",
+                                  "12", "", "", "", "", "",
+                                  "18", "", "", "", "", "", "24")) +
+    scale_y_discrete(expand = c(0, 0), position = "right") +
+    #scale_fill_carto_c(palette = "TealRose", name = "Hourly bike count relative to yearly mean per crossing", 
+    scale_fill_distiller(palette = "RdYlGn", name = "Hourly bike count relative to yearly mean per crossing",
+                         limits = c(-1, 2.5),
+                         breaks = seq(-1, 2.5, by = 0.5), 
+                         labels = c("-1.0", "-0.5", "0.0", "0.5", "1.0", "1.5", "2.0", "\u22652.5"),
+                         guide = guide_colourbar(direction = "horizontal",
+                                                 barheight = unit(2, units = "mm"), 
+                                                 barwidth = unit(120, units = "mm"),
+                                                 draw.ulim = FALSE, title.position = 'top',
+                                                 title.hjust = 0.5, label.hjust = 0.5)) +
+    facet_grid(season ~ crossing, switch = "y") +
+    labs(x = "Hour of the day", y = NULL,
+         title = "Riding the green wave in Seattle",
+         subtitle = "Monthly bike traffic (2014-2018), based on data from seattle.gov\n",
+         caption = "Visualization by @CedScherer") +
+    theme(strip.text.x = element_text(face = "plain", size = 10, angle = 0),
+          strip.text.y = element_text(face = "plain", size = 10, angle = 180),
+          strip.background = element_rect(fill = "grey20", color = "transparent"),
+          panel.spacing.x = unit(10, "pt"), 
+          axis.text.x = element_text(family = "Roboto Mono", size = 8),
+          axis.text.y = element_text(size = 10),
+          axis.title.x = element_text(size = 12),
+          legend.title = element_text(size = 9.5),
+          legend.text = element_text(family = "Roboto Mono", size = 8),
+          legend.position = "bottom")
+
+ggsave("./plots/twitter/2019_14_bikes_season_twit.png", width = 14, height = 4.8, dpi = 250)
+ggsave("./plots/2019_14_bikes_season.png", width = 14, height = 4.8, dpi = 750)
+```
+
+***
+
+```{r session}
+sessionInfo()
+```
