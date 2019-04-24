@@ -53,7 +53,7 @@ ghibli_genres <- df_ghibli %>%
          subtitle = "") +
     annotation_custom(a, xmin = 0.4, xmax = 6.75, ymin = 12, ymax = 23) +
     theme(axis.text.x = element_text(family = "Roboto Mono"),
-          plot.title = element_text(size = 25))
+          plot.title = element_text(size = 20))
 
 ## plot scores
 img_b <- png::readPNG("./img/ghibli.png") 
