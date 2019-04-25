@@ -60,7 +60,7 @@ df_bikes_grouped <- df_bikes %>%
   mutate(crossing_avg = mean(bike_count, na.rm = T))
 ```
 
-```{r plot-month, fig.width = 14, fig.heigth = 4.8}
+```{r plot-month, fig.width = 14, fig.heigth = 4.75}
 df_bikes_month <- df_bikes_grouped %>% 
   group_by(crossing, term, month, hour) %>% 
   summarize(
@@ -121,11 +121,10 @@ df_bikes_month %>%
           legend.text = element_text(family = "Roboto Mono", size = 8),
           legend.position = "bottom")
 
-ggsave("./plots/twitter/2019_14_bikes_month_twit.png", width = 14, height = 4.8, dpi = 250)
-ggsave("./plots/2019_14_bikes_month.png", width = 14, height = 4.8, dpi = 750)
+ggsave("./plots/2019_14_bikes_month.png", width = 14, height = 4.75, dpi = 300)
 ```
 
-```{r plot-season, fig.width = 14, fig.heigth = 4.8}
+```{r plot-season, fig.width = 14, fig.heigth = 5}
 df_bikes_grouped %>% 
   mutate(season = factor(season, levels = 1:4, 
                          labels = c("Spring\n(Mar-May)", 
@@ -176,8 +175,7 @@ df_bikes_grouped %>%
           legend.text = element_text(family = "Roboto Mono", size = 8),
           legend.position = "bottom")
 
-ggsave("./plots/twitter/2019_14_bikes_season_twit.png", width = 14, height = 4.8, dpi = 250)
-ggsave("./plots/2019_14_bikes_season.png", width = 14, height = 4.8, dpi = 750)
+ggsave("./plots/2019_14_bikes_season.png", width = 14, height = 5, dpi = 300)
 ```
 
 ***

@@ -31,7 +31,7 @@ df_ghibli <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/
   dplyr::select(animeID, title_english, title_japanese, genre, score, scored_by, members)
 ```
 
-```{r plots, fig.width = 14, fig.heigth = 5.2}
+```{r plots, fig.width = 14, fig.heigth = 5}
 ## plot genres
 img_a <- png::readPNG("./img/totoro.png") 
 a <- grid::rasterGrob(img_a, interpolate = T) 
@@ -52,8 +52,7 @@ ghibli_genres <- df_ghibli %>%
          title = "Studio Ghibli movies listed on MyAnimeList.net (MAL)",
          subtitle = "") +
     annotation_custom(a, xmin = 0.4, xmax = 6.75, ymin = 12, ymax = 23) +
-    theme(axis.text.x = element_text(family = "Roboto Mono"),
-          plot.title = element_text(size = 22))
+    theme(axis.text.x = element_text(family = "Roboto Mono"))
 
 ## plot scores
 img_b <- png::readPNG("./img/ghibli.png") 
@@ -89,8 +88,7 @@ ghibli_scores <- df_ghibli_unique %>%
 ## save as panel
 ghibli_genres + ghibli_scores
 
-ggsave("./plots/twitter/2019_17_animes_twit.png", width = 14, height = 5.2, dpi = 250)
-ggsave("./plots/2019_17_animes.png", width = 14, height = 5.2, dpi = 750)
+ggsave("./plots/2019_17_animes.png", width = 14, height = 5, dpi = 300)
 ```
 
 ***

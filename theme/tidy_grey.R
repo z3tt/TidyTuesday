@@ -76,7 +76,7 @@ theme_custom <- function (base_size = 12, base_family = base)
         strip.switch.pad.grid = unit(0.1, "cm"), 
         strip.switch.pad.wrap = unit(0.1, "cm"), 
         plot.background = element_rect(colour = NA), 
-        plot.title = element_text(size = base_size * 1.5, hjust = 0, vjust = 1, face = "bold", margin = margin(b = half_line * 1.2)), 
+        plot.title = element_text(size = base_size * 1.8, hjust = 0, vjust = 1, face = "bold", margin = margin(b = half_line * 1.2)), 
         plot.subtitle = element_text(size = base_size, hjust = 0, vjust = 1, margin = margin(b = half_line * 0.9)), 
         plot.caption = element_text(size = rel(0.9), hjust = 1, vjust = 1, margin = margin(t = half_line * 0.9), color = "white"), 
         plot.margin = margin(base_size, base_size, base_size, base_size), complete = T,
