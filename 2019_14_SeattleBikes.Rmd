@@ -163,7 +163,7 @@ df_bikes_grouped %>%
     facet_grid(season ~ crossing, switch = "y") +
     labs(x = "Hour of the day", y = NULL,
          title = "Riding the green wave in Seattle",
-         subtitle = "Monthly bike traffic (2014-2018), based on data from seattle.gov\n",
+         subtitle = "Bike traffic (2014-2018) by seasons, based on data from seattle.gov\n",
          caption = "Visualization by @CedScherer") +
     theme(strip.text.x = element_text(face = "plain", size = 10, angle = 0),
           strip.text.y = element_text(face = "plain", size = 10, angle = 180),

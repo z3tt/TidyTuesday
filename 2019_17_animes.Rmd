@@ -59,7 +59,7 @@ ghibli_genres <- df_ghibli %>%
 img_b <- png::readPNG("./img/ghibli.png") 
 b <- grid::rasterGrob(img_b, interpolate = T) 
 
-set.seed(17)
+set.seed(10000)
 
 df_ghibli_unique <-df_ghibli %>% 
   group_by(animeID) %>% 
