@@ -53,13 +53,13 @@ ghibli_genres <- df_ghibli %>%
          subtitle = "") +
     annotation_custom(a, xmin = 0.4, xmax = 6.75, ymin = 12, ymax = 23) +
     theme(axis.text.x = element_text(family = "Roboto Mono"),
-          plot.title = element_text(size = 20))
+          plot.title = element_text(size = 22))
 
 ## plot scores
 img_b <- png::readPNG("./img/ghibli.png") 
 b <- grid::rasterGrob(img_b, interpolate = T) 
 
-set.seed(10000)
+set.seed(1)
 
 df_ghibli_unique <-df_ghibli %>% 
   group_by(animeID) %>% 
@@ -69,13 +69,11 @@ df_ghibli_unique <-df_ghibli %>%
 ghibli_scores <- df_ghibli_unique %>% 
   ggplot(aes(score, scored_by)) +
     geom_point(aes(size = members), color = "#F4C59D", alpha = 0.6) +
-    geom_text_repel(data = filter(df_ghibli_unique, scored_by > 120000), 
-                    aes(label = title), size = 1.75, family = "Poppins", 
-                    color = "#F4C59D", segment.size = 0.3,
-                    xlim = c(9.25, 10), box.padding = 0.5, force = 5) +
+    geom_text_repel(data = filter(df_ghibli_unique, scored_by > 120000), aes(label = title), size = 1.75, family = "Poppins", 
+                    color = "#F4C59D", segment.size = 0.3, xlim = c(9.25, 10), box.padding = 0.5, force = 5) +
     scale_x_continuous(limits = c(5, 10)) +
     scale_y_continuous(labels = scales::comma, limits = c(0, 600000)) + 
-    scale_size_continuous(name = "Times listed by MAL users:", 
+    scale_size_continuous(name = "Times listed by MAL users:",
                           breaks = c(1000, 10000, 100000, 250000, 500000), 
                           labels = c("  1,000", " 10,000", "100,000", "250,000", "500,000")) +
     guides(size = guide_legend(override.aes = list(alpha = 1))) +
@@ -83,7 +81,7 @@ ghibli_scores <- df_ghibli_unique %>%
          caption = "\nVisualization by @CedScherer  |  Picture credit: Studio Ghibli, Inc & MangoKingoroo") +
     annotation_custom(b, xmin = 5, xmax = 8, ymin = 400000, ymax = 600000) +
     theme(axis.text = element_text(family = "Roboto Mono"),
-          legend.position = c(0.3, 0.4),
+          legend.position = c(0.32, 0.4),
           legend.background = element_rect(fill = "transparent"),
           legend.title = element_text(size = 9),
           legend.text = element_text(family = "Roboto Mono", size = 8))
