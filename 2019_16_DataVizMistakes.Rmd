@@ -91,8 +91,8 @@ p2 <- df_research %>%
     geom_vline(xintercept = 0, color = "black", size = 0.7) + 
     geom_vline(xintercept = 50, color = "red1", size = 0.7) + 
     geom_point(data = filter(df_research, !is.na(type)), aes(color = type, fill = type), 
-               size = 10, alpha = 0.8, shape = 21) +
-    geom_point(data = filter(df_research, is.na(type)), size = 4, 
+               size = 9, alpha = 0.8, shape = 21) +
+    geom_point(data = filter(df_research, is.na(type)), size = 4.5, 
                color = "black", fill = "grey40", alpha = 0.4, shape = 21) + 
     scale_x_continuous(limits = c(0, 65), breaks = seq(0, 60, by = 10), expand = c(0, 0)) +
     scale_color_manual(values = c("firebrick4", "turquoise4", "dodgerblue3"), name = NULL) +
@@ -116,9 +116,9 @@ p2 <- df_research %>%
 p_research <- ggdraw(p2) + 
   draw_text("Still a man's world", x = 0.02, y = 0.98, hjust = 0, vjust = 1, size = 20, family = "Open Sans ExtraBold") +
   draw_text("Women among researchers with papers published", 
-            x = 0.02, y = 0.93, hjust = 0, vjust = 1, size = 14, family = "Open Sans") +
+            x = 0.02, y = 0.92, hjust = 0, vjust = 1, size = 14, family = "Open Sans") +
    draw_text("(indexed in Scopus from 2011 to 2015, % of total)", 
-            x = 0.02, y = 0.89, hjust = 0, vjust = 1, size = 11, family = "Open Sans")
+            x = 0.02, y = 0.88, hjust = 0, vjust = 1, size = 11, family = "Open Sans")
 ```
 
 ## Emoji and title
