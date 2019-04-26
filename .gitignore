@@ -37,6 +37,7 @@ rsconnect/
 
 # html files
 /html/
+*.html
 
 # desktop.ini et al
 *.ini
