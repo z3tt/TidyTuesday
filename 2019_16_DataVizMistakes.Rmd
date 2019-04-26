@@ -1,0 +1,156 @@
+---
+title: "TidyTuesday 2019/16 - Data Viz Mistakes	by The Economist"
+author: "Cedric Scherer"
+date: "26th of April 2019"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(ggthemes)
+library(cowplot)
+library(patchwork)
+library(emoGG)
+
+## ggplot theme updates
+source("./theme/tidy_grey.R")
+```
+
+## Trade deficit in goods and the number of people employed in manufacturing
+
+```{r data-trade}
+df_trade <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-16/trade.csv")
+```
+
+```{r plot-trade, fig.width = 14, fig.heigth = 5}
+p1 <- df_trade %>% 
+  mutate(
+    trade_deficit = trade_deficit / 10^9, 
+    manufacture_employment = manufacture_employment / 10^5,
+  ) %>% 
+  gather(cat, value, -year) %>% 
+  ggplot(aes(year, value, fill = cat)) + 
+    geom_col(width = 0.8) +
+    geom_hline(yintercept = 0, color = "red1", size = 0.7) +
+    scale_x_continuous(breaks = 1995:2016, 
+                       labels = c("1995", "", "", "", "", "", "", "", "", "", 
+                                  "2005", "", "", "", "", "", "", "", "", "", "", "2016")) +
+    scale_y_continuous(limits = c(-380, 210), breaks = seq(-300, 200, by = 100)) +
+    scale_fill_manual(name = "", values = c("firebrick4", "dodgerblue3"), 
+                      labels = c("Manufacturing employment (100K)",
+                                 "Trade deficit with China in goods ($B)")) +
+    guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
+    labs(x = NULL, y = NULL, 
+         title = "",
+         subtitle = "\n", 
+         caption = "\nVisualization by @CedScherer  |  Sources: US Census Bureau; BLS") +
+    theme_economist() +
+    theme(text = element_text(family = "Open Sans"), 
+          axis.text = element_text(size = 12),
+          axis.text.y = element_text(hjust = 1),
+          axis.ticks.length = unit(5, "pt"),
+          legend.text = element_text(size = 14),
+          legend.position = "top",
+          legend.justification = c(0, 1),
+          plot.caption = element_text(color = "grey40"),
+          plot.background = element_rect(fill = "#dcf0f7"),
+          panel.grid.major.y = element_line(color = "grey70", size = 0.4),
+          panel.background = element_rect(fill = "#dcf0f7"))
+
+p_trade <- ggdraw(p1) + 
+  draw_text("Free markets and free workers", x = 0.01, y = 0.98, hjust = 0, vjust = 1, size = 20, family = "Open Sans ExtraBold") +
+  draw_text("United States", x = 0.01, y = 0.92, hjust = 0, vjust = 1, size = 14, family = "Open Sans")
+```
+
+## Gender in the global research landscape
+
+```{r data-reseach}
+df_research <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-16/women_research.csv") %>% 
+  mutate(
+    field = if_else(field == "Women inventores", "Inventores", field),
+    field = if_else(field == "Computer science, maths", "Computer sciences", field),
+    field = fct_reorder(field, percent_women),
+    type = if_else(country %in% c("Japan", "EU28", "Portugal"), country, NA_character_),
+    type = factor(type, levels = c("Japan", "EU28", "Portugal"))
+  )
+```
+
+```{r plot-reserach}
+p2 <- df_research %>% 
+  ggplot(aes(percent_women * 100, field)) + 
+    geom_vline(xintercept = 0, color = "black", size = 0.7) + 
+    geom_vline(xintercept = 50, color = "red1", size = 0.7) + 
+    geom_point(data = filter(df_research, !is.na(type)), aes(color = type, fill = type), 
+               size = 10, alpha = 0.8, shape = 21) +
+    geom_point(data = filter(df_research, is.na(type)), size = 4, 
+               color = "black", fill = "grey40", alpha = 0.4, shape = 21) + 
+    scale_x_continuous(limits = c(0, 65), breaks = seq(0, 60, by = 10), expand = c(0, 0)) +
+    scale_color_manual(values = c("firebrick4", "dodgerblue3", "turquoise4"), name = NULL) +
+    scale_fill_manual(values = c("firebrick4", "dodgerblue3", "turquoise4"), name = NULL) +
+    guides(color = guide_legend(override.aes = list(size = 4))) +
+    labs(x = NULL, y = NULL, title = "", subtitle = "\n\n", 
+         caption = '\nSources: "Gender in the Global Research Landscape" by Elsevier; The Economist\nVisualization by @CedScherer') +
+    theme_economist() +
+    theme(text = element_text(family = "Open Sans"), 
+          axis.text = element_text(size = 14),
+          axis.ticks.x = element_blank(),
+          axis.line.x = element_blank(),
+          legend.text = element_text(size = 11),
+          legend.position = "top",
+          plot.caption = element_text(color = "grey40"),
+          plot.background = element_rect(fill = "#dcf0f7"),
+          panel.grid.major.y = element_blank(),
+          panel.grid.major.x = element_line(color = "grey70", size = 0.4),
+          panel.background = element_rect(fill = "#dcf0f7"))
+
+p_research <- ggdraw(p2) + 
+  draw_text("Still a man's world", x = 0.02, y = 0.98, hjust = 0, vjust = 1, size = 20, family = "Open Sans ExtraBold") +
+  draw_text("Women among researchers with papers published", 
+            x = 0.02, y = 0.93, hjust = 0, vjust = 1, size = 14, family = "Open Sans") +
+   draw_text("(indexed in Scopus from 2011 to 2015, % of total)", 
+            x = 0.02, y = 0.89, hjust = 0, vjust = 1, size = 11, family = "Open Sans")
+```
+
+## Emoji and title
+
+```{r plot-shrug}
+p_emoji <- tibble(a = 1, b = 1) %>% 
+  ggplot(aes(a, b)) + 
+    geom_emoji(emoji = "1f937", size = 0.25) +
+    annotate("text", x = 1, y = 1.015, label = "Better?", family = "Merriweather", 
+             fontface = "bold", size = 9, color = "grey85") +
+    scale_x_continuous(limits = c(0.975, 1.025)) +
+    scale_y_continuous(limits = c(0.975, 1.025)) +
+    coord_fixed() +
+    labs(title = 'The Economist’s "Mistakes, we’ve drawn a few - Learning from our errors in data visualisation"                 ',
+         subtitle = "\n") +
+    theme_void() + 
+    theme(panel.background = element_rect(fill = "grey20"), 
+          plot.background = element_rect(fill = "grey20"),
+          plot.title = element_text(size = 20, color = "white", hjust = 0.5, family = "Poppins", face = "bold"),
+          plot.subtitle = element_text(size = 8, color = "white", hjust = 0.5, family = "Poppins"))
+```
+
+## Full panel
+
+```{r full-panel, fig.width = 14, fig.height = 5.6}
+(p_trade + p_emoji + p_research) + plot_layout(nrow = 1, widths = c(1, 0.35, 0.85))
+
+ggsave("./plots/2019_16_DataVizMistakes.png", width = 14, height = 5.6, dpi = 300)
+```
+
+***
+
+```{r session}
+sessionInfo()
+```
