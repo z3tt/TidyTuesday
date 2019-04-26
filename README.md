@@ -1,6 +1,6 @@
 # TidyTuesday
 My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).  
-Feedback very welcome via [@CedScherer](https://twitter.com/cedscherer?lang=en) or [cedricphilippscherer@gmail.com]("mailto:cedricphilippscherer@gmail.com").
+Feedback very welcome via [@CedScherer](https://twitter.com/cedscherer?lang=en) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
 ### Week 2019/17 🐉 Anime Data by MyAnimeList.net
 ![./plots/2019_17_animes.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_17_animes.png)
