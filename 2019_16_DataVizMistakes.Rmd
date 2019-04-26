@@ -95,8 +95,8 @@ p2 <- df_research %>%
     geom_point(data = filter(df_research, is.na(type)), size = 4, 
                color = "black", fill = "grey40", alpha = 0.4, shape = 21) + 
     scale_x_continuous(limits = c(0, 65), breaks = seq(0, 60, by = 10), expand = c(0, 0)) +
-    scale_color_manual(values = c("firebrick4", "dodgerblue3", "turquoise4"), name = NULL) +
-    scale_fill_manual(values = c("firebrick4", "dodgerblue3", "turquoise4"), name = NULL) +
+    scale_color_manual(values = c("firebrick4", "turquoise4", "dodgerblue3"), name = NULL) +
+    scale_fill_manual(values = c("firebrick4", "turquoise4", "dodgerblue3"), name = NULL) +
     guides(color = guide_legend(override.aes = list(size = 4))) +
     labs(x = NULL, y = NULL, title = "", subtitle = "\n\n", 
          caption = '\nSources: "Gender in the Global Research Landscape" by Elsevier; The Economist\nVisualization by @CedScherer') +
