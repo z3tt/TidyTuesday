@@ -46,7 +46,7 @@ p1 <- df_trade %>%
                        labels = c("1995", "", "", "", "", "", "", "", "", "", 
                                   "2005", "", "", "", "", "", "", "", "", "", "", "2016")) +
     scale_y_continuous(limits = c(-380, 210), breaks = seq(-300, 200, by = 100)) +
-    scale_fill_manual(name = "", values = c("firebrick4", "dodgerblue3"), 
+    scale_fill_manual(name = "", values = c("dodgerblue3", "firebrick4"), 
                       labels = c("Manufacturing employment (100K)",
                                  "Trade deficit with China in goods ($B)")) +
     guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
