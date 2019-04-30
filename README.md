@@ -2,6 +2,10 @@
 My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).  
 Feedback very welcome via [@CedScherer](https://twitter.com/cedscherer?lang=en) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
+### Week 2019/17 🏨🐦 Chicago Bird Collisions by [Winger et al, 2019](https://doi.org/10.1098/rspb.2019.0364)
+![./plots/2019_18_BirdCollisions.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_18_BirdCollisions.png)
+<br/><br/>   
+
 ### Week 2019/17 🐉 Anime Data by [MyAnimeList.net](https://myanimelist.net/)
 ![./plots/2019_17_animes.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_17_animes.png)
 <br/><br/>   
