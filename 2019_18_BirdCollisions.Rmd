@@ -61,7 +61,7 @@ df_light <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/t
               size = 3, fontface = "plain", label.strata = T) +
     scale_x_discrete(limits = c("Family", "Habitat", "Stratum"), 
                      expand = c(0, 0), position = "top") +
-    scale_y_continuous(expand = c(0, 0)) +
+    scale_y_continuous(labels = scales::percent_format(accuracy = 1), expand = c(0, 0)) +
     scale_fill_simpsons(name = "Flight calls during migration?") +
     theme(axis.title.x = element_text(size = 12),
           axis.title.y = element_text(size = 12),
@@ -74,7 +74,7 @@ df_light <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/t
           legend.title = element_text(size = 10, face = "bold"),
           legend.text = element_text(size = 9)) +
     guides(fill = guide_legend(title.position = "top", title.hjust = 0.5, label.position = "bottom")) +
-    labs(x = NULL, y = "Percent of cases (1978-2016)",
+    labs(x = NULL, y = "Percentage of cases (1978-2016)",
          title = "What drives collision risk in nocturnally migrating passerine birds?",
          subtitle = "Nocturnal bird collisions at McCormick Place, Chicago, IL"))
 ```
@@ -103,12 +103,14 @@ zonoalbi <- grid::rasterGrob(img_b, interpolate = T)
   ggplot(aes(fct_reorder(species, pct_sum), pct)) +
     geom_bar(aes(alpha = light_intensity), stat  = "identity", fill = "#ffd700") +
     coord_flip() +
-    scale_y_continuous(expand = c(0, 0), limits = c(0, 0.21), position = "right") +
+    scale_y_continuous(labels = scales::percent_format(accuracy = 1), expand = c(0, 0), 
+                       limits = c(0, 0.21), position = "right") +
     scale_alpha_discrete(range = c(0.3, 1), name = "Night-time light intensity:") +
-    annotation_custom(chicago, xmin = -0.5, xmax = 5.7, ymin = 0.05, ymax = 0.21) +
-    annotation_custom(zonoalbi, xmin = -0.1, xmax = 5, ymin = 0.015, ymax = 0.065) +
-    guides(alpha = guide_legend(title.position = "top", title.hjust = 0.5, label.position = "bottom", reverse = T)) +
-    labs(x = "\nMost frequently detected species", y = "Percent of cases (2000-2016)",
+    annotation_custom(chicago, xmin = -0.5, xmax = 6, ymin = 0.0475, ymax = 0.21) +
+    annotation_custom(zonoalbi, xmin = -0.1, xmax = 6.2, ymin = 0.015, ymax = 0.07) +
+    guides(alpha = guide_legend(title.position = "top", title.hjust = 0.5, 
+                                label.position = "bottom", reverse = T)) +
+    labs(x = "\nMost frequently detected species", y = "Percentage of cases (2000-2016)",
          title = "",
          caption = "\nVisualization by @CedScherer  |  Data: Winger et al. 2019 (doi: 10.1098/rspb.2019.0364)") +
     theme(axis.title.x = element_text(size = 12),
@@ -128,7 +130,7 @@ zonoalbi <- grid::rasterGrob(img_b, interpolate = T)
 ## save as panel
 birds_fams + birds_light + plot_layout(width = c(1, 0.7))
 
-ggsave("./plots/2019_18_BirdCollisions.png", width = 14, height = 5.3, dpi = 300)
+ggsave("./plots/2019_18_BirdCollisions.png", width = 14, height = 5.2, dpi = 300)
 ```
 
 ***
