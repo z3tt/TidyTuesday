@@ -1,0 +1,138 @@
+---
+title: "TidyTuesday 2019/18 - Chicago Bird Collisions	by Winger et al. 2019"
+author: "Cedric Scherer"
+date: "30th of April 2019"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(ggalluvial)
+library(patchwork)
+library(ggsci)
+
+## ggplot theme updates
+source("./theme/tidy_grey.R")
+```
+
+```{r data}
+df_collisions <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-30/bird_collisions.csv")
+df_light <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-30/mp_light.csv")
+```
+
+```{r}
+## collisions by family (1978-2016)
+(birds_fams <- df_collisions %>% 
+  filter(locality == "MP") %>% 
+  mutate(
+    sum = n(),
+    flight_call = if_else(flight_call %in% c("No", "Rare"), "No/Rare", flight_call)
+  ) %>% 
+  group_by(family) %>% 
+  mutate(
+    n = n(),
+    group = if_else(n < 2500, "Other", family)
+  ) %>% 
+  group_by(group, habitat, stratum, flight_call) %>% 
+  summarize(n = n(), pct = n() / unique(sum)) %>%
+  group_by(group) %>% 
+  mutate(n_fam = sum(n)) %>% 
+  ungroup() %>% 
+  mutate(
+    group = fct_reorder(group, -n_fam),
+    group = fct_relevel(group, "Other", after = 4),
+    flight_call = factor(flight_call, levels = c("Yes", "No/Rare")),
+    habitat = factor(habitat, levels = c("Forest", "Edge", "Open"))
+  ) %>% 
+  ggplot(aes(axis1 = group, axis2 = habitat, axis3 = stratum, y = pct)) +
+    geom_alluvium(aes(fill = flight_call)) +
+    geom_stratum(fill = "grey70", color = "grey20", size = 0.1, width = 0.4) +
+    geom_text(stat = "stratum", family = "Poppins", color = "grey20", 
+              size = 3, fontface = "plain", label.strata = T) +
+    scale_x_discrete(limits = c("Family", "Habitat", "Stratum"), 
+                     expand = c(0, 0), position = "top") +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_simpsons(name = "Flight calls during migration?") +
+    theme(axis.title.x = element_text(size = 12),
+          axis.title.y = element_text(size = 12),
+          axis.text.x = element_text(size = 11, color = "white", face = "bold"),
+          axis.text.y = element_text(size = 10, family = "Roboto Mono"),
+          legend.position = "bottom",
+          legend.key.width = unit(6, "lines"),
+          legend.key.height = unit(0.75, "lines"),
+          legend.spacing.x = unit(0.5, 'cm'),
+          legend.title = element_text(size = 10, face = "bold"),
+          legend.text = element_text(size = 9)) +
+    guides(fill = guide_legend(title.position = "top", title.hjust = 0.5, label.position = "bottom")) +
+    labs(x = NULL, y = "Percent of cases (1978-2016)",
+         title = "What drives collision risk in nocturnally migrating passerine birds?",
+         subtitle = "Nocturnal bird collisions at McCormick Place, Chicago, IL"))
+```
+
+```{r}
+## collision per light intensity and species (2000-2016)
+img_a <- png::readPNG("./img/ChigacoNight.png") 
+chicago <- grid::rasterGrob(img_a, interpolate = T) 
+
+img_b <- png::readPNG("./img/zonotrichia_albicollis.png") 
+zonoalbi <- grid::rasterGrob(img_b, interpolate = T)  
+
+(birds_light <- df_collisions %>% 
+  filter(date >= min(df_light$date)) %>% 
+  inner_join(df_light) %>% 
+  mutate(
+    sum = n(),
+    species = glue::glue("{genus} {species}"), 
+    light_intensity = cut(light_score, breaks = 3, labels = c("low", "medium", "high"))
+  ) %>% 
+  group_by(species, light_intensity) %>% 
+  summarize(n = n(), pct = n() / unique(sum)) %>% 
+  group_by(species) %>% 
+  mutate(pct_sum = sum(pct)) %>% 
+  filter(pct_sum >= 0.02) %>% 
+  ggplot(aes(fct_reorder(species, pct_sum), pct)) +
+    geom_bar(aes(alpha = light_intensity), stat  = "identity", fill = "#ffd700") +
+    coord_flip() +
+    scale_y_continuous(expand = c(0, 0), limits = c(0, 0.21), position = "right") +
+    scale_alpha_discrete(range = c(0.3, 1), name = "Night-time light intensity:") +
+    annotation_custom(chicago, xmin = -0.5, xmax = 5.7, ymin = 0.05, ymax = 0.21) +
+    annotation_custom(zonoalbi, xmin = -0.1, xmax = 5, ymin = 0.015, ymax = 0.065) +
+    guides(alpha = guide_legend(title.position = "top", title.hjust = 0.5, label.position = "bottom", reverse = T)) +
+    labs(x = "\nMost frequently detected species", y = "Percent of cases (2000-2016)",
+         title = "",
+         caption = "\nVisualization by @CedScherer  |  Data: Winger et al. 2019 (doi: 10.1098/rspb.2019.0364)") +
+    theme(axis.title.x = element_text(size = 12),
+          axis.title.y = element_text(size = 12),
+          axis.text.x = element_text(size = 10, family = "Roboto Mono"),
+          axis.text.y = element_text(size = 10, face = "italic"),
+          legend.position = "bottom",
+          legend.key.width = unit(6, "lines"),
+          legend.key.height = unit(0.75, "lines"),
+          legend.spacing.x = unit(0.5, 'cm'),
+          legend.title = element_text(size = 10, face = "bold"),
+          legend.text = element_text(size = 9),
+          plot.margin = margin(12, 50, 12, 12)))
+```
+
+```{r panel, fig.width = 14, fig.height = 5.5}
+## save as panel
+birds_fams + birds_light + plot_layout(width = c(1, 0.7))
+
+ggsave("./plots/2019_18_BirdCollisions.png", width = 14, height = 5.3, dpi = 300)
+```
+
+***
+
+```{r session}
+sessionInfo()
+```

@@ -31,7 +31,7 @@ theme_custom <- function (base_size = 12, base_family = base)
         axis.text.x.top = element_text(margin = margin(b = 0.8 * half_line/2), vjust = 0), 
         axis.text.y = element_text(margin = margin(r = 0.8 * half_line/2), hjust = 1), 
         axis.text.y.right = element_text(margin = margin(l = 0.8 * half_line/2), hjust = 0), 
-        axis.ticks = element_line(colour = "grey85", size = 0.4), 
+        axis.ticks = element_line(colour = "grey85", size = 0.3), 
         axis.ticks.length = unit(half_line/2, "pt"), 
         axis.title.x = element_text(margin = unit(c(3.5, 0, 0, 0), "mm"), vjust = 1, size = base_size * 1.3, face = "bold"), 
         axis.title.x.top = element_text(margin = margin(b = half_line), vjust = 0), 
