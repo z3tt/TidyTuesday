@@ -41,3 +41,6 @@ rsconnect/
 
 # desktop.ini et al
 *.ini
+
+# pdf files
+*.pdf
