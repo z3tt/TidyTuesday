@@ -178,7 +178,7 @@ maps_facet <- df_students_tile %>%
     geom_text(aes(x = x, y = y, label = alpha.2), color = "white", size = 1.6, 
               fontface = "bold", family = "Roboto Mono") +
     scale_y_reverse() +
-    scale_fill_carto_c(palette = "ag_Sunset", limits = c(1, 85), name = NULL,
+    scale_fill_carto_c(palette = "ag_Sunset", limits = c(0, 85), name = NULL,
                        guide = guide_colourbar(direction = "horizontal",
                                                barheight = unit(1.5, units = "mm"), 
                                                barwidth = unit(120, units = "mm"),
