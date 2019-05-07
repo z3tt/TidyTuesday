@@ -88,7 +88,7 @@ ghibli_scores <- df_ghibli_unique %>%
 ## save as panel
 ghibli_genres + ghibli_scores
 
-ggsave("./plots/2019_17_animes.png", width = 14, height = 5, dpi = 300)
+ggsave("./plots/2019_17_animes.png", width = 14, height = 5.2, dpi = 300)
 ```
 
 ***
