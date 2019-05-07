@@ -4,6 +4,8 @@ Feedback very welcome via [@CedScherer](https://twitter.com/cedscherer?lang=en) 
 
 ### Week 2019/19 👨‍🏫 Global Student to Teachers Ratios by [UNSECO's "eAtlas of Teachers"](http://data.uis.unesco.org/index.aspx?queryid=180)
 ![./plots/2019_19_StudentTeacher.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_19_StudentTeacher.png)
+Teachers"](http://data.uis.unesco.org/index.aspx?queryid=180)
+![./plots/2019_19_StudentTeacher_facet.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_19_StudentTeacher_facet.png)
 <br/><br/>  
 
 ### Week 2019/18 🏨🐦 Chicago Bird Collisions by [Winger et al, 2019](https://doi.org/10.1098/rspb.2019.0364)

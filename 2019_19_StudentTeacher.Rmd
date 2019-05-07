@@ -135,7 +135,7 @@ map_country <- df_students_tile %>%
     geom_text(aes(x = x, y = y, label = alpha.2), color = "white", size = 2.3, 
               fontface = "bold", family = "Roboto Mono") +
     scale_y_reverse() +
-    scale_fill_carto_c(palette = "ag_Sunset", limits = c(0, 85), name = NULL,
+    scale_fill_carto_c(palette = "ag_Sunset", limits = c(0, 90), breaks = seq(0, 90, by = 10), name = NULL,
                        guide = guide_colourbar(direction = "horizontal",
                                                barheight = unit(1.5, units = "mm"), 
                                                barwidth = unit(120, units = "mm"),
@@ -178,7 +178,7 @@ maps_facet <- df_students_tile %>%
     geom_text(aes(x = x, y = y, label = alpha.2), color = "white", size = 1.6, 
               fontface = "bold", family = "Roboto Mono") +
     scale_y_reverse() +
-    scale_fill_carto_c(palette = "ag_Sunset", limits = c(0, 85), name = NULL,
+    scale_fill_carto_c(palette = "ag_Sunset", limits = c(0, 90), breaks = seq(0, 90, by = 10), name  = NULL,
                        guide = guide_colourbar(direction = "horizontal",
                                                barheight = unit(1.5, units = "mm"), 
                                                barwidth = unit(120, units = "mm"),
@@ -189,6 +189,7 @@ maps_facet <- df_students_tile %>%
     theme(line = element_blank(),
           axis.text = element_blank(),
           legend.position = c(0.5, -0.1),
+          legend.text = element_text(family = "Roboto Mono", size = 9),
           panel.border = element_rect(colour = "grey20"),
           strip.background = element_rect(colour = "grey20")) +
     labs(caption = '\nVisualization by @CedScherer  |  Data: "eAtlas of Teachers" by UNESCO', x = "", y = NULL)
