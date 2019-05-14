@@ -33,7 +33,7 @@ df_nobel <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/t
 ## tile plot facetted by gender
 tile_gender <- df_nobel %>% 
   filter(laureate_type == "Individual") %>% 
-  mutate(decade = glue::glue("{round(prize_year - 1, -1)}'s")) %>% 
+  mutate(decade = glue::glue("{round(prize_year - 1, -1)}s")) %>% 
   group_by(decade, category) %>% 
   mutate(ind_awards = n()) %>%
   group_by(decade, category, gender) %>% 
