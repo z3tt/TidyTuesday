@@ -48,9 +48,7 @@ ghibli_genres <- df_ghibli %>%
     scale_y_continuous(limits = c(0, 20), expand = c(0.01, 0)) +
     scale_fill_ghibli_d("MononokeLight") +
     guides(fill = F) + 
-    labs(x = "Most common genres", y = "Count",
-         title = "Studio Ghibli movies listed on MyAnimeList.net (MAL)",
-         subtitle = "") +
+    labs(x = "Most common genres", y = "Count") +
     annotation_custom(a, xmin = 0.4, xmax = 6.75, ymin = 12, ymax = 23) +
     theme(axis.text.x = element_text(family = "Roboto Mono"))
 
@@ -85,10 +83,21 @@ ghibli_scores <- df_ghibli_unique %>%
           legend.title = element_text(size = 9),
           legend.text = element_text(family = "Roboto Mono", size = 8))
 
-## save as panel
-ghibli_genres + ghibli_scores
+## left-alligned title
+title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "Studio Ghibli movies listed on MyAnimeList.net (MAL)",
+       subtitle = "") +
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        panel.border = element_rect(colour = "transparent"),
+        axis.text = element_blank())
 
-ggsave("./plots/2019_17_animes.png", width = 14, height = 5.2, dpi = 300)
+## full panel
+title + ghibli_genres + ghibli_scores + plot_layout(width = c(0, 1, 1))
+
+ggsave("./plots/2019_17/2019_17_animes.png", width = 14, height = 5.4, dpi = 300)
 ```
 
 ***
