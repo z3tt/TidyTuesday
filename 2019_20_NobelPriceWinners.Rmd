@@ -19,6 +19,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 library(tidyverse)
 library(scico)
 library(emojifont)
+library(patchwork)
 
 ## ggplot theme updates
 source("./theme/tidy_grey.R")
@@ -26,12 +27,11 @@ source("./theme/tidy_grey.R")
 
 ```{r data}
 df_nobel <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-14/nobel_winners.csv")
-#df_nobel_all_pubs <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-14/nobel_winner_all_pubs.csv")
 ```
 
 ```{r plots, fig.width = 14, fig.height = 5.5}
 ## tile plot facetted by gender
-df_nobel %>% 
+tile_gender <- df_nobel %>% 
   filter(laureate_type == "Individual") %>% 
   mutate(decade = glue::glue("{round(prize_year - 1, -1)}'s")) %>% 
   group_by(decade, category) %>% 
@@ -67,7 +67,7 @@ df_nobel %>%
     theme(strip.text = element_blank(),
           panel.spacing.x = unit(15, "pt"),
           axis.text.x = element_text(family = "Roboto Mono", size = 9),
-          legend.position = "bottom",
+          legend.position = "top",
           axis.ticks = element_blank(),
           panel.border = element_rect(color = "grey20")) + 
     labs(x = NULL, y = NULL,
@@ -85,9 +85,9 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
         axis.text = element_blank())
 
 ## full panel
-title + tile_gender + plot_layout
+title + tile_gender + plot_layout(width = c(0, 1))
 
-ggsave("./plots/2019_20/2019_20_nobel_tile_gender.pdf", width = 14, height = 5, device = cairo_pdf)
+ggsave("./plots/2019_20/2019_20_NobelPrizeWinners.pdf", width = 14, height = 5, device = cairo_pdf)
 ```
 
 ***
