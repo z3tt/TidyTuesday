@@ -19,6 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
 library(RColorBrewer)
+library(patchwork)
 
 ## ggplot theme updates
 source("./theme/tidy_grey.R")
@@ -86,7 +87,7 @@ average <- df_bikes_month %>%
   summarize(avg = round(unique(crossing_avg), digits = 2)) %>% 
   mutate(avg = paste0("yearly mean = ", avg))
 
-df_bikes_month %>% 
+bikes_month <- df_bikes_month %>% 
   ggplot(aes(hour + 0.5, fct_rev(month))) +
     geom_tile(aes(fill = diff)) +
     geom_text(data = average, aes(label = avg), x = 12, y = 11.7, size = 2.2, 
@@ -109,8 +110,6 @@ df_bikes_month %>%
                                               title.hjust = 0.5, label.hjust = 0.5)) +
     facet_grid(term ~ crossing) +
     labs(x = "Hour of the day", y = NULL,
-         title = "Riding the green wave in Seattle",
-         subtitle = "Monthly bike traffic (2014-2018), based on data from seattle.gov\n",
          caption = "Visualization by @CedScherer") +
     theme(strip.text = element_text(face = "plain", size = 10, angle = 0),
           panel.spacing.x = unit(10, "pt"), 
@@ -121,11 +120,25 @@ df_bikes_month %>%
           legend.text = element_text(family = "Roboto Mono", size = 8),
           legend.position = "bottom")
 
-ggsave("./plots/2019_14_bikes_month.png", width = 14, height = 4.75, dpi = 300)
+## left-alligned title
+title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "Riding the green wave in Seattle",
+         subtitle = "Monthly bike traffic (2014-2018), based on data from seattle.gov\n") +
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        panel.border = element_rect(colour = "transparent"),
+        axis.text = element_blank())
+
+## full panel
+title + bikes_month + plot_layout(width = c(0, 1))
+
+ggsave("./plots/2019_14/2019_14_bikes_month.pdf", width = 14, height = 4.75, device = cairo_pdf)
 ```
 
 ```{r plot-season, fig.width = 14, fig.heigth = 5}
-df_bikes_grouped %>% 
+bikes_season <- df_bikes_grouped %>% 
   mutate(season = factor(season, levels = 1:4, 
                          labels = c("Spring\n(Mar-May)", 
                                     "Summer\n(Jun-Aug)", 
@@ -161,8 +174,6 @@ df_bikes_grouped %>%
                                                  title.hjust = 0.5, label.hjust = 0.5)) +
     facet_grid(season ~ crossing, switch = "y") +
     labs(x = "Hour of the day", y = NULL,
-         title = "Riding the green wave in Seattle",
-         subtitle = "Bike traffic (2014-2018) by seasons, based on data from seattle.gov\n",
          caption = "Visualization by @CedScherer") +
     theme(strip.text.x = element_text(face = "plain", size = 10, angle = 0),
           strip.text.y = element_text(face = "plain", size = 10, angle = 180),
@@ -175,7 +186,22 @@ df_bikes_grouped %>%
           legend.text = element_text(family = "Roboto Mono", size = 8),
           legend.position = "bottom")
 
-ggsave("./plots/2019_14_bikes_season.png", width = 14, height = 5, dpi = 300)
+## left-alligned title
+title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+         title = "Riding the green wave in Seattle",
+         subtitle = "Bike traffic (2014-2018) by seasons, based on data from seattle.gov\n") +
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        panel.border = element_rect(colour = "transparent"),
+        axis.text = element_blank())
+
+## full panel
+title + bikes_season + plot_layout(width = c(0, 1))
+
+
+ggsave("./plots/2019_14/2019_14_bikes_season.pdf", width = 14, height = 5, device = cairo_pdf)
 ```
 
 ***
