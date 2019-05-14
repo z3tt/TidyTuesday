@@ -6,7 +6,7 @@ Feedback very welcome via [@CedScherer](https://twitter.com/cedscherer?lang=en) 
 ![./plots/2019_20/2019_20_NobelPrizeWinners.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_20/2019_20_NobelPrizeWinners.png)
 <br/><br/>
 
-### Week 2019/19 👨‍🏫 Global Student to Teachers Ratios by [UNSECO's "eAtlas of Teachers"](http://data.uis.unesco.org/index.aspx?queryid=180)
+### Week 2019/19 👨‍🏫 Global Student to Teachers Ratios by [UNESCO's "eAtlas of Teachers"](http://data.uis.unesco.org/index.aspx?queryid=180)
 ![./plots/2019_19/2019_19_StudentTeacher.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_19/2019_19_StudentTeacher.png)
 ![./plots/2019_19/2019_19_StudentTeacher_facet.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_19/2019_19_StudentTeacher_facet.png)
 <br/><br/>  
