@@ -3,7 +3,7 @@ My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascie
 Feedback very welcome via [@CedScherer](https://twitter.com/cedscherer?lang=en) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
 ### Week 2019/20 🎖️ Nobel Prize Winners by [Harvard Dataverse](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/6NJ5RN)
-![./plots/2019_20/2019_20_NoblePrizeWinners.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_20/2019_20_NoblePrizeWinners.png)
+![./plots/2019_20/2019_20_NobelPrizeWinners.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_20/2019_20_NobelPrizeWinners.png)
 <br/><br/>
 
 ### Week 2019/19 👨‍🏫 Global Student to Teachers Ratios by [UNSECO's "eAtlas of Teachers"](http://data.uis.unesco.org/index.aspx?queryid=180)
