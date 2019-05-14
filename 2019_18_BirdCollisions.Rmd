@@ -74,9 +74,7 @@ df_light <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/t
           legend.title = element_text(size = 10, face = "bold"),
           legend.text = element_text(size = 9)) +
     guides(fill = guide_legend(title.position = "top", title.hjust = 0.5, label.position = "bottom")) +
-    labs(x = NULL, y = "Percentage of cases (1978-2016)",
-         title = "What drives collision risk in nocturnally migrating passerine birds?",
-         subtitle = "Nocturnal bird collisions at McCormick Place, Chicago, IL"))
+    labs(x = NULL, y = "Percentage of cases (1978-2016)"))
 ```
 
 ```{r}
@@ -127,10 +125,23 @@ zonoalbi <- grid::rasterGrob(img_b, interpolate = T)
 ```
 
 ```{r panel, fig.width = 14, fig.height = 5.5}
-## save as panel
-birds_fams + birds_light + plot_layout(width = c(1, 0.7))
+## left-alligned title
+title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+         title = "What drives collision risk in nocturnally migrating passerine birds?",
+         subtitle = "Nocturnal bird collisions at McCormick Place, Chicago, IL") +
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        panel.border = element_rect(colour = "transparent"),
+        axis.text = element_blank())
 
-ggsave("./plots/2019_18_BirdCollisions.png", width = 14, height = 5.2, dpi = 300)
+## full panel
+
+## save as panel
+title + birds_fams + birds_light + plot_layout(width = c(0, 1, 0.7))
+
+ggsave("./plots/2019_18/2019_18_BirdCollisions.pdf", width = 14, height = 5.2, device = cairo_pdf)
 ```
 
 ***
