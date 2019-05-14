@@ -52,21 +52,23 @@ df_students_tile <- df_students %>%
   ) %>% 
   mutate(alpha.3 = country_code) %>%
   full_join(df_world_tile) %>%
-  filter(!is.na(indicator)) %>% 
+  filter(
+    !is.na(indicator),
+    !is.na(region)
+  ) %>% 
   mutate(alpha.2 = if_else(country == "Namibia", "NA", alpha.2))
 ```
 
 ```{r plots, fig.width = 14, fig.height = 5.5}
 ## worldwide average
 world_avg <- df_students_tile %>% 
-  group_by(country) %>% 
-  filter(indicator == "Primary Education", str_detect(country_code, "[A-Z]")) %>% 
-  ungroup() %>% 
+  filter(indicator == "Primary Education") %>% 
   summarize(avg = mean(student_ratio, na.rm = T)) %>% 
   pull(avg)
 
 ## regions
-map_regions <- df_world_tile %>% 
+map_regions <- df_students_tile %>% 
+  filter(indicator == "Primary Education") %>% 
   ggplot(aes(x = x, y = y, fill = region, color = region)) + 
     geom_tile() +
     scale_y_reverse() +
@@ -93,7 +95,7 @@ arrows <- tibble(
 set.seed(2019)
 
 lolli_country <- df_students_tile %>% 
-  filter(indicator == "Primary Education", !is.na(region)) %>% 
+  filter(indicator == "Primary Education") %>% 
   group_by(region) %>% 
   mutate(student_ratio_cont = mean(student_ratio, na.rm = T)) %>% 
   ungroup() %>% 

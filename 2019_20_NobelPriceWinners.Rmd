@@ -1,0 +1,97 @@
+---
+title: "TidyTuesday 2019/20 - Nobel Prize Winners by "
+author: "Cedric Scherer"
+date: "14th of May 2019"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(scico)
+library(emojifont)
+
+## ggplot theme updates
+source("./theme/tidy_grey.R")
+```
+
+```{r data}
+df_nobel <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-14/nobel_winners.csv")
+#df_nobel_all_pubs <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-14/nobel_winner_all_pubs.csv")
+```
+
+```{r plots, fig.width = 14, fig.height = 5.5}
+## tile plot facetted by gender
+df_nobel %>% 
+  filter(laureate_type == "Individual") %>% 
+  mutate(decade = glue::glue("{round(prize_year - 1, -1)}'s")) %>% 
+  group_by(decade, category) %>% 
+  mutate(ind_awards = n()) %>%
+  group_by(decade, category, gender) %>% 
+  summarize(prop = n() / unique(ind_awards)) %>%  
+  ungroup() %>% 
+  complete(decade, category, gender, fill = list(prop = 0)) %>% 
+  group_by(decade, category) %>% 
+  mutate(
+    prop_fem = min(prop),
+    prop_male = max(prop)
+  ) %>% 
+  group_by(category) %>% 
+  mutate(avg_fem = mean(prop_fem)) %>% 
+  ungroup() %>% 
+  mutate(
+    label = if_else(gender == "Male", fontawesome("fa-mars"), 
+                                      fontawesome("fa-venus")),
+    category = fct_reorder(category, avg_fem),
+    prop = if_else((prop_fem + prop_male) == 0, NA_real_, prop)
+  ) %>% 
+  ggplot(aes(decade, category, color = prop, label = label)) +
+    geom_tile(fill = "grey25", color = "grey20", size = 0.7) +
+    geom_text(family = 'fontawesome-webfont', size = 8) +
+    facet_grid(. ~ gender) +
+    scale_color_scico(palette = "berlin", name = NULL, na.value = "grey25",
+                      guide = guide_colourbar(direction = "horizontal",
+                                               barheight = unit(3, units = "mm"), 
+                                               barwidth = unit(150, units = "mm"),
+                                               draw.ulim = FALSE, title.position = 'bottom',
+                                               title.hjust = 0.5, label.hjust = 0.5)) +
+    theme(strip.text = element_blank(),
+          panel.spacing.x = unit(15, "pt"),
+          axis.text.x = element_text(family = "Roboto Mono", size = 9),
+          legend.position = "bottom",
+          axis.ticks = element_blank(),
+          panel.border = element_rect(color = "grey20")) + 
+    labs(x = NULL, y = NULL,
+         caption = '\nVisualization by @CedScherer  |  Data: Harvard Dataverse, Li et al. 2018, doi: 10.7910/DVN/6NJ5RN')
+
+## left-alligned title
+title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = 'The male dominance of the Nobel prize',
+       subtitle = "Proportion of female and male Nobel prize winners per category and decade.") +
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        panel.border = element_rect(colour = "transparent"),
+        axis.text = element_blank())
+
+## full panel
+title + tile_gender + plot_layout
+
+ggsave("./plots/2019_20/2019_20_nobel_tile_gender.pdf", width = 14, height = 5, device = cairo_pdf)
+```
+
+***
+
+```{r session}
+sessionInfo()
+```
