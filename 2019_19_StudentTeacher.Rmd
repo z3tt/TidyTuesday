@@ -72,8 +72,8 @@ map_regions <- df_students_tile %>%
   ggplot(aes(x = x, y = y, fill = region, color = region)) + 
     geom_tile() +
     scale_y_reverse() +
-    scale_fill_manual(values=lacroix_palette("PeachPear", n = 6, type = "discrete"), guide = F) +
-    scale_color_manual(values=lacroix_palette("PeachPear", n = 6, type = "discrete"), guide = F) +
+    scale_fill_manual(values = lacroix_palette("PeachPear", n = 6, type = "discrete"), guide = F) +
+    scale_color_manual(values = lacroix_palette("PeachPear", n = 6, type = "discrete"), guide = F) +
     coord_equal() +
     theme(line = element_blank(),
           panel.background = element_rect(fill = "transparent"),
