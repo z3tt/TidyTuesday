@@ -6,7 +6,7 @@ output:
   html_document:
     theme: paper
     highlight: kate
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
@@ -28,8 +28,7 @@ source("./theme/tidy_grey.R")
 
 ```{r data}
 df_students <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-07/student_teacher_ratio.csv")
-df_world_tile <- readr::read_csv("https://gist.githubusercontent.com/maartenzam/787498bbc07ae06b637447dbd430ea0a/raw/9a9dafafb44d8990f85243a9c7ca349acd3a0d07/worldtilegrid.csv") %>% 
-  filter(region != "Antarctica") %>% 
+df_world_tile <- readr::read_csv("https://gist.githubusercontent.com/maartenzam/787498bbc07ae06b637447dbd430ea0a/raw/9a9dafafb44d8990f85243a9c7ca349acd3a0d07/worldtilegrid.csv") %>%
   mutate(
     alpha.2 = if_else(name == "Namibia", "NA", alpha.2),
     region = if_else(region == "Americas", sub.region, region),
@@ -41,35 +40,35 @@ df_world_tile <- readr::read_csv("https://gist.githubusercontent.com/maartenzam/
 
 ```{r data-proc}
 ## data merged with tile map
-df_students_tile <- df_students %>% 
-  group_by(country, indicator) %>% 
-  filter(year == max(year)) %>% 
-  ungroup() %>% 
-  complete(indicator, nesting(country, country_code)) %>% 
+df_students_tile <- df_students %>%
+  group_by(country, indicator) %>%
+  filter(year == max(year)) %>%
+  ungroup() %>%
+  complete(indicator, nesting(country, country_code)) %>%
   filter(
-    indicator %in% c("Primary Education", "Secondary Education", "Tertiary Education"), 
+    indicator %in% c("Primary Education", "Secondary Education", "Tertiary Education"),
     str_detect(country_code, "[A-Z]")
-  ) %>% 
+  ) %>%
   mutate(alpha.3 = country_code) %>%
   full_join(df_world_tile) %>%
   filter(
     !is.na(indicator),
     !is.na(region)
-  ) %>% 
+  ) %>%
   mutate(alpha.2 = if_else(country == "Namibia", "NA", alpha.2))
 ```
 
 ```{r plots, fig.width = 14, fig.height = 5.5}
 ## worldwide average
-world_avg <- df_students_tile %>% 
-  filter(indicator == "Primary Education") %>% 
-  summarize(avg = mean(student_ratio, na.rm = T)) %>% 
+world_avg <- df_students_tile %>%
+  filter(indicator == "Primary Education") %>%
+  summarize(avg = mean(student_ratio, na.rm = T)) %>%
   pull(avg)
 
 ## regions
-map_regions <- df_students_tile %>% 
-  filter(indicator == "Primary Education") %>% 
-  ggplot(aes(x = x, y = y, fill = region, color = region)) + 
+map_regions <- df_students_tile %>%
+  filter(indicator == "Primary Education") %>%
+  ggplot(aes(x = x, y = y, fill = region, color = region)) +
     geom_tile() +
     scale_y_reverse() +
     scale_fill_manual(values = lacroix_palette("PeachPear", n = 6, type = "discrete"), guide = F) +
@@ -78,8 +77,8 @@ map_regions <- df_students_tile %>%
     theme(line = element_blank(),
           panel.background = element_rect(fill = "transparent"),
           plot.background = element_rect(fill = "transparent", color = "transparent"),
-          panel.border = element_rect(colour = "transparent"),
-          strip.background = element_rect(colour = "grey20"),
+          panel.border = element_rect(color = "transparent"),
+          strip.background = element_rect(color = "grey20"),
           axis.text = element_blank(),
           plot.margin = margin(0, 0, 0, 0)) +
     labs(x = NULL, y = NULL)
@@ -94,121 +93,127 @@ arrows <- tibble(
 
 set.seed(2019)
 
-lolli_country <- df_students_tile %>% 
-  filter(indicator == "Primary Education") %>% 
-  group_by(region) %>% 
-  mutate(student_ratio_cont = mean(student_ratio, na.rm = T)) %>% 
-  ungroup() %>% 
+lolli_country <- df_students_tile %>%
+  filter(indicator == "Primary Education") %>%
+  group_by(region) %>%
+  mutate(student_ratio_cont = mean(student_ratio, na.rm = T)) %>%
+  ungroup() %>%
   mutate(
-    region = fct_reorder(region, -student_ratio_cont), 
+    region = fct_reorder(region, -student_ratio_cont),
     region_col = fct_reorder(region, x)
-  ) %>% 
-  ggplot(aes(student_ratio_cont, region)) + 
+  ) %>%
+  ggplot(aes(student_ratio_cont, region)) +
     geom_vline(aes(xintercept = world_avg), color = "grey85") +
-    geom_jitter(aes(x = student_ratio, y = region, fill = region_col), color = "grey85", 
+    geom_jitter(aes(x = student_ratio, y = region, fill = region_col), color = "grey85",
                 width = 0, height = 0.2, size = 2.5, alpha = 0.3, shape = 21) +
-    geom_segment(aes(x = world_avg, xend = student_ratio_cont, y = region, yend = region), color = "grey85", size = 0.7) +
-    geom_point(color = "grey85", size = 6) + 
-    geom_point(aes(color = region_col), size = 5) + 
-    annotate("text", x = 33, y = 6.3, label = "Worldwide average:\n22.4 students per teacher", family = "Poppins", size = 2.5, color = "grey85") +
-    annotate("text", x = 10, y = 3.5, label = "Continental average", family = "Poppins", size = 2.5, color = "grey85") +
-    annotate("text", x = 10, y = 1.5, label = "Countries", family = "Poppins", size = 2.5, color = "grey85") +
-    annotate("text", x = 65, y = 1.9, label = "The Central African Republic has by far\nthe most students per teacher", 
-             family = "Poppins", size = 2, color = "grey85") +
-    geom_curve(data = arrows, aes(x = x1, y = y1, xend = x2, yend = y2), 
-               arrow = arrow(length = unit(0.1, "inch")), size = 0.3, color = "grey85", curvature = -0.3) +
-    annotation_custom(ggplotGrob(map_regions), xmin = 55, xmax = 85, ymin = 2.5, ymax = 7.5) +
+    geom_segment(aes(x = world_avg, xend = student_ratio_cont, y = region, yend = region),
+                 color = "grey85", size = 0.7) +
+    geom_point(color = "grey85", size = 6) +
+    geom_point(aes(color = region_col), size = 5) +
+    annotate("text", x = 35, y = 6.3, family = "Poppins", size = 2.5, color = "grey85",
+             label = glue::glue("Worldwide average:\n{round(world_avg, 1)} students per teacher")) +
+    annotate("text", x = 10, y = 3.5, family = "Poppins", size = 2.5,
+             color = "grey85", label = "Continental average") +
+    annotate("text", x = 10, y = 1.5, family = "Poppins", size = 2.5,
+             color = "grey85", label = "Countries") +
+    annotate("text", x = 65, y = 1.9, family = "Poppins", size = 2, color = "grey85",
+             label = "The Central African Republic has by far\nthe most students per teacher") +
+    geom_curve(data = arrows, aes(x = x1, y = y1, xend = x2, yend = y2),
+               arrow = arrow(length = unit(0.1, "inch")),
+               size = 0.3, color = "grey85", curvature = -0.3) +
+    annotation_custom(ggplotGrob(map_regions),
+                      xmin = 55, xmax = 85, ymin = 2.5, ymax = 7.5) +
     scale_x_continuous(limits = c(1, 85), breaks = c(1, seq(10, 80, by = 10))) +
-    scale_fill_manual(values=lacroix_palette("PeachPear", n = 6, type = "discrete"), guide = F) +
-    scale_color_manual(values=lacroix_palette("PeachPear", n = 6, type = "discrete"), guide = F) +
+    scale_fill_manual(values = lacroix_palette("PeachPear", n = 6, type = "discrete"), guide = F) +
+    scale_color_manual(values = lacroix_palette("PeachPear", n = 6, type = "discrete"), guide = F) +
     labs(x = NULL, y = NULL, caption = NULL) +
     theme(axis.title.x = element_text(size = 12, face = "plain"),
           axis.text.x = element_text(size = 9, family = "Roboto Mono"),
           axis.text.y = element_text(size = 12))
 
 ## primary education map by country
-map_country <- df_students_tile %>% 
-  filter(indicator == "Primary Education") %>% 
-  ggplot(aes(x = x, y = y, fill = student_ratio)) + 
+map_country <- df_students_tile %>%
+  filter(indicator == "Primary Education") %>%
+  ggplot(aes(x = x, y = y, fill = student_ratio)) +
     geom_tile(color = "grey70") +
-    geom_tile(data = filter(df_students_tile, is.na(student_ratio), 
-                            indicator == "Primary Education"), 
+    geom_tile(data = filter(df_students_tile, is.na(student_ratio),
+                            indicator == "Primary Education"),
               fill = "grey40", color = "grey70") +
-    geom_text(aes(x = x, y = y, label = alpha.2), color = "white", size = 2.3, 
+    geom_text(aes(x = x, y = y, label = alpha.2), color = "white", size = 2.3,
               fontface = "bold", family = "Roboto Mono") +
     scale_y_reverse() +
     scale_fill_carto_c(palette = "ag_Sunset", limits = c(1, 85), breaks = c(1, seq(10, 80, by = 10)), name  = NULL,
-                       guide = guide_colourbar(direction = "horizontal",
-                                               barheight = unit(1.5, units = "mm"), 
-                                               barwidth = unit(120, units = "mm"),
-                                               draw.ulim = FALSE, title.position = 'bottom',
-                                               title.hjust = 0.5, label.hjust = 0.5)) + 
+                       guide = guide_colorbar(direction = "horizontal",
+                                              barheight = unit(1.5, units = "mm"),
+                                              barwidth = unit(120, units = "mm"),
+                                              draw.ulim = FALSE, title.position = 'bottom',
+                                              title.hjust = 0.5, label.hjust = 0.5)) +
     coord_equal() +
     theme(legend.position = c(0.5, 1.1),
           line = element_blank(),
           axis.text = element_blank(),
           axis.title.x = element_text(size = 10.8, color = "white", face = "plain", hjust = 1),
-          legend.text = element_text(family = "Roboto Mono", size = 8),
-          panel.border = element_rect(colour = "grey20"),
-          strip.background = element_rect(colour = "grey20")) +
+          legend.text = element_text(family = "Roboto Mono", size = 9),
+          panel.border = element_rect(color = "grey20"),
+          strip.background = element_rect(color = "grey20")) +
     labs(caption = '\nVisualization by @CedScherer  |  Data: "eAtlas of Teachers" by UNESCO', x = NULL, y = NULL)
 
 ## left-alligned title
 title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
-       title = "Global student to teacher ratios in primary education", 
+       title = "Global student to teacher ratios in primary education",
        subtitle = "Latest reported student to teacher ratio per country and continent (2012-2018)\n")+
   theme(line = element_blank(),
         panel.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", color = "transparent"),
-        panel.border = element_rect(colour = "transparent"),
+        panel.border = element_rect(color = "transparent"),
         axis.text = element_blank())
 
 ## full panel
 title + lolli_country + map_country + plot_layout(width = c(0, 1, 0.8))
 
-ggsave("./plots/2019_19_StudentTeacher.pdf", width = 14, height = 5.5, device = cairo_pdf)
+ggsave("./plots/2019_19/2019_19_StudentTeacher.pdf", width = 14, height = 5.5, device = cairo_pdf)
 ```
 
 ```{r plot-facets, fig.width = 14, fig.height = 5.4}
 ## facetted by prim., sec. and tert. education level
-maps_facet <- df_students_tile %>% 
-  ggplot(aes(x = x, y = y, fill = student_ratio)) + 
+maps_facet <- df_students_tile %>%
+  ggplot(aes(x = x, y = y, fill = student_ratio)) +
     geom_tile(color = "grey70", size = 0.1) +
-    geom_tile(data = filter(df_students_tile, is.na(student_ratio)), 
+    geom_tile(data = filter(df_students_tile, is.na(student_ratio)),
               fill = "grey40", color = "grey70", size = 0.1) +
-    geom_text(aes(x = x, y = y, label = alpha.2), color = "white", size = 1.6, 
+    geom_text(aes(x = x, y = y, label = alpha.2), color = "white", size = 1.6,
               fontface = "bold", family = "Roboto Mono") +
     scale_y_reverse() +
     scale_fill_carto_c(palette = "ag_Sunset", limits = c(1, 85), breaks = c(1, seq(10, 80, by = 10)), name  = NULL,
-                       guide = guide_colourbar(direction = "horizontal",
-                                               barheight = unit(1.5, units = "mm"), 
-                                               barwidth = unit(120, units = "mm"),
-                                               draw.ulim = FALSE, title.position = 'bottom',
-                                               title.hjust = 0.5, label.hjust = 0.5)) + 
+                       guide = guide_colorbar(direction = "horizontal",
+                                              barheight = unit(1.5, units = "mm"),
+                                              barwidth = unit(120, units = "mm"),
+                                              draw.ulim = FALSE, title.position = 'bottom',
+                                              title.hjust = 0.5, label.hjust = 0.5)) +
     coord_equal() +
     facet_wrap(~indicator) +
     theme(line = element_blank(),
           axis.text = element_blank(),
           legend.position = c(0.5, -0.1),
           legend.text = element_text(family = "Roboto Mono", size = 9),
-          panel.border = element_rect(colour = "grey20"),
-          strip.background = element_rect(colour = "grey20")) +
+          panel.border = element_rect(color = "grey20"),
+          strip.background = element_rect(color = "grey20")) +
     labs(caption = '\nVisualization by @CedScherer  |  Data: "eAtlas of Teachers" by UNESCO', x = "", y = NULL)
 
 title_facet <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
-       title = "Global student to teacher ratios", 
+       title = "Global student to teacher ratios",
        subtitle = "Latest reported student to teacher ratio per country and educational level (2012-2018)\n")+
   theme(line = element_blank(),
         panel.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", color = "transparent"),
-        panel.border = element_rect(colour = "transparent"),
+        panel.border = element_rect(color = "transparent"),
         axis.text = element_blank())
 
 title_facet + maps_facet + plot_layout(widths = c(0, 1))
 
-ggsave("./plots/2019_19_StudentTeacher_facet.pdf", width = 14, height = 5.5, device = cairo_pdf)
+ggsave("./plots/2019_19/2019_19_StudentTeacher_facet.pdf", width = 14, height = 5.5, device = cairo_pdf)
 ```
 
 ***

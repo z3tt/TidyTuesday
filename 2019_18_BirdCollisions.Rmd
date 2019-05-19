@@ -104,8 +104,8 @@ zonoalbi <- grid::rasterGrob(img_b, interpolate = T)
     scale_y_continuous(labels = scales::percent_format(accuracy = 1), expand = c(0, 0), 
                        limits = c(0, 0.21), position = "right") +
     scale_alpha_discrete(range = c(0.3, 1), name = "Night-time light intensity:") +
-    annotation_custom(chicago, xmin = -0.5, xmax = 6, ymin = 0.0475, ymax = 0.21) +
-    annotation_custom(zonoalbi, xmin = -0.1, xmax = 6.2, ymin = 0.015, ymax = 0.07) +
+    annotation_custom(chicago, xmin = -0.6, xmax = 5.9, ymin = 0.0475, ymax = 0.21) +
+    annotation_custom(zonoalbi, xmin = 0.4, xmax = 6.4, ymin = 0.0156, ymax = 0.07) +
     guides(alpha = guide_legend(title.position = "top", title.hjust = 0.5, 
                                 label.position = "bottom", reverse = T)) +
     labs(x = "\nMost frequently detected species", y = "Percentage of cases (2000-2016)",
@@ -133,7 +133,7 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   theme(line = element_blank(),
         panel.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", color = "transparent"),
-        panel.border = element_rect(colour = "transparent"),
+        panel.border = element_rect(color = "transparent"),
         axis.text = element_blank())
 
 ## full panel

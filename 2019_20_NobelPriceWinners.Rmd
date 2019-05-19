@@ -59,11 +59,11 @@ tile_gender <- df_nobel %>%
     geom_text(family = 'fontawesome-webfont', size = 8) +
     facet_grid(. ~ gender) +
     scale_color_scico(palette = "berlin", name = NULL, na.value = "grey25",
-                      guide = guide_colourbar(direction = "horizontal",
-                                               barheight = unit(3, units = "mm"), 
-                                               barwidth = unit(150, units = "mm"),
-                                               draw.ulim = FALSE, title.position = 'bottom',
-                                               title.hjust = 0.5, label.hjust = 0.5)) +
+                      guide = guide_colorbar(direction = "horizontal",
+                                             barheight = unit(3, units = "mm"), 
+                                             barwidth = unit(150, units = "mm"),
+                                             draw.ulim = FALSE, title.position = 'bottom',
+                                             title.hjust = 0.5, label.hjust = 0.5)) +
     theme(strip.text = element_blank(),
           panel.spacing.x = unit(15, "pt"),
           axis.text.x = element_text(family = "Roboto Mono", size = 9),
@@ -81,7 +81,7 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   theme(line = element_blank(),
         panel.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", color = "transparent"),
-        panel.border = element_rect(colour = "transparent"),
+        panel.border = element_rect(color = "transparent"),
         axis.text = element_blank())
 
 ## full panel

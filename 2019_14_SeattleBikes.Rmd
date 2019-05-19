@@ -103,10 +103,10 @@ bikes_month <- df_bikes_month %>%
                        limits = c(-1, 2.5),
                        breaks = seq(-1, 2.5, by = 0.5), 
                        labels = c("-1.0", "-0.5", "0.0", "0.5", "1.0", "1.5", "2.0", "\u22652.5"),
-                       guide = guide_colourbar(direction = "horizontal",
-                                               barheight = unit(2, units = "mm"), 
-                                               barwidth = unit(120, units = "mm"),
-                                               draw.ulim = FALSE, title.position = 'top',
+                       guide = guide_colorbar(direction = "horizontal",
+                                              barheight = unit(2, units = "mm"), 
+                                              barwidth = unit(120, units = "mm"),
+                                              draw.ulim = FALSE, title.position = 'top',
                                               title.hjust = 0.5, label.hjust = 0.5)) +
     facet_grid(term ~ crossing) +
     labs(x = "Hour of the day", y = NULL,
@@ -128,7 +128,7 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   theme(line = element_blank(),
         panel.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", color = "transparent"),
-        panel.border = element_rect(colour = "transparent"),
+        panel.border = element_rect(color = "transparent"),
         axis.text = element_blank())
 
 ## full panel
@@ -167,11 +167,11 @@ bikes_season <- df_bikes_grouped %>%
                          limits = c(-1, 2.5),
                          breaks = seq(-1, 2.5, by = 0.5), 
                          labels = c("-1.0", "-0.5", "0.0", "0.5", "1.0", "1.5", "2.0", "\u22652.5"),
-                         guide = guide_colourbar(direction = "horizontal",
-                                                 barheight = unit(2, units = "mm"), 
-                                                 barwidth = unit(120, units = "mm"),
-                                                 draw.ulim = FALSE, title.position = 'top',
-                                                 title.hjust = 0.5, label.hjust = 0.5)) +
+                         guide = guide_colorbar(direction = "horizontal",
+                                                barheight = unit(2, units = "mm"), 
+                                                barwidth = unit(120, units = "mm"),
+                                                draw.ulim = FALSE, title.position = 'top',
+                                                title.hjust = 0.5, label.hjust = 0.5)) +
     facet_grid(season ~ crossing, switch = "y") +
     labs(x = "Hour of the day", y = NULL,
          caption = "Visualization by @CedScherer") +
@@ -194,7 +194,7 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   theme(line = element_blank(),
         panel.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", color = "transparent"),
-        panel.border = element_rect(colour = "transparent"),
+        panel.border = element_rect(color = "transparent"),
         axis.text = element_blank())
 
 ## full panel
