@@ -1,0 +1,170 @@
+---
+title: "TidyTuesday 2019/21 - "
+author: "Cedric Scherer"
+date: "7th of May 2019"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(sf)
+library(maptools)
+library(cartogram)
+library(scico)
+library(patchwork)
+library(cowplot)
+
+## ggplot theme updates
+source("./theme/tidy_grey.R")
+```
+
+```{r data}
+df_plastic_coast <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-21/coastal-population-vs-mismanaged-plastic.csv") %>% 
+  rename(waste_t = `Mismanaged plastic waste (tonnes)`,
+         population = `Total population (Gapminder)`)
+
+df_mismanaged_gdp <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-21/per-capita-mismanaged-plastic-waste-vs-gdp-per-capita.csv") %>% 
+  rename(
+    mismanaged_pc = `Per capita mismanaged plastic waste (kilograms per person per day)`,
+    gdp = `GDP per capita, PPP (constant 2011 international $) (Rate)`,
+    population = `Total population (Gapminder)`
+  )
+
+df_waste_gdp <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-21/per-capita-plastic-waste-vs-gdp-per-capita.csv") %>% 
+  rename(waste_pc = `Per capita plastic waste (kilograms per person per day)`)
+```
+
+
+```{r data-spatial}
+data("wrld_simpl")
+
+df_waste_gdp_map <- wrld_simpl %>%
+  st_as_sf() %>%
+  st_transform(crs = "+proj=robin") %>% 
+  mutate(ISO3 = as.character(ISO3)) %>% 
+  left_join(df_waste_gdp, by = c("ISO3" = "Code")) %>% 
+  filter(Year == 2010)
+```
+
+```{r data-proportional}
+df_plastic_prop <- df_mismanaged_gdp %>% 
+  left_join(df_waste_gdp) %>% 
+  filter(Year == 2010) %>% 
+  select(Entity, Code, waste_pc, mismanaged_pc) %>% 
+  mutate(
+    prop_rec = (waste_pc - mismanaged_pc) / waste_pc,
+    prop_mis = mismanaged_pc / waste_pc
+  )
+```
+
+```{r map}
+map_waste_prop <- df_waste_gdp_map %>% 
+  left_join(df_plastic_prop, by = c("ISO3" = "Code")) %>% 
+  mutate(prop_mis_cut = cut(prop_mis, breaks = seq(0, 0.9, by = 0.1))) %>% 
+  ggplot() +
+    geom_sf(aes(geometry = geometry, fill = prop_mis_cut), 
+            color = "grey20", size = 0.05) +
+    scale_fill_scico_d(palette = "bilbao", na.value = "grey30", 
+                       name = "Proportion of mismanaged plastic waste",
+                       labels = c("0%–10%", "10%–20%", "20%–30%", 
+                                  "30%–40%", "40%–50%", "50%–60%", 
+                                  "60%–70%", "70%–80%", "80%–90%", 
+                                  "missing data")) +
+    theme(legend.position = c(0.55, -0.25),
+          legend.key.height = unit(0.5, "lines"), 
+          legend.key.width = unit(3, "lines"),
+          legend.text = element_text(family = "Roboto Mono", size = 9),
+          legend.title = element_text(face = "bold", 
+                                      color = "grey90", size = 10.5),
+          panel.border = element_rect(color = NA),
+          axis.ticks.x = element_blank(),
+          axis.text.x = element_text(size = 10, color = "grey40"),
+          panel.grid.major = element_line(linetype = "dashed", 
+                                          color = "grey40")) +
+    guides(fill = guide_legend(title.position = "top", 
+                               title.hjust = 0.5, nrow = 1,
+                               label.position = "bottom")) 
+```
+
+```{r bar-plots}
+bar_waste <- df_plastic_prop %>% 
+  top_n(20, waste_pc) %>% 
+  ggplot(aes(fct_reorder(Entity, waste_pc), waste_pc)) + 
+    geom_col(fill = "#d6aa84", width = 0.7) +
+    geom_hline(yintercept = 0, color = "grey40", size = 0.1) +
+    coord_flip() +
+    scale_y_continuous(expand = c(0, 0), limits = c(0, 4), 
+                       breaks = seq(0, 4, by = 1)) +
+    theme(axis.ticks = element_blank(),
+          axis.text.x = element_text(size = 9, family = "Roboto Mono"),
+          axis.text.y = element_text(size = 9),
+          axis.title.x = element_text(size = 10.5, face = "plain"),
+          panel.border = element_rect(color = NA),
+          panel.grid.major.x = element_line(color = "grey40", 
+                                            size = 0.1)) +
+    labs(x = NULL, y = "Plastic waste\nper capita in kg")
+    
+bar_mismanaged <- df_plastic_prop %>% 
+  top_n(20, mismanaged_pc) %>% 
+  ggplot(aes(fct_reorder(Entity, mismanaged_pc), mismanaged_pc)) + 
+    geom_col(fill = "#bb4848", width = 0.7) +
+    geom_hline(yintercept = 0, color = "grey40", size = 0.1) +
+    coord_flip() +
+    scale_y_continuous(expand = c(0, 0), limits = c(0, 0.3), 
+                       breaks = seq(0, 0.3, by = 0.1)) +
+    theme(axis.ticks = element_blank(),
+          axis.text.x = element_text(size = 9, family = "Roboto Mono"),
+          axis.text.y = element_text(size = 9),
+          axis.title.x = element_text(size = 10.5, face = "plain"),
+          panel.border = element_rect(color = NA),
+          panel.grid.major.x = element_line(color = "grey40", 
+                                            size = 0.1)) +
+    labs(x = NULL, y = "Mismanaged plastic waste\nper capita in kg")
+```
+
+```{r title+caption}
+## left-alligned title
+title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "Plastic pollution – absolute and relative plastic waste generation across the world",
+       subtitle = "Middle- and low income countries tend to generate high amounts of mismanaged waste which is at high risk of entering the ocean.\n") +
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = NA),
+        plot.background = element_rect(fill = NA, color = NA),
+        panel.border = element_rect(color = NA),
+        axis.text = element_blank())
+
+## right-alligned caption
+caption <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       caption = '\n\n\nVisualization by @CedScherer  |  Data: Ritchie & Roser (2019), OurWorldInData.org') +
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = NA),
+        plot.background = element_rect(fill = NA, color = NA),
+        panel.border = element_rect(color = NA),
+        axis.text = element_blank())
+```
+
+
+```{r full-panel}
+title + bar_waste + map_waste_prop + bar_mismanaged + caption +
+  plot_layout(widths = c(0, 0.25, 1, 0.25, 0), nrow = 1)
+
+ggsave("./plots/2019_21/2019_21_PlasticWaste.pdf", width = 14, height = 5.3, device = cairo_pdf)
+```
+
+***
+
+```{r session}
+sessionInfo()
+```
