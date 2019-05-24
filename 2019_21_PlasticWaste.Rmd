@@ -80,7 +80,7 @@ map_waste_prop <- df_waste_gdp_map %>%
                                   "30%–40%", "40%–50%", "50%–60%", 
                                   "60%–70%", "70%–80%", "80%–90%", 
                                   "missing data")) +
-    theme(legend.position = c(0.55, -0.25),
+    theme(legend.position = c(0.55, -0.28),
           legend.key.height = unit(0.5, "lines"), 
           legend.key.width = unit(3, "lines"),
           legend.text = element_text(family = "Roboto Mono", size = 9),
@@ -88,9 +88,10 @@ map_waste_prop <- df_waste_gdp_map %>%
                                       color = "grey90", size = 10.5),
           panel.border = element_rect(color = NA),
           axis.ticks.x = element_blank(),
-          axis.text.x = element_text(size = 10, color = "grey40"),
-          panel.grid.major = element_line(linetype = "dashed", 
-                                          color = "grey40")) +
+          axis.text.x = element_text(family = "Roboto Mono",
+                                     size = 9, color = "grey40"),
+          panel.grid.major = element_line(color = "grey40",
+                                          size = 0.15)) +
     guides(fill = guide_legend(title.position = "top", 
                                title.hjust = 0.5, nrow = 1,
                                label.position = "bottom")) 
@@ -101,7 +102,7 @@ bar_waste <- df_plastic_prop %>%
   top_n(20, waste_pc) %>% 
   ggplot(aes(fct_reorder(Entity, waste_pc), waste_pc)) + 
     geom_col(fill = "#d6aa84", width = 0.7) +
-    geom_hline(yintercept = 0, color = "grey40", size = 0.1) +
+    geom_hline(yintercept = 0, color = "grey40", size = 0.15) +
     coord_flip() +
     scale_y_continuous(expand = c(0, 0), limits = c(0, 4), 
                        breaks = seq(0, 4, by = 1)) +
@@ -111,14 +112,14 @@ bar_waste <- df_plastic_prop %>%
           axis.title.x = element_text(size = 10.5, face = "plain"),
           panel.border = element_rect(color = NA),
           panel.grid.major.x = element_line(color = "grey40", 
-                                            size = 0.1)) +
+                                            size = 0.15)) +
     labs(x = NULL, y = "Plastic waste\nper capita in kg")
     
 bar_mismanaged <- df_plastic_prop %>% 
   top_n(20, mismanaged_pc) %>% 
   ggplot(aes(fct_reorder(Entity, mismanaged_pc), mismanaged_pc)) + 
     geom_col(fill = "#bb4848", width = 0.7) +
-    geom_hline(yintercept = 0, color = "grey40", size = 0.1) +
+    geom_hline(yintercept = 0, color = "grey40", size = 0.15) +
     coord_flip() +
     scale_y_continuous(expand = c(0, 0), limits = c(0, 0.3), 
                        breaks = seq(0, 0.3, by = 0.1)) +
@@ -128,7 +129,7 @@ bar_mismanaged <- df_plastic_prop %>%
           axis.title.x = element_text(size = 10.5, face = "plain"),
           panel.border = element_rect(color = NA),
           panel.grid.major.x = element_line(color = "grey40", 
-                                            size = 0.1)) +
+                                            size = 0.15)) +
     labs(x = NULL, y = "Mismanaged plastic waste\nper capita in kg")
 ```
 
@@ -158,7 +159,7 @@ caption <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 
 ```{r full-panel}
 title + bar_waste + map_waste_prop + bar_mismanaged + caption +
-  plot_layout(widths = c(0, 0.25, 1, 0.25, 0), nrow = 1)
+  plot_layout(widths = c(0, 0.27, 1, 0.25, 0), nrow = 1)
 
 ggsave("./plots/2019_21/2019_21_PlasticWaste.pdf", width = 14, height = 5.3, device = cairo_pdf)
 ```
