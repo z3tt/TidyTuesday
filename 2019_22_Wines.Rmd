@@ -57,7 +57,7 @@ bottles <- df_wines %>%
     theme(plot.caption = element_text(size = 9),
           axis.title.y = element_text(size = 12, hjust = 0.2),
           axis.text.x = element_blank(),
-          axis.text.y = element_text(size = 7, family = "Roboto Mono"),
+          axis.text.y = element_text(size = 8.5, family = "Roboto Mono"),
           axis.ticks = element_blank(),
           strip.background = element_rect(color = NA),
           strip.text = element_text(size = 9, face = "plain", vjust = 1),
@@ -81,7 +81,7 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 
 title + bottles + plot_layout(widths = c(0, 3))
 
-ggsave("./plots/2019_22/2019_22_Wines.pdf", width = 14, height = 2.67, device = cairo_pdf)
+ggsave("./plots/2019_22/2019_22_Wines.pdf", width = 14, height = 2.65, device = cairo_pdf)
 ```
 
 ***
