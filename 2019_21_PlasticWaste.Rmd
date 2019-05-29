@@ -129,18 +129,25 @@ bar_mismanaged <- df_plastic_prop %>%
           panel.border = element_rect(color = NA),
           panel.grid.major.x = element_line(color = "grey40", 
                                             size = 0.15)) +
-    labs(x = NULL, y = "Mismanaged plastic waste\nper capita in kg")
+    labs(x = NULL, y = "Mismanaged plastic waste\nper capita in kg",
+         caption = '\n\nVisualization by @CedScherer  |  Data: Ritchie & Roser (2019), OurWorldInData.org')
+
+## left-alligned title
+title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "Plastic pollution - absolute and relative plastic waste generation across the world",
+       subtitle = glue::glue("Middle- and low income countries tend to generate high amounts of", 
+                             "mismanaged waste which is at high risk of entering the ocean.")) +
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        panel.border = element_rect(color = "transparent"),
+        axis.text = element_blank())
 ```
 
 ```{r full-panel}
-bar_waste + map_waste_prop + bar_mismanaged +
-  plot_layout(widths = c(0.27, 1, 0.25), nrow = 1) +
-  plot_annotation(
-    title = "Plastic pollution - absolute and relative plastic waste generation across the world",
-    subtitle = glue::glue("Middle- and low income countries tend to generate high amounts of", 
-                          "mismanaged waste which is at high risk of entering the ocean."),
-    caption = '\n\nVisualization by @CedScherer  |  Data: Ritchie & Roser (2019), OurWorldInData.org'
-  )
+title + bar_waste + map_waste_prop + bar_mismanaged +
+  plot_layout(widths = c(0, 0.27, 1, 0.25), nrow = 1)
 
 ggsave("./plots/2019_21/2019_21_PlasticWaste.pdf", width = 14, height = 5.3, device = cairo_pdf)
 ```

@@ -1,5 +1,5 @@
 ---
-title: "TidyTuesday 2019/20 - Nobel Prize Winners by "
+title: "TidyTuesday 2019/20 - Nobel Prize Winners by Harvard Dataverse"
 author: "Cedric Scherer"
 date: "14th of May 2019"
 output:
