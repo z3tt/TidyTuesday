@@ -2,6 +2,10 @@
 My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).  
 Feedback very welcome via [@CedScherer](https://twitter.com/cedscherer?lang=en) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
+### Week 2019/22 🍷️ Wine Ratings	by [Vivino](https://www.kaggle.com/zynicide/wine-reviews)
+![./plots/2019_22/2019_22_Wines.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_22/2019_22_Wines.png)
+<br/><br/>
+
 ### Week 2019/21 🚮 Global Plastic Waste by [Our World In Data](https://ourworldindata.org/plastic-pollution)
 ![./plots/2019_21/2019_21_PlasticWaste.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_21/2019_21_PlasticWaste.png)
 <br/><br/>
