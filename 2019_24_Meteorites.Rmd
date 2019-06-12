@@ -1,0 +1,190 @@
+---
+  title: "TidyTuesday 2019/24 - Meteorites by NASA"
+author: "Cedric Scherer"
+date: "11th of June 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+  ```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(ggradar)
+library(patchwork)
+library(showtext)
+
+## ggplot theme updates
+source("./theme/tidy_black.R")
+
+## add spacy font
+font_add_google("Orbitron", "Orbitron")
+font_add_google("Roboto Mono", "Roboto Mono")
+showtext_auto()
+```
+
+```{r data}
+df_meteor <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-06-11/meteorites.csv") %>% 
+  mutate(
+    decade = year - year %% 10,
+    century = year - year %% 100
+  )
+```
+
+```{r lineplot}
+df_line <- df_meteor %>% 
+  filter(
+    decade >= 1500,
+    fall == "Fell",
+  ) %>% 
+  group_by(decade) %>% 
+  count() %>% 
+  complete(decade = seq(1500, 2010, by = 10), fill = list(n = 0)) %>% 
+  unique()
+
+avg <- df_line %>% 
+  ungroup() %>% 
+  filter(decade < 2010) %>% 
+  summarize(mean = mean(n)) %>% 
+  pull(mean)
+
+time_series <- df_line %>% ggplot(aes(decade, n)) +
+  geom_line(size = 0.8, color = "green", alpha = 0.5) +
+  geom_ribbon(aes(ymin = -Inf, ymax = n), fill = "green", alpha = 0.1) +
+  geom_point(size = 1.25, color = "green") +
+  geom_hline(aes(yintercept = avg), linetype = "dashed", color = "green", size = 0.8) +
+  geom_point(data = filter(df_line, decade == 2010), aes(decade, n), 
+             color = "red", alpha = 0.2, size = 15) +
+  geom_point(data = filter(df_line, decade == 2010), aes(decade, n), 
+             color = "red", alpha = 0.5, size = 5) +
+  geom_point(data = filter(df_line, decade == 2010), aes(decade, n), 
+             color = "red", size = 2) +
+  annotate("text", x = 1710, y = 85, label = "WARNING!", color = "red", 
+           family = "Orbitron", size = 8, fontface = "bold") +
+  annotate("text", x = 1710, y = 78, label = "The number of fallen meteorites", 
+           color = "grey85", family = "Roboto Mono", size = 3.7) +
+  annotate("text", x = 1710, y = 74, label = "is drastically decreasing!", 
+           color = "grey85", family = "Roboto Mono", size = 3.7) +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(1500, 2050, by = 50), 
+                     limits = c(1490, 2055)) +
+  scale_y_continuous(expand = c(0,0), limits = c(-2, 100), 
+                     breaks = seq(0, 100, by = 10)) + 
+  theme(panel.border = element_rect(color = "grey40"),
+        axis.text = element_text(family = "Roboto Mono", size = 9, 
+                                 color = "#009d00", face = "bold"),
+        axis.ticks.length = unit(3, "pt"),
+        axis.ticks = element_line(color = "transparent")) +
+  labs(x = NULL, y = NULL)
+```
+
+```{r map}
+df_meteor_prev <- df_meteor %>% 
+  filter(
+    fall == "Fell", 
+    decade >= 1500, 
+    decade < 2010
+  )
+
+df_meteor_now <- df_meteor %>% 
+  filter(
+    fall == "Fell", 
+    decade == 2010
+  )
+
+df_meteor_heavy <- df_meteor %>% 
+  filter(
+    fall == "Fell", 
+    decade >= 1500
+  ) %>% 
+  mutate(group = if_else(decade == 2010, "now", "prev")) %>% 
+  group_by(group) %>% 
+  top_n(1, mass) %>% 
+  mutate(
+    name = glue::glue("> {name} ({year})"),
+    class = glue::glue("> Class: {class}"),
+    mass = glue::glue("> Mass: {mass / 1000} kg")
+  )
+
+map_pixel <- ggplot(map_data("world"), aes(round(long, 0), round(lat, 0))) +
+  geom_polygon(aes(group = group), fill = "#001810", color = "#004e00") + ##004e00 #2e482e
+  geom_point(data = df_meteor_prev, aes(long, lat), color = "green", size = 0.8, alpha = 0.35) +
+  geom_point(data = df_meteor_now, aes(long, lat), color = "red", size = 9, alpha = 0.2) +
+  geom_point(data = df_meteor_now, aes(long, lat), color = "red", size = 3.3, alpha = 0.5) +
+  geom_point(data = df_meteor_now, aes(long, lat), color = "red", size = 1.5) +
+  geom_rect(data = df_meteor_heavy, 
+            aes(xmin = long - 25, xmax = long + 25, ymin = lat + 13.5, ymax = lat + 32), 
+            color = "grey55", fill = "#001810", alpha = 0.7, size = 0.1) +
+  geom_segment(data = df_meteor_heavy, 
+               aes(x = long, xend = long, y = lat, yend = lat + 13.5), 
+               color = "grey55", size = 0.5) +
+  geom_segment(data = df_meteor_heavy, 
+               aes(x = long - 25.1, xend = long + 25.1, y = lat + 13.5, yend = lat + 13.5), 
+               color = "grey55", size = 1.3) +
+  geom_text(data = df_meteor_heavy, aes(long - 23, lat + 28, label = name), 
+            family = "Orbitron", color = "green", size = 2.5, fontface = "bold", hjust = 0) +
+  geom_text(data = df_meteor_heavy, aes(long - 23, lat + 23, label = class), 
+            family = "Orbitron", color = "grey85", size = 2.5, fontface = "bold", hjust = 0) +
+  geom_text(data = df_meteor_heavy, aes(long - 23, lat + 18, label = mass), 
+            family = "Orbitron", color = "grey85", size = 2.5, fontface = "bold", hjust = 0) +
+  annotate("text", x = -162, y = -28, label = "Please Enter Password for User 'NASA1'", 
+           color = "grey85", family = "Roboto Mono", size = 2.3, hjust = 0) +
+  annotate("text", x = -162, y = -33, label = "> TRUMP123456", 
+           color = "green", family = "Roboto Mono", size = 2.3, hjust = 0) +
+  annotate("text", x = -162, y = -38, label = "Welcome Mr. President!", 
+           color = "grey85", family = "Roboto Mono", size = 2.3, hjust = 0) +
+  annotate("text", x = -162, y = -43, label = "> MapView.Basic(MeteoritesV19.06.12)", 
+           color = "green", family = "Roboto Mono", size = 2.3, hjust = 0) +
+  annotate("text", x = -162, y = -48, label = "Processing: |||||||||||||||||||| 100%", 
+           color = "grey85", family = "Roboto Mono", size = 2.3, hjust = 0) +
+  annotate("text", x = -162, y = -53, label = "Map `MeteoritesV19.06.12` loaded.", 
+           color = "grey85", family = "Roboto Mono", size = 2.3, hjust = 0) +
+  annotate("text", x = -162, y = -58, label = "> MapView.Highlight(MeteoritesV19.06.12$recent)", 
+           color = "green", family = "Roboto Mono", size = 2.3, hjust = 0) +
+  annotate("text", x = -162, y = -63, label = "Processing: |||||||||||||| 73.4%", 
+           color = "grey85", family = "Roboto Mono", size = 2.3, hjust = 0) +
+  scale_x_continuous(breaks = seq(-200, 200, by = 25), expand = c(0, 0)) +
+  scale_y_continuous(breaks = seq(-100, 100, by = 25)) +
+  scale_size_continuous(range = c(0.25, 1)) +
+  coord_fixed(xlim = c(-165, 180), ylim = c(-76, 82)) +
+  theme(plot.caption = element_text(family = "Orbitron",  
+                                    color = "grey20", face = "bold"),
+        legend.position = "none",
+        panel.border = element_rect(color = "grey40"),
+        axis.text = element_blank(),
+        axis.ticks = element_line(color = "transparent")) +
+  labs(x = NULL, y = NULL, 
+       caption = "Provided by @CedScherer & National Aeronautics and Space Administration (NASA)  ")
+```
+
+```{r title}
+title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "                                          SPACE OBSERVER 3000 X V3.5.1") +
+  theme(plot.title = element_text(family = "Orbitron", color = "grey20"),
+        line = element_blank(),
+        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        panel.background = element_rect(fill = "transparent"),
+        panel.border = element_rect(color = "transparent"),
+        axis.text = element_blank())
+```
+
+```{r panel, fig.width = 14, fig.height = 5.3}
+(title + time_series + map_pixel + plot_layout(widths = c(0, 0.5, 1))) * 
+  theme(panel.grid.major = element_line(color = "#153915"),
+        panel.grid.minor = element_line(color = "#002700"))
+
+ggsave("./plots/2019_24/2019_24_Meteorites.pdf", width = 14, height = 5.3, device = cairo_pdf)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```

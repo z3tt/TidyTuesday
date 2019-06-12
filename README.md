@@ -2,6 +2,10 @@
 My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).  
 Feedback very welcome via [@CedScherer](https://twitter.com/cedscherer?lang=en) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
+### Week 2019/24 🌠 Meteorites by [NASA](https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh/data)
+![./plots/2019_24/2019_24_Meteorites.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_24/2019_24_Meteorites.png)
+<br/><br/>
+
 ### Week 2019/22 🍷️ Wine Ratings	by [Vivino](https://www.kaggle.com/zynicide/wine-reviews)
 ![./plots/2019_22/2019_22_Wines.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_22/2019_22_Wines.png)
 <br/><br/>
