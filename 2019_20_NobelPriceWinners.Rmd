@@ -19,10 +19,16 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 library(tidyverse)
 library(scico)
 library(emojifont)
+library(showtext)
 library(patchwork)
 
 ## ggplot theme updates
 source("./theme/tidy_grey.R")
+
+## add fonts via showtext (extrafont and emojifont do not worl together)
+font_add_google("Poppins", "Poppins")
+font_add_google("Roboto Mono", "Roboto Mono")
+showtext_auto()
 ```
 
 ```{r data}
@@ -58,7 +64,7 @@ tile_gender <- df_nobel %>%
     geom_tile(fill = "grey25", color = "grey20", size = 0.7) +
     geom_text(family = 'fontawesome-webfont', size = 8) +
     facet_grid(. ~ gender) +
-    scale_color_scico(palette = "berlin", name = NULL, na.value = "grey25",
+    scale_color_scico(palette = "buda", name = NULL, na.value = "grey25",
                       guide = guide_colorbar(direction = "horizontal",
                                              barheight = unit(3, units = "mm"), 
                                              barwidth = unit(150, units = "mm"),
