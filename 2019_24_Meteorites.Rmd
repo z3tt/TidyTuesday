@@ -1,5 +1,5 @@
 ---
-  title: "TidyTuesday 2019/24 - Meteorites by NASA"
+title: "TidyTuesday 2019/24 - Meteorites by NASA"
 author: "Cedric Scherer"
 date: "11th of June 2019"
 output:
