@@ -120,7 +120,7 @@ map_pixel <- ggplot(map_data("world"), aes(round(long, 0), round(lat, 0))) +
   geom_point(data = df_meteor_now, aes(long, lat), color = "red", size = 1.5) +
   geom_rect(data = df_meteor_heavy, 
             aes(xmin = long - 25, xmax = long + 25, ymin = lat + 13.5, ymax = lat + 32), 
-            color = "grey55", fill = "#001810", alpha = 0.7, size = 0.1) +
+            color = "grey55", fill = "#001810", alpha = 0.7, size = 0.15) +
   geom_segment(data = df_meteor_heavy, 
                aes(x = long, xend = long, y = lat, yend = lat + 13.5), 
                color = "grey55", size = 0.5) +
