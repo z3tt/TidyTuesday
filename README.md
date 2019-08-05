@@ -2,6 +2,10 @@
 My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).  
 Feedback very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
+### Week 2019/27 💰 Media Franchise Revenues by [Wikipedia](https://en.wikipedia.org/wiki/List_of_highest-grossing_media_franchises)
+![./plots/2019_27/2019_27_FranchiseRevenue.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_27_FranchiseRevenue.png)
+<br/><br/>
+
 ### Week 2019/24 🌠 Meteorites by [NASA](https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh/data)
 ![./plots/2019_24/2019_24_Meteorites.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_24/2019_24_Meteorites.png)
 <br/><br/>
