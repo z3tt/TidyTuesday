@@ -1,0 +1,229 @@
+---
+title: "TidyTuesday 2019/27 - Media Franchise Revenues by Wikipedia"
+author: "Cedric Scherer"
+date: "5th of August 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+  ```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(patchwork)
+library(tvthemes)
+
+## ggplot theme updates
+source("./theme/tidy_grey.R")
+```
+
+```{r data}
+df_media <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-02/media_franchises.csv") %>% 
+  mutate(
+    revenue_category = case_when(
+      revenue_category == "Video Games/Games" ~ "Video Games",
+      revenue_category %in% c("Home Video/Entertainment", "TV") ~ "Home Entertainment",
+      revenue_category %in% c("Comic or Manga", "Book sales") ~ "Books & Comics",
+      revenue_category == "Merchandise, Licensing & Retail" ~ "Merchandise",
+      TRUE ~ revenue_category
+    )
+  )
+```
+
+```{r yearly}
+df_media_per_year <- df_media %>% 
+  group_by(franchise, revenue_category) %>% 
+  summarize(
+    revenue = sum(revenue),
+    year_created = min(year_created, na.rm = T),
+    original_media = unique(original_media)
+  ) %>% 
+  group_by(franchise) %>% 
+  mutate(
+    years_running = 2018.5 - year_created,
+    rev_per_year = revenue / years_running,
+    sum_per_year = sum(revenue) / unique(years_running),
+  ) %>% 
+  ungroup() %>% 
+  mutate(
+    franchise = case_when(
+      franchise == "Wizarding World / Harry Potter" ~ "Harry Potter",
+      franchise == "Super Sentai / Power Rangers" ~ "Power Rangers",
+      str_detect(franchise, "Jump") ~ "Shōnen Jump",
+      TRUE ~ franchise
+    ),
+    original_media = case_when(
+      original_media %in% c("Film", "Animated film") ~ "Movie",
+      original_media %in% c("Television series", "Animated series", "Anime") ~ "Series",
+      original_media == "Video game" ~ "Game",
+      original_media == "Cartoon character" ~ "Character",
+      TRUE ~ original_media
+    )
+  ) %>% 
+  filter(sum_per_year > 0.825) %>% 
+  mutate(franchise = fct_reorder(franchise, sum_per_year))
+
+cols_a <- c("#646464", "#700000", "#9D5931", "#D78808", "#005173", "#747940")
+
+revenue_yearly <- df_media_per_year %>% 
+  ggplot(aes(franchise, rev_per_year)) + 
+    geom_col(aes(fill = original_media), width = 0.65) +
+    geom_hline(yintercept = 0, color = "grey50", size = 0.2) +
+    geom_hline(data = tibble(y = 1:4), aes(yintercept = y), 
+               color = "grey50", size = 0.2, linetype = "dotted") +
+    geom_text(data = df_media_per_year %>% 
+                       group_by(franchise) %>% 
+                       summarize(
+                         sum_per_year = unique(sum_per_year),
+                         label = glue::glue("${format(round(unique(sum_per_year), 2), nsmall = 2)}B")
+                       ),
+              aes(franchise, sum_per_year, label = label), 
+              color = "grey90", size = 2.5, family = "Roboto Mono", 
+              nudge_y = 0.08, hjust = 0) +
+    geom_text(data = df_media_per_year %>% 
+                group_by(franchise) %>% 
+                summarize(label = unique(original_media)),
+              aes(franchise, 0.05, label = label), 
+              color = "grey90", size = 2.2, family = "Poppins", 
+              fontface = "bold", hjust = 0, vjust = 0.45) +
+    geom_text(data = df_media_per_year %>% 
+                group_by(franchise) %>% 
+                summarize(label = glue::glue("({unique(year_created)})")),
+              aes(franchise, -0.18, label = label), color = "grey60", 
+              size = 2.7, family = "Roboto Mono", hjust = 1) +
+    coord_flip(clip = "off") +
+    scale_y_continuous(limits = c(-0.5, 4.3), breaks = c(0:4, 4.3), 
+                       labels = c(glue::glue("${0:4}B"), "    per year"), 
+                       expand = c(0.01, 0.01), position = "right") + 
+    scale_fill_manual(values = cols_a, guide = F) +
+    theme(axis.text.x = element_text(family = "Roboto Mono", size = 8),
+          axis.text.y = element_text(size = 8, color = "grey90", face = "bold"),
+          axis.ticks = element_blank(),
+          panel.border = element_rect(color = "transparent"),
+          strip.background = element_rect(color = "transparent"),
+          strip.text = element_text(size = 11)) +
+    labs(x = NULL, y = NULL)
+```
+
+
+```{r relative}
+df_media_rel <- df_media %>% 
+  group_by(franchise, revenue_category) %>% 
+  summarize(
+    revenue = sum(revenue),
+    year_created = min(year_created, na.rm = T),
+  ) %>% 
+  group_by(franchise) %>% 
+  mutate(
+    sum_revenue = sum(revenue, na.rm = T),
+    revenue_rel = revenue / sum_revenue
+  ) %>% 
+  group_by(revenue_category) %>% 
+  mutate(sum_cat = sum(revenue)) %>% 
+  ungroup() %>% 
+  mutate(
+    franchise = case_when(
+      franchise == "Wizarding World / Harry Potter" ~ "Harry Potter",
+      franchise == "Super Sentai / Power Rangers" ~ "Power Rangers",
+      str_detect(franchise, "Jump") ~ "Shōnen Jump",
+      TRUE ~ franchise
+    )
+  ) %>% 
+  filter(franchise %in% as.vector(df_media_per_year$franchise))
+
+categories <- df_media_rel %>% 
+  arrange(sum_cat) %>% 
+  mutate(revenue_category = glue::glue("{revenue_category} (${round(sum_cat, 1)}B)")) %>% 
+  pull(revenue_category) %>% 
+  unique() %>% 
+  as.vector()
+
+cols_b <- c("#D96F63", "#6D3E4E", "#945744", "#7E6A69", "#A22B2B", "#E8B02A")
+
+revenue_relative <- df_media_rel %>% 
+  mutate(
+    revenue_category = glue::glue("{revenue_category} (${round(sum_cat, 1)}B)"),
+    revenue_category = factor(revenue_category, levels = categories),
+    franchise = factor(franchise, levels = levels(df_media_per_year$franchise)),
+    label = glue::glue("${round(revenue, 1)}B"),
+    label = ifelse(revenue_rel < 0.075, "", label)
+  ) %>% 
+  ggplot(aes(franchise, revenue_rel, fill = revenue_category, label = label)) + 
+    geom_col(color = "grey20", size = 0.1, width = 0.65, position = "stack") +
+    geom_hline(data = tibble(1:3), aes(yintercept = c(0.25, 0.5, 0.75)), 
+               color = "grey50", size = 0.2, linetype = "dotted") +
+    geom_hline(data = tibble(1:2), aes(yintercept = c(0, 1)), 
+               color = "grey50", size = 0.2) +
+    geom_text(color = "grey90", size = 1.8, family = "Roboto Mono", 
+              fontface = "bold", position = position_stack(vjust = 0.5)) +
+    geom_text(data = df_media_rel %>% 
+                group_by(franchise) %>% 
+                summarize(sum = unique(sum_revenue)) %>% 
+                mutate(
+                  label = glue::glue("${format(round(sum, 1), nsmall = 1)}B         "),
+                  revenue_category = "Music ($16.1B)",  ## just any of the existing to avoid new key in legend
+                ), 
+              aes(x = franchise, y = 0, label = label), color = "grey90", 
+              family = "Roboto Mono", size = 3, fontface = "bold", 
+              position = "stack", hjust = 1) +
+    coord_flip(clip = "off") +
+    scale_y_continuous(limits = c(-0.5, 1), breaks = c(-0.28, seq(0, 1, by = 0.25)), 
+                       expand = c(0, 0), position = "right", 
+                       labels = c("Total revenue", "0%", "25%", "50%", "75%", "100%")) + 
+    scale_fill_manual(values = cols_b, name = "Revenue breakdown:") +
+    guides(fill = guide_legend(reverse = T)) +
+    theme(axis.text.x = element_text(family = "Roboto Mono", size = 8),
+          axis.text.y = element_blank(),
+          axis.ticks = element_blank(),
+          panel.border = element_rect(color = "transparent"),
+          legend.title = element_text(size = 9, face = "bold"),
+          legend.text = element_text(size = 7.5),
+          legend.key.height = unit(1.25, "lines"),
+          legend.key.width = unit(0.5, "lines"),
+          legend.justification = "top") +
+    labs(x = NULL, y = NULL)
+```
+
+```{r title}
+## left-alligned title
+title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "Gotta Catch 'Em All!  Franchise Fans Beg for Merchandise",
+       subtitle = "Annual and total revenue of media franchise powerhouses and breakdown of revenues by category.\n") +
+  theme(line = element_blank(),
+        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        panel.background = element_rect(fill = "transparent"),
+        panel.border = element_rect(color = "transparent"),
+        axis.text = element_blank())
+```
+
+```{r caption}
+## right-alligned caption
+caption <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       caption = "\nVisualization by @CedScherer  |  Data source: Wikipedia") +
+  theme(line = element_blank(),
+        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        panel.background = element_rect(fill = "transparent"),
+        panel.border = element_rect(color = "transparent"),
+        axis.text = element_blank())
+```
+
+```{r full-panel, fig.width = 14, fig.height = 5.5}
+title + revenue_yearly + revenue_relative + caption + plot_layout(widths = c(0, 1, 1, 0), nrow = 1)
+
+ggsave("./plots/2019_27/2019_27_FranchiseRevenue.pdf", width = 14, height = 5.6, device = cairo_pdf)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```
