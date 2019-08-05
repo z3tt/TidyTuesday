@@ -35,7 +35,7 @@ showtext_auto()
 df_nobel <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-14/nobel_winners.csv")
 ```
 
-```{r plots, fig.width = 14, fig.height = 5.5}
+```{r plot, fig.width = 14, fig.height = 5.5}
 ## tile plot facetted by gender
 tile_gender <- df_nobel %>% 
   filter(laureate_type == "Individual") %>% 
@@ -78,7 +78,9 @@ tile_gender <- df_nobel %>%
           panel.border = element_rect(color = "grey20")) + 
     labs(x = NULL, y = NULL,
          caption = '\nVisualization by @CedScherer  |  Data: Harvard Dataverse, Li et al. 2018, doi: 10.7910/DVN/6NJ5RN')
+```
 
+```{r title}
 ## left-alligned title
 title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
@@ -89,7 +91,9 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
         plot.background = element_rect(fill = "transparent", color = "transparent"),
         panel.border = element_rect(color = "transparent"),
         axis.text = element_blank())
+```
 
+```{r full-panel, fig.width = 14, fig.height = 5.5}
 ## full panel
 title + tile_gender + plot_layout(width = c(0, 1))
 

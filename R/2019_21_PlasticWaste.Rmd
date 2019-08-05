@@ -133,7 +133,7 @@ bar_mismanaged <- df_plastic_prop %>%
     labs(x = NULL, y = "Mismanaged plastic waste\nper capita in kg")
 ```
 
-```{r title+caption}
+```{r title}
 ## left-alligned title
 title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
@@ -145,7 +145,9 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
         plot.background = element_rect(fill = NA, color = NA),
         panel.border = element_rect(color = NA),
         axis.text = element_blank())
+```
 
+```{r caption}
 ## right-alligned caption
 caption <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
@@ -156,7 +158,6 @@ caption <- ggplot(data.frame(x = 1:2, y = 1:10)) +
         panel.border = element_rect(color = NA),
         axis.text = element_blank())
 ```
-
 
 ```{r full-panel}
 title + bar_waste + map_waste_prop + bar_mismanaged + caption +

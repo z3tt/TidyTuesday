@@ -1,6 +1,6 @@
 # TidyTuesday
 My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).  
-Feedback very welcome via [@CedScherer](https://twitter.com/cedscherer?lang=en) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
+Feedback very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
 ### Week 2019/24 🌠 Meteorites by [NASA](https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh/data)
 ![./plots/2019_24/2019_24_Meteorites.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_24/2019_24_Meteorites.png)
@@ -28,7 +28,7 @@ Feedback very welcome via [@CedScherer](https://twitter.com/cedscherer?lang=en) 
 <br/><br/>   
 
 ### Week 2019/17 🐉 Anime Data by [MyAnimeList.net](https://myanimelist.net/)
-![./plots/2019_17/2019_17_animes.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_17/2019_17_animes.png)
+![./plots/2019_17/2019_17_animes.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_17/2019_17_Animes.png)
 <br/><br/>   
 
 ### Week 2019/16 📊 [Data Viz Mistakes](https://medium.economist.com/mistakes-weve-drawn-a-few-8cdd8a42d368) by The Economist
@@ -36,6 +36,6 @@ Feedback very welcome via [@CedScherer](https://twitter.com/cedscherer?lang=en) 
 <br/><br/>  
 
 ### Week 2019/14 🚴 [Seattle Bike Traffic](https://www.seattletimes.com/seattle-news/transportation/what-we-can-learn-from-seattles-bike-counter-data/) by seattle.gov
-![./plots/2019_14/2019_14_bikes_month.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_14/2019_14_bikes_month.png)
-![./plots/2019_14/2019_14_bikes_season.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_14/2019_14_bikes_season.png)
+![./plots/2019_14/2019_14_bikes_month.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_14/2019_14_SeattleBikes_month.png)
+![./plots/2019_14/2019_14_bikes_season.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_14/2019_14_SeattleBikes_season.png)
 <br/><br/>

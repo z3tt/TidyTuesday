@@ -124,7 +124,7 @@ zonoalbi <- grid::rasterGrob(img_b, interpolate = T)
           plot.margin = margin(12, 50, 12, 12)))
 ```
 
-```{r panel, fig.width = 14, fig.height = 5.5}
+```{r title}
 ## left-alligned title
 title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
@@ -135,7 +135,9 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
         plot.background = element_rect(fill = "transparent", color = "transparent"),
         panel.border = element_rect(color = "transparent"),
         axis.text = element_blank())
+```
 
+```{r full-panel, fig.width = 14, fig.height = 5.5}
 ## full panel
 
 ## save as panel
