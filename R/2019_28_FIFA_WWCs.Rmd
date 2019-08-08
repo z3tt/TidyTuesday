@@ -37,7 +37,7 @@ df_outcomes <- readr::read_csv("https://raw.githubusercontent.com/rfordatascienc
 df_squads <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/squads.csv")
 ```
 
-```{r}
+```{r data-prep}
 df_outcomes_id <- df_outcomes %>% 
   filter(round != "Third Place Playoff") %>% 
   group_by(team, year) %>% 
@@ -73,7 +73,7 @@ df_outcomes_top <- df_outcomes_rounds %>%
   ungroup()
 ```
 
-```{r}
+```{r step-chart}
 ## labels for x-axis
 labs <- df_outcomes_rounds %>% 
   dplyr::select(round, year) %>% 
@@ -178,7 +178,7 @@ p_steps <-
     labs(x = NULL, y = "Points scored")
 ```
 
-```{r}
+```{r net-chart}
 df_outcomes_stats_top <- df_outcomes_rounds %>% 
   mutate(winner = if_else(round == "Final" & win_status == "Won", 1, 0)) %>% 
   filter(team %in% c("USA", "GER", "JPN", "NOR")) %>% 
@@ -229,7 +229,7 @@ p_stats <-
     labs(x = "Points scored", y = "Goals scored")
 ```
 
-```{r}
+```{r dot-chart}
 years_short <- years %>% 
   mutate(label = glue::glue("'{str_sub(label, 3)}"))
 
@@ -274,7 +274,7 @@ p_title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
         axis.text = element_blank())
 ```
 
-```{r full-panel, fig.width = 14, fig.height = 5.5}
+```{r full-panel, fig.width = 14, fig.height = 5.7}
 (p_title + p_steps + (p_stats / p_wins)) + plot_layout(widths = c(0, 1, 0.9))
 
 ggsave("./plots/2019_28/2019_28_FIFA_WWCs.pdf", width = 14, height = 5.7, device = cairo_pdf)
