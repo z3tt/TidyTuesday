@@ -1,0 +1,287 @@
+---
+title: "TidyTuesday 2019/28 - Women's World Cups by data.world"
+author: "Cedric Scherer"
+date: "20th of July 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(patchwork)
+library(showtext)
+
+## ggplot theme updates
+source("./theme/tidy_grey.R")
+
+## add fonts via showtext (extrafont and emojifont do not worl together)
+font_add_google("Poppins", "Poppins")
+font_add_google("Roboto Mono", "Roboto Mono")
+font_add_google("Roboto Condensed", "Roboto Condensed")
+showtext_auto()
+```
+
+```{r data}
+df_codes <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/codes.csv")
+df_outcomes <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/wwc_outcomes.csv") %>% 
+  left_join(df_codes, by = "team")
+df_squads <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/squads.csv")
+```
+
+```{r}
+df_outcomes_id <- df_outcomes %>% 
+  filter(round != "Third Place Playoff") %>% 
+  group_by(team, year) %>% 
+  mutate(id = row_number()) %>% 
+  group_by(team) %>% 
+  mutate(
+    win_num = if_else(win_status == "Won", 1, 0),
+    wins = cumsum(win_num),
+    points = case_when(
+      win_status == "Won" ~ 3, 
+      win_status == "Tie" ~ 1, 
+      win_status == "Lost" ~ 0
+    ),
+    points_sum = cumsum(points),
+    round = if_else(round == "Group", glue::glue("Group Match {id}"), round),
+    round_year = glue::glue("{year} {round}")
+  ) %>% 
+  ungroup() 
+
+df_outcomes_rounds <- df_outcomes_id %>%
+  dplyr::select(year, round) %>% 
+  distinct() %>% 
+  mutate(round_id = row_number()) %>% 
+  full_join(df_outcomes_id) 
+
+df_outcomes_top <- df_outcomes_rounds %>% 
+  filter(team %in% c("USA", "GER", "JPN", "NOR")) %>% 
+  group_by(team) %>% 
+  mutate(
+    wins_sum = max(wins),
+    country = factor(country, levels = c("United States", "Germany", "Norway", "Japan"))
+  ) %>% 
+  ungroup()
+```
+
+```{r}
+## labels for x-axis
+labs <- df_outcomes_rounds %>% 
+  dplyr::select(round, year) %>% 
+  distinct() %>% 
+  pull(round)
+
+## images for flag legend
+img_usa <- png::readPNG("./img/flag_usa.png") 
+usa <- grid::rasterGrob(img_usa, interpolate = T)
+img_ger <- png::readPNG("./img/flag_ger.png") 
+ger <- grid::rasterGrob(img_ger, interpolate = T)
+img_jpn <- png::readPNG("./img/flag_jpn.png") 
+jpn <- grid::rasterGrob(img_jpn, interpolate = T)
+img_nor <- png::readPNG("./img/flag_nor.png") 
+nor <- grid::rasterGrob(img_nor, interpolate = T)
+img_ned <- png::readPNG("./img/flag_ned.png") 
+ned <- grid::rasterGrob(img_ned, interpolate = T)
+
+## lines for legend
+lines <- tibble(
+  x = c(50, 48, 47, 48, 50),
+  xend = rep(52.5, 5),
+  y = c(120, 97, 48, 77, 22),
+  yend = c(120, 97, 48, 77, 22),
+  team = c("USA", "GER", "JPN", "NOR", "NED")
+)
+
+## rect coords for soccer field design
+rects <- tibble(
+  xmin = c(-Inf, 6.5, 12.5, 18.5, 24.5, 30.5, 36.5, 43.5, 50.5),
+  xmax = c(7, 13, 19, 25, 31, 37, 44, 51, Inf),
+  ymin = rep(-Inf, 9),
+  ymax = rep(Inf, 9),
+  group = c("1", "2", "1", "2", "1", "2", "1", "2", "1"),
+  round_id = rep(1, 9),
+  wins = rep(1, 9),
+  points_sum = rep(1, 9)
+)
+
+## label for year of WWC
+years <- tibble(
+  x = c(3.5, 9.5, 15.5, 21.5, 27.5, 33.5, 40, 47),
+  y = rep(130, 8),
+  label = as.character(seq(1991, 2019, by = 4))
+)
+
+p_steps <- 
+  df_outcomes_rounds %>% 
+  add_row(round_id = 0, team = "USA", points_sum = 0) %>% 
+  group_by(team) %>% 
+  mutate(
+    wins_sum = max(wins),
+    country = factor(country, levels = c("United States", "Germany", "Norway", "Japan"))
+  ) %>% 
+  ggplot(aes(round_id, points_sum)) +
+    geom_rect(data = rects, aes(xmin = xmin, xmax = xmax, 
+                                ymin = ymin, ymax = ymax, fill = group)) +
+    geom_text(data = years, aes(x = x, y = y, label = label), 
+              family = "Roboto Mono", color = "white", fontface = "bold") +
+    geom_segment(data = lines, aes(x = x, y = y, xend = xend, yend = yend, 
+                                   color = team), linetype = "dotted") +
+    annotation_custom(usa, xmin = 51.5, xmax = 53.5, ymin = 118, ymax = 122) +
+    annotation_custom(ger, xmin = 51.5, xmax = 53.5, ymin = 95, ymax = 99) +
+    annotation_custom(jpn, xmin = 51.5, xmax = 53.5, ymin = 46, ymax = 50) +
+    annotation_custom(nor, xmin = 51.5, xmax = 53.5, ymin = 75, ymax = 79) +
+    annotation_custom(ned, xmin = 51.5, xmax = 53.5, ymin = 20, ymax = 24) +
+    geom_step(aes(group = team), colour = "grey20", alpha = 0.2, size = 0.4) +
+    geom_step(data = df_outcomes_rounds %>% 
+                filter(team %in% c("USA", "GER", "JPN", "NOR", "NED")), 
+              aes(color = team), size = 0.7, alpha = 0.7) +
+    geom_point(data = df_outcomes_rounds %>% 
+                 filter(team %in% c("USA", "GER", "JPN", "NOR", "NED"), 
+                        win_status == "Lost"), aes(color = team), size = 1.7, shape = 17) +
+    geom_point(data = df_outcomes_rounds %>% 
+                 filter(team %in% c("USA", "GER", "JPN", "NOR", "NED"), 
+                        round == "Final", win_status == "Won") %>% 
+                 mutate(points_sum = points_sum + 0.5), 
+               aes(color = team), size = 4, shape = "★") +
+    annotate("text", x = 3.5, y = 20, label = "USA win the\nfirst WWC",
+             color = "white", family = "Roboto Condensed", lineheight = 0.8, size = 2.1) +
+    annotate("text", x = 12, y = 41, label = "Norway wins the\ntitle in 1995",
+             color = "darkcyan", family = "Roboto Condensed", lineheight = 0.8, size = 2.1) +
+    annotate("text", x = 8.5, y = 33, label = "USA lose for\nthe first time",
+             color = "white", family = "Roboto Condensed", lineheight = 0.8, size = 2.1) +
+    annotate("text", x = 31, y = 27, label = "Japan starts its\nwinning streak that\nleads to the title in 2011",
+             color = "indianred3", family = "Roboto Condensed", lineheight = 0.8, size = 2.1) +
+    annotate("text", x = 26.5, y = 76, label = "Winning two titles in a\nrow, Germany becomes\nUSA's rival number 1",
+             color = "goldenrod2", family = "Roboto Condensed", lineheight = 0.8, size = 2.1) +
+    annotate("text", x = 51, y = 12, label = "The Netherlands\nmake it to the final\nfor the first time",
+             color = "chocolate2", family = "Roboto Condensed", lineheight = 0.8, size = 2.1) +
+    annotate("text", x = 45.5, y = 121, label = "USA win the WWC 2019",
+             color = "white", family = "Roboto Condensed", lineheight = 0.8, size = 2.1) +
+    scale_x_continuous(limits = c(0, 54.5), breaks = 1:50, labels = labs, expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0, 130), breaks = seq(0, 120, by = 20)) +
+    scale_color_manual(values = c("goldenrod1", "indianred3", "chocolate2", 
+                                  "darkcyan", "white"),guide = F) +
+    scale_fill_manual(values = c("#445525", "#3b4a20"), guide = F) +
+    theme(axis.text.x = element_text(size = 6, angle = 90, hjust = 1, vjust = 0.5),
+          axis.text.y = element_text(family = "Roboto Mono", size = 8),
+          axis.title.x = element_text(size = 11),
+          axis.title.y = element_text(size = 11)) +
+    labs(x = NULL, y = "Points scored")
+```
+
+```{r}
+df_outcomes_stats_top <- df_outcomes_rounds %>% 
+  mutate(winner = if_else(round == "Final" & win_status == "Won", 1, 0)) %>% 
+  filter(team %in% c("USA", "GER", "JPN", "NOR")) %>% 
+  group_by(team, country, year) %>% 
+  summarize(
+    wins = sum(win_num),
+    points_sum = sum(points),
+    scores = sum(score),
+    winner = max(winner)
+  ) %>% 
+  ungroup() %>% 
+  add_row(year = 1987, team = "USA", country = "United States") %>% 
+  group_by(team) %>% 
+  mutate(
+    wins_sum = max(wins),
+    country = factor(country, levels = c("United States", "Germany", "Norway", "Japan"))
+  )
+
+years_lab <- tibble(
+  points_sum = rep(3, 9),
+  scores = rev(seq(2, 30, length.out = 9)),
+  team = factor("USA", levels = c("USA", "GER", "NOR", "JPN")),
+  country = factor("United States", levels = c("United States", "Germany", "Norway", "Japan")),
+  year = seq(1987, 2019, by = 4)
+)
+
+p_stats <- 
+  df_outcomes_stats_top %>% 
+  ggplot(aes(points_sum, scores, color = year)) + 
+    geom_path(alpha = 0.7) +
+    geom_point(data = df_outcomes_stats_top %>% 
+                 filter(winner == 0), size = 1.5) +
+    geom_point(data = df_outcomes_stats_top %>% 
+                 filter(winner == 1), 
+               aes(points_sum, scores), size = 4.5, shape = "★") +
+    geom_text(data = years_lab, aes(label = as.character(year)), 
+              family = "Roboto Mono", size = 2.5, fontface = "bold") +
+    facet_wrap(~ country, nrow = 1) +
+    scale_x_continuous(limits = c(0, 23), breaks = seq(0, 20, by = 5), expand = c(0.05, 0.05)) +
+    scale_y_continuous(limits = c(0, 29), breaks = seq(0, 25, by = 5), expand = c(0.05, 0.05)) +
+    rcartocolor::scale_color_carto_c(palette = "Emrld", direction = -1, guide = F) +
+    theme(axis.text = element_text(family = "Roboto Mono", size = 8),
+          axis.title.x = element_text(size = 11),
+          axis.title.y = element_text(size = 11),
+          strip.background = element_rect(color = "transparent"), 
+          strip.text = element_text(size = 10, vjust = 1, face = "plain"),
+           plot.margin = margin(12, 12, 0, 12)) +
+    labs(x = "Points scored", y = "Goals scored")
+```
+
+```{r}
+years_short <- years %>% 
+  mutate(label = glue::glue("'{str_sub(label, 3)}"))
+
+p_wins <- 
+  df_outcomes_top %>% 
+  ggplot(aes(round_id, wins)) +
+    geom_rect(data = rects, aes(xmin = xmin, xmax = xmax, 
+                                ymin = ymin, ymax = ymax, fill = group)) +
+    geom_text(data = years_short, aes(x = x, y = y - 86, label = label), 
+              family = "Roboto Mono", color = "white", size = 1.8) +
+    geom_point(aes(color = win_status), size = 0.4) +
+    facet_wrap(~ country, nrow = 1) +
+    scale_x_continuous(limits = c(0, 51), breaks = 1:50, labels = labs, expand = c(0, 0)) +
+    scale_y_continuous(limits = c(0, 45), breaks = seq(0, 40, by = 10)) +
+    scale_color_manual(values = c("firebrick", "grey80", "goldenrod3"), name = "") +
+    scale_fill_manual(values = c("#445525", "#3b4a20"), guide = F) +
+    guides(color = guide_legend(reverse = T, nrow = 1, 
+                                override.aes = list(size = 3))) +
+    theme(axis.text.x = element_blank(),
+          axis.text.y = element_text(family = "Roboto Mono", size = 8),
+          axis.ticks.x = element_blank(),
+          axis.title.x = element_text(size = 11),
+          axis.title.y = element_text(size = 11),
+          legend.position = c(0.5, -0.1),
+          legend.background = element_rect(color = "transparent", fill = "transparent"),
+          strip.background = element_rect(color = "transparent"),
+          strip.text = element_text(size = 10, vjust = 1, face = "plain")) +
+    labs(x = NULL, y = "Matches won",
+         caption = "\nVisualization by @CedScherer  |  Data: Wikipedia")
+```
+
+```{r title}
+## left-alligned title
+p_title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "The US women's national soccer team is almost unbeatable at FIFA World Cups",
+       subtitle = "Comparison of the US women's team to all former champions and the 2019 finalist, the Netherlands. Stats are shown for all tournament matches excluding third\nplace playoffs. Stars indicate world champions, triangles lost matches. Points are calculated based on the 3-1-0 scheme.") +
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        panel.border = element_rect(color = "transparent"),
+        axis.text = element_blank())
+```
+
+```{r full-panel, fig.width = 14, fig.height = 5.5}
+(p_title + p_steps + (p_stats / p_wins)) + plot_layout(widths = c(0, 1, 0.9))
+
+ggsave("./plots/2019_28/2019_28_FIFA_WWCs.pdf", width = 14, height = 5.7, device = cairo_pdf)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```
