@@ -140,7 +140,7 @@ p_steps <-
     annotation_custom(jpn, xmin = 51.5, xmax = 53.5, ymin = 46, ymax = 50) +
     annotation_custom(nor, xmin = 51.5, xmax = 53.5, ymin = 75, ymax = 79) +
     annotation_custom(ned, xmin = 51.5, xmax = 53.5, ymin = 20, ymax = 24) +
-    geom_step(aes(group = team), colour = "grey20", alpha = 0.2, size = 0.4) +
+    geom_step(aes(group = team), colour = "grey10", alpha = 0.2, size = 0.4) +
     geom_step(data = df_outcomes_rounds %>% 
                 filter(team %in% c("USA", "GER", "JPN", "NOR", "NED")), 
               aes(color = team), size = 0.7, alpha = 0.7) +
@@ -258,7 +258,7 @@ p_wins <-
           strip.background = element_rect(color = "transparent"),
           strip.text = element_text(size = 10, vjust = 1, face = "plain")) +
     labs(x = NULL, y = "Matches won",
-         caption = "\nVisualization by @CedScherer  |  Data: Wikipedia")
+         caption = "\nVisualization by @CedScherer  |  Data: data.world")
 ```
 
 ```{r title}
