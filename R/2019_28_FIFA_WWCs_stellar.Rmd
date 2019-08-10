@@ -1,0 +1,192 @@
+---
+title: "TidyTuesday 2019/28 - Women's World Cups by data.world"
+author: "Cedric Scherer"
+date: "20th of July 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(patchwork)
+library(lemon)
+library(showtext)
+
+## ggplot theme updates
+source("./theme/tidy_grey.R")
+theme_update(rect = element_rect(fill = "#001a33"),
+             strip.background = element_rect(fill = "#001a33", colour = "transparent"), 
+             plot.margin = margin(0, 80, 10, 80),
+             panel.spacing.y = unit(50, "pt"),
+             strip.text = element_text(vjust = 0))
+
+## add fonts via showtext (extrafont and emojifont do not worl together)
+font_add_google("Roboto Mono", "Roboto Mono")
+font_add_google("Passion One", "Passion One")
+showtext_auto()
+```
+
+```{r data}
+df_codes <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/codes.csv")
+df_outcomes <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-07-09/wwc_outcomes.csv") %>% 
+  left_join(df_codes, by = "team")
+```
+
+```{r data-prep}
+df_outcomes_id <- df_outcomes %>% 
+  filter(round != "Third Place Playoff") %>% 
+  mutate(
+    country = if_else(country %in% c("China PR", "Chinese Taipei"), "China", country),
+    country = if_else(country == "Ivory Coast (Côte d'Ivoire)", "Ivory Coast", country)
+  ) %>% 
+  group_by(country) %>% 
+  mutate(
+    win_num = if_else(win_status == "Won", 1, 0),
+    wins = cumsum(win_num),
+    points = case_when(
+      win_status == "Won" ~ 3, 
+      win_status == "Tie" ~ 1, 
+      win_status == "Lost" ~ 0
+    ),
+    points_sum = cumsum(points)
+  ) %>% 
+  ungroup() 
+
+df_outcomes_stats <- df_outcomes_id %>%
+  dplyr::select(year, round) %>% 
+  distinct() %>% 
+  mutate(round_id = row_number()) %>% 
+  full_join(df_outcomes_id) %>% 
+  mutate(winner = if_else(round == "Final" & win_status == "Won", 1, 0)) %>% 
+  group_by(country, year) %>% 
+  summarize(
+    wins = sum(win_num),
+    points_sum = sum(points),
+    scores = sum(score),
+    winner = max(winner)
+  ) %>% 
+  ungroup() %>% 
+  add_row(year = 1987, country = "United States") %>% 
+  group_by(country) %>% 
+  mutate(wins_sum = max(wins))
+```
+
+```{r plot}
+p_stellar <- 
+  df_outcomes_stats %>% 
+  ggplot(aes(points_sum, scores, color = year)) + 
+    geom_path(size = 1, alpha = 0.6) +
+    geom_point(data = df_outcomes_stats %>% 
+                 filter(winner == 0), size = 4) +
+    #geom_point(data = df_outcomes_stats %>% 
+    #               filter(winner == 0), size = 15, shape = "*") +
+    geom_point(data = df_outcomes_stats %>% 
+                   filter(winner == 1), 
+               aes(points_sum, scores), size = 15, shape = "★") +
+    facet_wrap(~ country, ncol = 5) +
+    scale_x_continuous(limits = c(0, 27), breaks = seq(0, 25, by = 5)) +
+    scale_y_continuous(limits = c(0, 27), breaks = seq(0, 25, by = 5)) +
+    rcartocolor::scale_color_carto_c(palette = "Emrld", direction = -1, guide = F) +
+    coord_capped_cart(bottom = "both", left = "both") +
+    theme(axis.text = element_text(color = "grey20", family = "Roboto Mono"),
+          axis.title.x = element_text(size = 18, hjust = 0, family = "Passion One", color = "grey30", face = "plain"),
+          axis.title.y = element_text(size = 18, hjust = 0, family = "Passion One", color = "grey30", face = "plain"),
+          axis.ticks = element_line(color = "grey20"),
+          axis.line = element_line(color = "grey20"),
+          strip.text = element_text(size = 18, vjust = 1, face = "plain", family = "Passion One", color = "grey30"),
+          panel.border = element_blank(),
+          plot.caption = element_text(size = 15, family = "Passion One", color = "grey20")) +
+    labs(x = "\nPoints scored →", y = "\nGoals scored →",
+         caption = "\nVisualization by @CedScherer  |  Data: data.world     \n\n\n\n\n")
+
+## colored text legend  
+p_legend <- 
+  ggplot(tibble(
+           x = seq(0, 28, length.out = 9), 
+           y = rep(33, 9),
+           year = seq(1987, 2019, by = 4)
+    ), aes(x, y, color = year, label = as.character(year))) +
+    geom_text(size = 10, family = "Roboto Mono", fontface = "bold") +
+    rcartocolor::scale_color_carto_c(palette = "Emrld", direction = -1, guide = F) +
+    scale_x_continuous(limits = c(2.5, 29)) +
+    theme(line = element_blank(),
+          axis.title = element_blank(),
+          plot.title = element_text(hjust = 0.5),
+          panel.background = element_rect(fill = "transparent"),
+          plot.background = element_rect(fill = "transparent", color = "transparent"),
+          panel.border = element_rect(color = "transparent"),
+          axis.text = element_blank())
+
+## centered title
+p_title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "\n\n\nThe Stellar Map of the FIFA Women's World Cup\n",
+       subtitle = "Number of goals and points scored per national team and FIFA World Cup.\n",
+       caption = "\nStats are shown for all tournament matches excluding third place playoffs.\nStars indicate world champions, scored points are calculated based on the 3-1-0 scheme.") +
+  theme(line = element_blank(),
+        plot.title = element_text(size = 50, hjust = 0.5, family = "Passion One", lineheight = 0.5, face = "bold"),
+        plot.subtitle = element_text(size = 25, hjust = 0.5, family = "Passion One", lineheight = 0.5, color = "grey60"),
+        plot.caption = element_text(size = 15, hjust = 0.5, color = "grey30", family = "Passion One"),
+        panel.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        panel.border = element_rect(color = "transparent"),
+        axis.text = element_blank())
+```
+
+```{r full-panel, fig.width = 14, fig.height = 5.7}
+(p_title / p_legend / p_stellar + plot_layout(heights = c(0, 0.08, 1)))
+
+ggsave("./plots/2019_28/2019_28_FIFA_WWCs_stellar.pdf", width = 21, height = 36, device = cairo_pdf)
+```
+
+--------
+
+```{r plot-clean}
+p_stellar_clean <- 
+  df_outcomes_stats %>% 
+  ggplot(aes(points_sum, scores, color = year)) + 
+    geom_path(size = 1, alpha = 0.6) +
+    geom_point(data = df_outcomes_stats %>% 
+                 filter(winner == 0), size = 4) +
+    #geom_point(data = df_outcomes_stats %>% 
+    #               filter(winner == 0), size = 15, shape = "*") +
+    geom_point(data = df_outcomes_stats %>% 
+                   filter(winner == 1), 
+               aes(points_sum, scores), size = 15, shape = "★") +
+    facet_wrap(~ country, ncol = 5) +
+    scale_x_continuous(limits = c(0, 27), breaks = seq(0, 25, by = 5), expand = c(0.05, 0.05)) +
+    scale_y_continuous(limits = c(0, 27), breaks = seq(0, 25, by = 5), expand = c(0.05, 0.05)) +
+    rcartocolor::scale_color_carto_c(palette = "Emrld", direction = -1, guide = F) +
+    coord_capped_cart(bottom = "both", left = "both") +
+    theme(axis.text = element_blank(),
+          axis.title.x = element_text(size = 18, hjust = 0, family = "Passion One", color = "grey30", face = "plain"),
+          axis.title.y = element_text(size = 18, hjust = 0, family = "Passion One", color = "grey30", face = "plain"),
+          axis.ticks = element_blank(),
+          strip.text = element_text(size = 18, vjust = 1, face = "plain", family ="Passion One", color = "grey30"),
+          panel.border = element_rect(color = "transparent"),
+          plot.caption = element_text(size = 15, family = "Passion One", color = "grey20")) +
+    labs(x = "\nPoints scored →", y = "\nGoals scored →",
+         caption = "\nVisualization by @CedScherer  |  Data: data.world     \n\n\n\n\n")
+```
+
+```{r full-panel-clean, fig.width = 14, fig.height = 5.7}
+(p_title / p_legend / p_stellar_clean + plot_layout(heights = c(0, 0.08, 1)))
+
+ggsave("./plots/2019_28/2019_28_FIFA_WWCs_stellar_clean.pdf", width = 21, height = 36, device = cairo_pdf)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```
+
