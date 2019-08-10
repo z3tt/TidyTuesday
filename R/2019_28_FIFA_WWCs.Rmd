@@ -177,7 +177,7 @@ p_steps <-
     labs(x = NULL, y = "Points scored")
 ```
 
-```{r net-chart}
+```{r stellar-chart}
 df_outcomes_stats_top <- df_outcomes_rounds %>% 
   mutate(winner = if_else(round == "Final" & win_status == "Won", 1, 0)) %>% 
   filter(team %in% c("USA", "GER", "JPN", "NOR")) %>% 
@@ -265,7 +265,7 @@ p_wins <-
 p_title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
        title = "The US women's national soccer team is almost unbeatable at FIFA World Cups",
-       subtitle = "Comparison of the US women's team to all former champions and the 2019 finalist, the Netherlands. Stats are shown for all tournament matches excluding third\nplace playoffs. Stars indicate world champions, triangles lost matches. Points are calculated based on the 3-1-0 scheme.") +
+       subtitle = "Comparison of the US women's team to all former champions and the 2019 finalist, the Netherlands. Stats are shown for all tournament matches excluding third\nplace playoffs. Stars indicate world champions, triangles lost matches. Scored points are calculated based on the 3-1-0 scheme.") +
   theme(line = element_blank(),
         panel.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", color = "transparent"),
