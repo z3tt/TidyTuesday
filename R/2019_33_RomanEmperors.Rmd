@@ -1,0 +1,103 @@
+---
+title: "TidyTuesday 2019/25 - Christmas Bird Counts by Bird Studies Canada"
+author: "Cedric Scherer"
+date: "5th of August 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(lubridate)
+library(showtext)
+
+## ggplot theme updates
+source("./theme/tidy_grey.R")
+theme_update(line = element_blank(),
+             rect = element_rect(fill = "#f7f5ee", color = "transparent"),
+             panel.border = element_blank(),
+             axis.text = element_blank(),
+             plot.title = element_text(color = "black", hjust = 0.5, size = 30),
+             plot.subtitle = element_text(color = "grey30", hjust = 0.5, size = 8, margin = margin(0, 0, 0, 0)),
+             plot.caption = element_text(color = "grey30", size = 8))
+
+## add fonts via showtext
+font_add_google("Cinzel", "Cinzel")
+showtext_auto()
+```
+
+```{r data}
+df_emperors <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-08-13/emperors.csv") %>% 
+  mutate(
+    birth = case_when(
+      index %in% c(1, 2, 4, 6) ~ update(birth, year = -year(birth)),
+      TRUE ~ birth
+    ),
+    reign_start = case_when(
+      index == 1 ~ update(reign_start, year = -year(reign_start)),
+      TRUE ~ reign_start
+    )
+  )
+```
+
+```{r plot}
+labs_yrs <- tibble(x = rep(5, 10),
+                   time = c(-50, 1, seq(50, 400, by = 50))) %>% 
+  mutate(
+    jesus = ifelse(time < 0, "BC", "AD"),
+    lab = glue::glue("{time} {jesus}")
+  )
+  
+legend <- tibble(
+  y = c(-50, -45, -40),
+  text = c("Natural Mortality", "Fatality", "Unknown Cause")
+)
+
+df_emperors %>% 
+  mutate(
+    reign_start = lubridate::year(reign_start),
+    cause = case_when(
+      cause == "Natural Causes" ~ "Natural Mortality",
+      cause == "Unknown" ~ "Unknown Cause",
+      TRUE ~ "Fatality"
+    ),
+    cause = fct_relevel(cause, "Natural Mortality", "Fatality", "Unknown Cause")
+  ) %>% 
+  ggplot(aes(x = 1.6, y = reign_start)) + 
+    geom_segment(data = labs_yrs, aes(x = 1.6, xend = 1.7, y = time, yend = time), size = 0.5, color = "grey30") +
+    geom_segment(x = 1.6, xend = 1.6, y = 55, yend = -405, lineend = "round", size = 2.5, color = "grey30") +
+    ggrepel::geom_text_repel(aes(label = name, color = cause), segment.color = "grey60",
+                             segment.size = 0.1, family = "Cinzel", fontface = "bold",
+                             size = 4, xlim  = c(0, 1.1), hjust = 1) +
+    geom_point(color = "transparent", fill = "white", size = 5, shape = 21) +
+    geom_point(color = "grey30", fill = alpha("grey10", 0.1), size = 5, shape = 21) +
+    geom_text(data = labs_yrs, aes(x = 1.72, y = time, label = lab), 
+              family = "Cinzel", hjust = 0, color = "grey30") + 
+    geom_text(data = legend, aes(x = 0.2, y = y, label = text, color = text), 
+              family = "Cinzel", hjust = 0, size = 4) + 
+    scale_x_continuous(limits = c(0, 2.3)) +
+    scale_y_reverse(limits = c(400, -50)) +
+    scale_color_manual(values = c("#b26a22", "#b22222", "grey50"), guide = F) +
+    theme(plot.title = element_text(family = "Cinzel"),
+          plot.subtitle = element_text(family = "Cinzel")) +
+    labs(x = NULL, y = NULL, title = "The Emperors of Rome",
+         subtitle = "\nTimeline of roman emperors, their start of their reign and their cause of death.\nThe darker the circles, the more emperors were reigning during this period.",
+         caption = "\nVisualization by @CedScherer  |  Data: Wikipedia Zonination")
+
+ggsave("./plots/2019_33/2019_33_RomanEmperors.pdf", width = 7, height = 22, device = cairo_pdf)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```
