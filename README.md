@@ -2,6 +2,10 @@
 My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).  
 Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
+### Week 2019/33 🌿 Roman Emperors by [Wikipedia](https://en.wikipedia.org/wiki/List_of_Roman_emperors)
+![./plots/2019_33/2019_33_RomanEmperors.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_33/2019_33_RomanEmperors.png)
+<br/><br/>
+
 ### Week 2019/28 ⚽ FIFA Women's World Cup by [data.world](https://data.world/sportsvizsunday/womens-world-cup-data)
 ![./plots/2019_28/2019_28_FIFA_WWCs.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_28/2019_28_FIFA_WWCs.png)
 ![./plots/2019_28/2019_28_FIFA_WWCs_stellar.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_28/2019_28_FIFA_WWCs_stellar.png)
