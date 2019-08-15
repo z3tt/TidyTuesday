@@ -226,7 +226,6 @@ title_facet + maps_facet + plot_layout(widths = c(0, 1))
 ggsave("./plots/2019_19/2019_19_StudentTeacher_facet.pdf", width = 14, height = 5.5, device = cairo_pdf)
 ```
 
-
 ***
 
 ```{r session}
