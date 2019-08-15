@@ -1,7 +1,7 @@
 ---
-title: "TidyTuesday 2019/25 - Christmas Bird Counts by Bird Studies Canada"
+title: "TidyTuesday 2019/33 - Roman Emperors by Wikipedia"
 author: "Cedric Scherer"
-date: "5th of August 2019"
+date: "14th of August 2019"
 output:
   html_document:
   theme: paper
@@ -18,6 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## packages
 library(tidyverse)
 library(lubridate)
+library(ggrepel)
 library(showtext)
 
 ## ggplot theme updates
@@ -27,7 +28,8 @@ theme_update(line = element_blank(),
              panel.border = element_blank(),
              axis.text = element_blank(),
              plot.title = element_text(color = "black", hjust = 0.5, size = 30),
-             plot.subtitle = element_text(color = "grey30", hjust = 0.5, size = 8, margin = margin(0, 0, 0, 0)),
+             plot.subtitle = element_text(color = "grey30", hjust = 0.5, 
+                                          size = 8, margin = margin(0, 0, 0, 0)),
              plot.caption = element_text(color = "grey30", size = 8))
 
 ## add fonts via showtext
@@ -58,40 +60,46 @@ labs_yrs <- tibble(x = rep(5, 10),
   )
   
 legend <- tibble(
-  y = c(-50, -45, -40),
-  text = c("Natural Mortality", "Fatality", "Unknown Cause")
+  y = c(-50, -46, -42),
+  text = c("Natural Death in Peace", 
+           "Fatality or in Captivity", 
+           "Unknown Cause of Death")
 )
 
 df_emperors %>% 
   mutate(
     reign_start = lubridate::year(reign_start),
     cause = case_when(
-      cause == "Natural Causes" ~ "Natural Mortality",
-      cause == "Unknown" ~ "Unknown Cause",
-      TRUE ~ "Fatality"
+      cause == "Natural Causes" ~ "Natural Death in Peace",
+      cause == "Unknown" ~ "Unknown Cause of Death",
+      TRUE ~ "Fatality or in Captivity"
     ),
-    cause = fct_relevel(cause, "Natural Mortality", "Fatality", "Unknown Cause")
+    cause = fct_relevel(cause, "Natural Death in Peace", 
+                                "Fatality or in Captivity", 
+                                "Unknown Cause of Death")
   ) %>% 
   ggplot(aes(x = 1.6, y = reign_start)) + 
-    geom_segment(data = labs_yrs, aes(x = 1.6, xend = 1.7, y = time, yend = time), size = 0.5, color = "grey30") +
-    geom_segment(x = 1.6, xend = 1.6, y = 55, yend = -405, lineend = "round", size = 2.5, color = "grey30") +
-    ggrepel::geom_text_repel(aes(label = name, color = cause), segment.color = "grey60",
-                             segment.size = 0.1, family = "Cinzel", fontface = "bold",
-                             size = 4, xlim  = c(0, 1.1), hjust = 1) +
+    geom_segment(data = labs_yrs, aes(x = 1.6, xend = 1.7, y = time, yend = time), 
+                 size = 0.5, color = "grey30") +
+    geom_segment(x = 1.6, xend = 1.6, y = 55, yend = -405, lineend = "round", 
+                 size = 2.5, color = "grey30") +
+    geom_text_repel(aes(label = name, color = cause), segment.color = "grey60",
+                    segment.size = 0.1, family = "Cinzel", fontface = "bold",
+                    size = 3.8, xlim  = c(0, 1.1), hjust = 1) +
     geom_point(color = "transparent", fill = "white", size = 5, shape = 21) +
     geom_point(color = "grey30", fill = alpha("grey10", 0.1), size = 5, shape = 21) +
     geom_text(data = labs_yrs, aes(x = 1.72, y = time, label = lab), 
               family = "Cinzel", hjust = 0, color = "grey30") + 
-    geom_text(data = legend, aes(x = 0.2, y = y, label = text, color = text), 
-              family = "Cinzel", hjust = 0, size = 4) + 
+    geom_text(data = legend, aes(x = 0.75, y = y, label = text, color = text), 
+              family = "Cinzel", hjust = 0.5, size = 3.2) + 
     scale_x_continuous(limits = c(0, 2.3)) +
     scale_y_reverse(limits = c(400, -50)) +
     scale_color_manual(values = c("#b26a22", "#b22222", "grey50"), guide = F) +
     theme(plot.title = element_text(family = "Cinzel"),
           plot.subtitle = element_text(family = "Cinzel")) +
     labs(x = NULL, y = NULL, title = "The Emperors of Rome",
-         subtitle = "\nTimeline of roman emperors, their start of their reign and their cause of death.\nThe darker the circles, the more emperors were reigning during this period.",
-         caption = "\nVisualization by @CedScherer  |  Data: Wikipedia Zonination")
+         subtitle = "\nTimeline of roman emperors, start of each reign and their cause of death.\nThe darker the circles, the more emperors were reigning during this period.",
+         caption = "\nVisualization by @CedScherer  |  Data: Wikipedia")
 
 ggsave("./plots/2019_33/2019_33_RomanEmperors.pdf", width = 7, height = 22, device = cairo_pdf)
 ```
