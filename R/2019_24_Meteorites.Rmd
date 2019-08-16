@@ -17,7 +17,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r prep, message=FALSE, warning=FALSE}
 ## packages
 library(tidyverse)
-library(ggradar)
 library(patchwork)
 library(showtext)
 
@@ -113,7 +112,7 @@ df_meteor_heavy <- df_meteor %>%
   )
 
 map_pixel <- ggplot(map_data("world"), aes(round(long, 0), round(lat, 0))) +
-  geom_polygon(aes(group = group), fill = "#001810", color = "#004e00") + ##004e00 #2e482e
+  geom_polygon(aes(group = group), fill = "#001810", color = "#004e00") +
   geom_point(data = df_meteor_prev, aes(long, lat), color = "green", size = 0.8, alpha = 0.35) +
   geom_point(data = df_meteor_now, aes(long, lat), color = "red", size = 9, alpha = 0.2) +
   geom_point(data = df_meteor_now, aes(long, lat), color = "red", size = 3.3, alpha = 0.5) +
