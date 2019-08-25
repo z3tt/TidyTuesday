@@ -1,0 +1,215 @@
+---
+title: "TidyTuesday 2019/34 - Nuclear Explosions by SIPRI"
+author: "Cedric Scherer"
+date: "21th of July 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(sf)
+library(LaCroixColoR)
+library(patchwork)
+
+## ggplot theme updates
+source("./theme/tidy_grey.R")
+theme_set(theme_custom(base_family = "Rockwell"))
+theme_update(rect = element_rect(fill = "#173f50"))
+```
+
+```{r data}
+df_nuclear <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-08-20/nuclear_explosions.csv")
+```
+
+```{r goode-map}
+## code for Goode homolosine projection by Claus Wilke:
+## https://gist.github.com/clauswilke/783e1a8ee3233775c9c3b8bfe531e28a
+
+## world map as sf object
+sf_world <- st_as_sf(rworldmap::getMap(resolution = "low"))
+
+## nuclear explosions as sf object
+sf_nuclear <- st_as_sf(x = df_nuclear,                         
+                       coords = c("longitude", "latitude"),
+                       crs = 4326) %>% 
+  filter(!is.na(yield_upper)) %>% 
+  mutate(country = case_when(
+    country == "CHINA" ~ "China",
+    country == "FRANCE" ~ "France",
+    country == "INDIA" ~ "India",
+    country == "PAKIST" ~ "Pakistan",
+    country == "UK" ~ "United Kingdom",
+    country == "USA" ~ "United States",
+    country == "USSR" ~ "Soviet Union"
+    ),
+    sealevel = if_else(depth < 0, "below", "above"),
+    sealevel = case_when(
+      type == "UG" | type == "TUNNEL" | type == "GALLERY" |
+        type == "SHAFT" | type == "SHAFT/GR" | type == "SHAFT/LG" |
+        type == "MINE" | type == "UW" ~ "underground",
+      TRUE ~ "atmospheric"
+    )
+  )
+
+## crs for Goode projection
+crs_goode <- "+proj=igh"
+
+## projection outline in long-lat coordinates
+lats <- c(
+  90:-90, # right side down
+  -90:0, 0:-90, # third cut bottom
+  -90:0, 0:-90, # second cut bottom
+  -90:0, 0:-90, # first cut bottom
+  -90:90, # left side up
+  90:0, 0:90, # cut top
+  90 # close
+)
+
+longs <- c(
+  rep(180, 181), # right side down
+  rep(c(80.01, 79.99), each = 91), # third cut bottom
+  rep(c(-19.99, -20.01), each = 91), # second cut bottom
+  rep(c(-99.99, -100.01), each = 91), # first cut bottom
+  rep(-180, 181), # left side up
+  rep(c(-40.01, -39.99), each = 91), # cut top
+  180 # close
+)
+
+goode_outline <- 
+  list(cbind(longs, lats)) %>%
+  st_polygon() %>%
+  st_sfc(
+    crs = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+  ) %>% 
+  st_transform(crs = crs_goode)
+
+## bounding box in transformed coordinates
+xlim <- c(-21945470, 21963330)
+ylim <- c(-9538022, 9266738)
+
+goode_bbox <- 
+  list(
+    cbind(
+      c(xlim[1], xlim[2], xlim[2], xlim[1], xlim[1]), 
+      c(ylim[1], ylim[1], ylim[2], ylim[2], ylim[1])
+    )
+  ) %>%
+  st_polygon() %>%
+  st_sfc(crs = crs_goode)
+
+## area outside the earth outline
+goode_without <- st_difference(goode_bbox, goode_outline)
+
+## colors
+cols <- c("#7F3C8D", "#0F8E7E", "#3969AC", "#948273", 
+          "#E73F74", "#80BA5A", "#F2B701")
+
+## map
+goode <- ggplot(sf_world) + 
+  geom_sf(fill = "white", color = "transparent") +
+  geom_sf(data = goode_without, fill = "#173f50", color = NA) +
+  geom_sf(data = goode_outline, fill = NA, color = "grey95", size = 0.5/.pt) +
+  geom_sf(data = sf_nuclear, aes(fill = country, size = yield_upper, 
+                                 shape = sealevel),
+          color = "grey20", stroke = 0.01) +
+  scale_x_continuous(name = NULL, breaks = seq(-120, 120, by = 60)) +
+  scale_y_continuous(name = NULL, breaks = seq(-60, 60, by = 30)) +
+  scale_size_continuous(range = c(1.5, 15), guide = F) +
+  scale_shape_manual(values = c(24, 25), guide = F) +
+  scale_fill_manual(name = "",
+                    values = alpha(cols, 0.3)) +
+  guides(fill = guide_legend(override.aes = list(alpha = 1)),
+         color = guide_legend(override.aes = list(alpha = 0))) +
+  coord_sf(xlim = 0.95*xlim, ylim = ylim, 
+           expand = F, crs = crs_goode, ndiscr = 1000) +
+  theme(panel.background = element_rect(fill = "grey90", color = "#173f50"),
+        panel.border = element_rect(color = "transparent"),
+        axis.text = element_blank(),
+        panel.grid.major = element_line(color = "grey95", size = 1),
+        panel.grid.minor = element_line(color = "grey95", size = 0.5),
+        legend.position = "left",
+        legend.key = element_rect(fill = "#173f50", color = "#173f50"),
+        legend.key.height = unit(0.1, "pt"),
+        legend.key.width = unit(4.5, "pt"),
+        legend.text = element_text(size = 16, 
+                                   margin = margin(t = 10, b = 10)))
+
+## map with colored triangle borders
+goode <- ggplot(sf_world) + 
+  geom_sf(fill = "white", color = "transparent") +
+  geom_sf(data = goode_without, fill = "#173f50", color = NA) +
+  geom_sf(data = goode_outline, fill = NA, color = "grey95", size = 0.5/.pt) +
+  geom_sf(data = sf_nuclear, aes(fill = country, color = country, 
+                                 size = yield_upper, shape = sealevel),
+          stroke = 0.01) +
+  scale_x_continuous(name = NULL, breaks = seq(-120, 120, by = 60)) +
+  scale_y_continuous(name = NULL, breaks = seq(-60, 60, by = 30)) +
+  scale_size_continuous(range = c(1.5, 15), guide = F) +
+  scale_shape_manual(values = c(24, 25), guide = F) +
+  scale_fill_manual(name = "", values = alpha(cols, 0.3)) +
+  scale_color_manual(guide = F, values = colorspace::darken(cols, 0.3)) +
+  guides(fill = guide_legend(override.aes = list(alpha = 1))) +
+  coord_sf(xlim = 0.95*xlim, ylim = ylim, 
+           expand = F, crs = crs_goode, ndiscr = 1000) +
+  theme(panel.background = element_rect(fill = "grey90", color = "#173f50"),
+        panel.border = element_rect(color = "transparent"),
+        axis.text = element_blank(),
+        panel.grid.major = element_line(color = "grey95", size = 1),
+        panel.grid.minor = element_line(color = "grey95", size = 0.5),
+        legend.position = "left",
+        legend.key = element_rect(fill = "#173f50", color = "#173f50"),
+        legend.key.height = unit(0.1, "pt"),
+        legend.key.width = unit(4.5, "pt"),
+        legend.text = element_text(size = 16, 
+                                   margin = margin(t = 10, b = 10)))
+```
+
+```{r title}
+## left-alligned title
+title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "Nuclear Explosions from 1945 to 1998",
+       subtitle = "Triangles depict nuclear explosions, either deployed in the atmosphere (pointing upwards) or under the ground/water (pointing downwards).\nThe size scales with the explosion yield estimate and the color indicates the country that deployed the nuclear device.") +
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = NA),
+        plot.background = element_rect(fill = NA, color = NA),
+        panel.border = element_rect(color = NA),
+        axis.text = element_blank(),
+        plot.title = element_text(family = "Rockwell Extra Bold", size = 30),
+        plot.subtitle = element_text(size = 10))
+```
+
+```{r caption}
+## right-alligned caption
+caption <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       caption = "Visualization by Cédric Scherer  |  Data: SIPRI Report 2000 (FOA-R--00-01572-180--SE)") +
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = NA),
+        plot.background = element_rect(fill = NA, color = NA),
+        panel.border = element_rect(color = NA),
+        axis.text = element_blank())
+```
+
+```{r full-panel, fig.width = 14, fig.height = 6.4}
+title + goode + caption + plot_layout(widths = c(0, 1, 0), nrow = 1)
+
+ggsave("./plots/2019_34/2019_34_NuclearExplosions.pdf", 
+       width = 14, height = 6.4, device = cairo_pdf)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```
