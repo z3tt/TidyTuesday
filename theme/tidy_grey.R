@@ -10,7 +10,7 @@ if ("extrafont" %in% rownames(installed.packages()))
 {
   library(extrafont)
   #extrafont::font_import()
-  extrafont::loadfonts(device = "win")
+  extrafont::loadfonts(device = "win", quiet = TRUE)
   base <- "Poppins"
 } else {
   base <- "Gadugi"   
