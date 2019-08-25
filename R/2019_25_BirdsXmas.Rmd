@@ -1,0 +1,202 @@
+---
+title: "TidyTuesday 2019/25 - Christmas Bird Counts by Bird Studies Canada"
+author: "Cedric Scherer"
+date: "25th of August 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(patchwork)
+
+## ggplot theme updates
+source("./theme/tidy_grey.R")
+```
+
+```{r data}
+df_birds <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-06-18/bird_counts.csv") %>% 
+  mutate(
+    decade = year - year %% 10,
+    genus = word(species_latin, 1)
+  ) %>% 
+  group_by(decade) %>% 
+  mutate(n_years = n_distinct(year))
+```
+
+```{r data-check}
+## check n() per species and year
+df_birds %>% 
+  group_by(species, year) %>% 
+  filter(n() > 1)
+```
+
+```{r common-birds-top3}
+df_birds_common <- df_birds %>%
+  group_by(species, species_latin) %>%
+  summarize(sum = sum(how_many_counted)) %>% 
+  ungroup() %>% 
+  top_n(3, sum) %>% 
+  arrange(sum)
+
+cols <- c("#e0c396", "#c38b38", "#7e4b31", "#1d1414")
+
+df_labels <- tibble(
+  species = c("Other", pull(df_birds_common[1])),
+  species_latin = c("", pull(df_birds_common[2])),
+  col = cols,
+  x = 2014,
+  y1 = rev(seq(4000, 21000, length.out = 4)),
+  y2 = rev(seq(1800, 18800, length.out = 4))
+)
+
+p_starling <- df_birds %>% 
+  mutate(species = if_else(species %in% 
+                             pull(df_birds_common[1]), species, "Other")) %>%
+  group_by(species, decade) %>% 
+  summarize(counts_year = sum(how_many_counted) / unique(n_years)) %>% 
+  ungroup() %>% 
+  mutate(species = factor(species, levels = c("Other", df_birds_common$species))) %>% 
+  ggplot(aes(decade, counts_year, fill = species)) +
+    geom_area(aes(fill = species), position = "stack", alpha = 0.75) +
+    geom_rect(xmin = 2012, xmax = Inf, ymin = 1000, ymax = Inf, fill = "grey20") +
+    geom_text(data = df_labels, aes(x = x, y = y1, label = species), 
+              size = 3, col = cols, hjust = 0, fontface = "bold", family = "Poppins") +
+    geom_text(data = df_labels, aes(x = x, y = y2, label = species_latin), 
+              size = 3, col = cols, hjust = 0, fontface = "italic", family = "Poppins") +
+    scale_x_continuous(limits = c(1920, 2055), breaks = seq(1920, 2020, by = 20),
+                       expand = c(0.03, 0.03)) +
+    scale_y_continuous(expand = c(0, 0), breaks = seq(0, 70000, by = 10000), 
+                       labels = scales::comma_format()) +
+    scale_fill_manual(values = cols) +
+    theme(legend.position = "none",
+          axis.title.y = element_text(size = 12, face = "plain"),
+          axis.text = element_text(family = "Roboto Mono", size = 10),
+          axis.ticks.x = element_line(colour = "grey40", size = 0.3),
+          axis.ticks.y = element_line(colour = "transparent", size = 0.3),
+          panel.grid.major.y = element_line(colour = "grey40", size = 0.3),
+          panel.border = element_blank(),
+          strip.background = element_rect(color = "transparent"))+
+    labs(x = NULL, y = "Yearly mean per decade (stacked)\n")
+```
+
+```{r starling-comp-facet}
+peak_starling <- df_birds %>% 
+  filter(species == "European Starling") %>% 
+  group_by(decade) %>% 
+  summarize(sum = sum(how_many_counted) / unique(n_years)) %>% 
+  top_n(1, sum)
+
+df_birds_periods <- df_birds %>% 
+  filter(decade != 1980) %>% 
+  filter(species != "European Starling") %>% 
+  mutate(period = if_else(decade < peak_starling$decade, 
+                          "earlier", "later")) %>% 
+  group_by(species, period) %>% 
+  summarize(sum = sum(how_many_counted)) %>% 
+  spread(period, sum) %>% 
+  mutate(diff = earlier - later) %>% 
+  ungroup()
+  
+top_early <- df_birds_periods %>% 
+  top_n(4, diff) %>% 
+  arrange(-diff) %>% 
+  pull(species)
+
+top_late <- df_birds_periods %>% 
+  top_n(4, -diff) %>% 
+  arrange(diff) %>% 
+  pull(species)
+
+df_starling <- df_birds %>% 
+  dplyr::filter(species == "European Starling") %>% 
+  group_by(decade) %>% 
+  summarize(counts_year = sum(how_many_counted) / unique(n_years)) %>% 
+  ungroup()
+
+annotation <- tibble(
+  decade = 1945,
+  counts_year = 35500,
+  species = factor(top_early[1], levels = c(top_early, top_late))
+)
+
+arrow <- tibble(
+  species = factor(top_early[1], levels = c(top_early, top_late)),
+  x = 1945, xend = 1966.8, 
+  y = 31200, yend = 26000
+)
+
+p_top <- df_birds %>% 
+  filter(species %in% c(top_early, top_late)) %>% 
+  group_by(species, decade) %>% 
+  summarize(counts_year = sum(how_many_counted) / unique(n_years)) %>% 
+  ungroup() %>% 
+  mutate(species = factor(species, levels = c(top_early, top_late))) %>% 
+  ggplot(aes(decade, counts_year, fill = species)) +
+    geom_area() + 
+    geom_area(data = df_starling, fill = "#1d1414", alpha = 0.75) +
+    geom_segment(x = peak_starling$decade, xend = peak_starling$decade, 
+                 y = 0, yend = peak_starling$sum - 2000, 
+                 color = "grey30", linetype = "dashed", size = 0.2) +
+    geom_area(alpha = 0.75) + 
+    geom_text(data = annotation, label = "European\nStarling", size = 3,
+              color = "white", family = "Poppins", fontface = "bold",
+              lineheight = 0.8) +
+    geom_curve(data = arrow, aes(x = x, xend = xend, y = y, yend = yend),
+               arrow = arrow(length = unit(0.07, "inch")), 
+               size = 0.5, color = "grey85", curvature = 0.35) +
+    facet_wrap(~ species, nrow = 2) +
+    scale_x_continuous(limits = c(1920, 2020), breaks = seq(1920, 2020, by = 20),
+                       labels = c("1920", "", "", "1980", "", "2020")) +
+    scale_y_continuous(limits = c(0, 53000), expand = c(0, 0),
+                       breaks = seq(0, 50000, by = 10000), 
+                       labels = scales::comma_format()) +
+    scale_fill_manual(values = c("#ff3200", "#e26a50", "#e9bc7c", "#e9e4a6",
+                                 "#1bb6af", "#0096ee", "#2f50d1", "#622abd")) +
+    theme(legend.position = "none",
+          axis.title.y = element_text(size = 12, face = "plain"),
+          axis.text = element_text(family = "Roboto Mono", size = 8.5),
+          axis.ticks.x = element_line(colour = "grey40", size = 0.3),
+          axis.ticks.y = element_line(colour = "transparent", size = 0.3),
+          panel.grid.major.y = element_line(colour = "grey40", size = 0.3),
+          panel.border = element_blank(),
+          strip.background = element_rect(color = "transparent"),
+          strip.text = element_text(size = 10),
+          panel.spacing = unit(15, "pt")) +
+    labs(x = NULL, y = "Yearly mean per decade\n",
+         caption = "\nVisualization by @CedScherer  |  Data source: Bird Studies Canada")
+```
+
+```{r title}
+## left-alligned title
+p_title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "Is it a bird? Is it a plane? Is it Santa Clause?  —  It's probably a European Starling!",
+       subtitle = "Bird counts during Christmas time in the Hamilton area of Ontario. Which species peaked before and after the record counts of the European Starling during the '80s?\n") +
+  theme(line = element_blank(),
+        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        panel.background = element_rect(fill = "transparent"),
+        panel.border = element_rect(color = "transparent"),
+        axis.text = element_blank())
+```
+
+```{r full-panel, fig.width = 14, fig.height = 5.5}
+p_title + p_starling + p_top + plot_layout(widths = c(0, 0.47, 1))
+
+ggsave("./plots/2019_25/2019_25_BirdsXmas.pdf", width = 14, height = 5.6, device = cairo_pdf)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```
