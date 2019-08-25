@@ -15,6 +15,10 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 ![./plots/2019_27/2019_27_FranchiseRevenue.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_27/2019_27_FranchiseRevenue.png)
 <br/><br/>
 
+### Week 2019/25 🎅🏽🐦 Christmas Bird Counts	by [Bird Studies Canada](https://www.birdscanada.org/index.jsp)
+![./plots/2019_25/2019_25_BirdsXmas.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_25/2019_25_BirdsXmas.png)
+<br/><br/>
+
 ### Week 2019/24 🌠 Meteorites by [NASA](https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh/data)
 ![./plots/2019_24/2019_24_Meteorites.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_24/2019_24_Meteorites.png)
 <br/><br/>
