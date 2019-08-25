@@ -49,7 +49,7 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 <br/><br/>   
 
 ### Week 2019/17 🐉 Anime Data by [MyAnimeList.net](https://myanimelist.net/)
-![./plots/2019_17/2019_17_Animes.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_17/2019_17_Animes.png)
+![./plots/2019_17/2019_17_Animes.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_17/2019_17_animes.png)
 <br/><br/>   
 
 ### Week 2019/16 📊 [Data Viz Mistakes](https://medium.economist.com/mistakes-weve-drawn-a-few-8cdd8a42d368) by The Economist
