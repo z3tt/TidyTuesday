@@ -29,7 +29,7 @@ theme_update(rect = element_rect(fill = "#001a33"),
              panel.spacing.y = unit(50, "pt"),
              strip.text = element_text(vjust = 0))
 
-## add fonts via showtext (extrafont and emojifont do not worl together)
+## add fonts via showtext
 font_add_google("Roboto Mono", "Roboto Mono")
 font_add_google("Passion One", "Passion One")
 showtext_auto()
