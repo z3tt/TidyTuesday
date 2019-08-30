@@ -24,7 +24,7 @@ library(patchwork)
 source("./theme/tidy_grey.R")
 
 theme_update(rect = element_rect(color = NA, 
-                                 fill = "#FFCC00"), #FED90F
+                                 fill = "#FFCC00"),
              line = element_blank(),
              text = element_text(color = "white"), 
              plot.margin = margin(10, 40, 20, 40))
@@ -116,9 +116,10 @@ ranks <-
     scale_color_manual(values = c("#00947E", "#FF5180", "#460046", 
                                   "#727273", "#B26C3A", "#C72626")) +
     scale_linetype_manual(values = c(rep(1, 6), 0)) +
-    theme(axis.text = element_text(color = "white", 
+    theme(axis.text = element_text(color = "white",
                                    family = "Roboto Mono", 
                                    face = "bold"),
+          axis.title.y = element_text(hjust = 0),
           panel.border = element_rect(color = NA),
           legend.position = "none") +
     labs(x = "Season", y = "Ranking\n")
