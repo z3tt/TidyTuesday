@@ -55,7 +55,6 @@ lev <- c(top, "other")
 
 df_simpsons_lumped <- 
   df_simpsons_series %>% 
-  #filter(guest_star %in% top) %>% 
   count(season, guest_star) %>% 
   group_by(guest_star) %>% 
   mutate(total = n()) %>% 
@@ -94,9 +93,9 @@ ranks <-
                size = 6) + 
     geom_text(data = filter(df_simpsons_lumped, top != "other"), 
               aes(label = n),
-              family = "Roboto Mono",
+              family = "Roboto",
               fontface = "bold", 
-              size = 3.6) +
+              size = 3) +
     annotate("label", x = 10, y = 55, 
              fill = "#FFCC00", 
              color = "white",
