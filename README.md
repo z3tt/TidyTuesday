@@ -2,6 +2,10 @@
 My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).  
 Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
+### Week 2019/35 ☢️ Simpsons Guest Stars by [Wikipedia](https://en.wikipedia.org/wiki/List_of_The_Simpsons_guest_stars)
+![./plots/2019_35/2019_35_SimpsonsGuests.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_35/2019_35_SimpsonsGuests.png)
+<br/><br/>
+
 ### Week 2019/34 ☢️ Nuclear Explosions by [SIPRI](https://github.com/data-is-plural/nuclear-explosions/blob/master/documents/sipri-report-original.pdf)
 ![./plots/2019_34/2019_34_NuclearExplosions.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_34/2019_34_NuclearExplosions.png)
 <br/><br/>
