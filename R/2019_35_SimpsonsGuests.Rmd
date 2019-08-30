@@ -1,0 +1,188 @@
+---
+title: "TidyTuesday 2019/35 - Simpsons Guest Stars by Wikipedia"
+author: "Cedric Scherer"
+date: "30th of August 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(ggtext)
+library(patchwork)
+
+## ggplot theme updates
+source("./theme/tidy_grey.R")
+
+theme_update(rect = element_rect(color = NA, 
+                                 fill = "#FFCC00"), #FED90F
+             line = element_blank(),
+             text = element_text(color = "white"), 
+             plot.margin = margin(10, 40, 20, 40))
+```
+
+```{r data}
+
+df_simpsons <- readr::read_delim("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-08-27/simpsons-guests.csv", delim = "|", quote = "")
+```
+
+```{r clean}
+df_simpsons_series <- 
+  df_simpsons %>% 
+  filter(season != "Movie") %>% 
+  mutate(season = as.numeric(season)) %>% 
+  separate(number, c("no_cont", "no_season"), sep = "–")
+```
+
+```{r rank-guests}
+top <- 
+  df_simpsons_series %>% 
+    count(guest_star) %>% 
+    top_n(6, n) %>% 
+    arrange(-n) %>%
+    pull(guest_star)
+
+lev <- c(top, "other")
+
+df_simpsons_lumped <- 
+  df_simpsons_series %>% 
+  #filter(guest_star %in% top) %>% 
+  count(season, guest_star) %>% 
+  group_by(guest_star) %>% 
+  mutate(total = n()) %>% 
+  #filter(total > 2) %>%
+  filter(!(total < 2 & guest_star %in% top)) %>% 
+  group_by(season) %>% 
+  arrange(desc(n), desc(total), guest_star) %>% 
+  mutate(
+    ranking = row_number(),
+    top = ifelse(guest_star %in% top, guest_star, "other"),
+    top = factor(top, levels = lev)
+  )
+
+ranks <- 
+  ggplot(df_simpsons_lumped, 
+         aes(season, ranking, 
+             color = top)) +
+    geom_segment(data = tibble(x = 0.3, xend = 30.5, y = 1:61), 
+                 aes(x = x, xend = xend, y = y, yend = y),
+                 color = "white", linetype = "dotted") +
+    geom_segment(data = tibble(x = 30.5, xend = 31, y = 2:61), 
+                 aes(x = x, xend = xend, y = y, yend = y),
+                 color = "white") +
+    geom_segment(data = tibble(x = 30.5, xend = 31.5, y = c(1, seq(5, 60, by = 5))), 
+                 aes(x = x, xend = xend, y = y, yend = y),
+                 color = "white") +
+    geom_point(color = "white", 
+               size = 5) +
+    geom_point(color = "#FFCC00", 
+               size = 3) + 
+    geom_line(data = filter(df_simpsons_lumped, top != "other"), 
+              size = 1, 
+              alpha = 1) +
+    geom_point(data = filter(df_simpsons_lumped, top != "other"), 
+              size = 9) + 
+    geom_point(data = filter(df_simpsons_lumped, top != "other"), 
+               color = "#FFCC00", 
+               size = 6) + 
+    geom_text(data = filter(df_simpsons_lumped, top != "other"), 
+              aes(label = n),
+              family = "Roboto Mono",
+              fontface = "bold", 
+              size = 3.6) +
+    annotate("label", x = 10, y = 55, 
+             fill = "#FFCC00", 
+             color = "white",
+             family = "Roboto Mono", 
+             fontface = "bold", 
+             size = 4.5,
+             label.padding = unit(1, "lines"),
+             label = 'Ranking of guest star appearances per\nseason in the TV series "The Simpsons".\n\nThe six top guests are colored\n and visualised as there common character.\nAll others are ranked anonymously\nshowing the number of guests per season.') +
+    scale_x_continuous(position = "top", 
+                       limits = c(0, 31.5), 
+                       breaks = 1:30,
+                       expand = c(0.01, 0.01)) +
+    scale_y_reverse(position = "right", 
+                    limits = c(61, 1), 
+                    breaks = c(1, seq(5, 60, by = 5)),
+                    expand = c(0.01, 0.01)) +
+    scale_color_manual(values = c("#00947E", "#FF5180", "#460046", 
+                                  "#727273", "#B26C3A", "#C72626")) +
+    scale_linetype_manual(values = c(rep(1, 6), 0)) +
+    theme(axis.text = element_text(color = "white", 
+                                   family = "Roboto Mono", 
+                                   face = "bold"),
+          panel.border = element_rect(color = NA),
+          legend.position = "none") +
+    labs(x = "Season", y = "Ranking\n")
+```
+
+```{r image-legend}
+labels <-
+  tibble(
+    labels = c(
+      "<img src='https://upload.wikimedia.org/wikipedia/en/7/76/Edna_Krabappel.png'
+    +     width='100' /><br><b style='color:#00947E'>Marcia Wallace</b><br><i style='color:#00947E'>Edna Krabappel</i></b>",
+      "<img src='https://upload.wikimedia.org/wikipedia/en/6/6c/Troymcclure.png'
+    +     width='90' /><br><b style='color:#FF5180'>Phil Hartman</b><br><i style='color:#FF5180'>Troy McClure</i></b>",
+      "<img src='https://upload.wikimedia.org/wikipedia/en/3/3e/FatTony.png'
+    +     width='110' /><br><b style='color:#460046'>Joe Mantegna</b><br><i style='color:#460046'>Fat Tony</i></b>",
+      "<img src='./img/orson.png'
+    +     width='85' /><br><b style='color:#727273'>Maurice LaMarche</b><br><i style='color:#727273'>Several VIPs</i>",
+      "<img src='https://upload.wikimedia.org/wikipedia/en/8/8a/SantasLittleHelper.png'
+    +     width='100' /><br><b style='color:#B26C3A'>Frank Welker</b><br><i style='color:#B26C3A'>Santas Little Helper</i></b>",
+      "<img src='https://upload.wikimedia.org/wikipedia/en/c/c8/C-bob.png'
+    +     width='100' /><br><b style='color:#C72626'>Kelsey Grammer</b><br><i style='color:#C72626'>Sideshow Bob</i></b>"
+    ),
+    x = 1:6, 
+    y = rep(1, 6)
+  )
+
+legend <- 
+  ggplot(labels, aes(x, y)) +
+    geom_richtext(aes(label = labels), 
+                  fill = NA, 
+                  color = NA, 
+                  vjust = 0) +
+    annotate("text", x = 3.5, y = 1.018, 
+             label = 'Guest Voices in "The Simpsons"', 
+             size = 15, 
+             fontface = "bold", 
+             family = "Poppins") +
+    scale_x_continuous(limits = c(0.6, 6.1)) +
+    scale_y_continuous(limits = c(1, 1.02)) +
+    theme_void() +
+    theme(plot.background = element_rect(fill = "#FFCC00"))
+  
+caption <- 
+  ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       caption = "Visualization by @CedScherer  |  Source: Wikipedia  |  Image  Copyright: Matt Groening & 20th Century Fox                                                   ") +
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", 
+                                       color = "transparent"),
+        panel.border = element_rect(color = "transparent"),
+        axis.text = element_blank())
+```
+
+```{r full-panel, fig.width = 16, fig.height = 24}
+legend + ranks + caption + plot_layout(ncol = 1, heights = c(0.25, 1, 0))
+
+ggsave("./plots/2019_35/2019_35_SimpsonsGuests.pdf", width = 16, height = 24, device = cairo_pdf)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```
