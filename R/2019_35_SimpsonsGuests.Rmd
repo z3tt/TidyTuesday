@@ -59,8 +59,6 @@ df_simpsons_lumped <-
   count(season, guest_star) %>% 
   group_by(guest_star) %>% 
   mutate(total = n()) %>% 
-  #filter(total > 2) %>%
-  filter(!(total < 2 & guest_star %in% top)) %>% 
   group_by(season) %>% 
   arrange(desc(n), desc(total), guest_star) %>% 
   mutate(
@@ -106,7 +104,7 @@ ranks <-
              fontface = "bold", 
              size = 4.5,
              label.padding = unit(1, "lines"),
-             label = 'Ranking of guest star appearances per\nseason in the TV series "The Simpsons".\n\nThe six top guests are colored\n and visualised as there common character.\nAll others are ranked anonymously\nshowing the number of guests per season.') +
+             label = 'Ranking of guest star appearances per\nseason in the TV series "The Simpsons".\n\nThe six top guests are colored\n and visualised as there common character.\nAll others are ranked anonymously\nshowing the number of guests per season.\nIn case of a tie guest stars\nare sorted by total appearances.') +
     scale_x_continuous(position = "top", 
                        limits = c(0, 31.5), 
                        breaks = 1:30,
