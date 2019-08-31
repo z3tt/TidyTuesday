@@ -103,7 +103,7 @@ ranks <-
              fontface = "bold", 
              size = 4.5,
              label.padding = unit(1, "lines"),
-             label = 'Ranking of guest star appearances per\nseason in the TV series "The Simpsons".\n\nThe six top guests are colored\n and visualised as there common character.\nAll others are ranked anonymously\nshowing the number of guests per season.\nIn case of a tie guest stars\nare sorted by total appearances.') +
+             label = 'Ranking of guest star appearances per\nseason in the TV series "The Simpsons".\n\nThe six top guests are colored\n and visualised as their common character.\nAll others are ranked anonymously and\nindicate the total number of guests\nper season. In case of a tie guest stars\nare sorted by the number of appearances.') +
     scale_x_continuous(position = "top", 
                        limits = c(0, 31.5), 
                        breaks = 1:30,
@@ -160,7 +160,9 @@ legend <-
     scale_y_continuous(limits = c(1, 1.02)) +
     theme_void() +
     theme(plot.background = element_rect(fill = "#FFCC00"))
-  
+```
+
+```{r caption}
 caption <- 
   ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
