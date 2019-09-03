@@ -1,0 +1,195 @@
+---
+title: "TidyTuesday 2019/36 - Moore's Law by Wikipedia"
+author: "Cedric Scherer"
+date: "4th of September 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(ggtext)
+library(patchwork)
+
+## ggplot theme updates
+source("./theme/tidy_grey.R")
+```
+
+```{r data}
+df_cpu <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-03/cpu.csv")
+
+df_gpu <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-03/gpu.csv")
+
+df_ram <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-03/ram.csv")
+```
+
+```{r combine-data}
+df_moore_all <-
+  df_ram %>% 
+  dplyr::select(
+    name = chip_name,
+    transistor_count,
+    date_of_introduction,
+    designer = manufacturer_s,
+    process, 
+    area
+  ) %>% 
+  mutate(type = "RAM") %>% 
+  bind_rows(df_cpu %>% 
+              rename(name = processor) %>% 
+              mutate(type = "CPU")) %>% 
+  bind_rows(df_gpu %>% 
+              dplyr::select(
+                name = processor,
+                transistor_count,
+                date_of_introduction,
+                designer = manufacturer_s,
+                process, 
+                area
+              ) %>% 
+              mutate(type = "GPU")
+            )
+```
+
+```{r plot}
+df_opt <-
+  df_moore_all %>% 
+  mutate(year_cum = date_of_introduction %/% 2 * 2) %>% 
+  group_by(type, year_cum) %>% 
+  summarize(transistor_count = mean(transistor_count, na.rm = T)) %>% 
+  group_by(type) %>% 
+  mutate(
+    min = min(transistor_count, na.rm = T),
+    start = min(year_cum, na.rm = T),
+    lev = 2^(year_cum / 2 - start / 2),
+    opt = min * lev
+  )
+
+labels <- tibble(
+  x1 = c(1986, 1992, 1995),
+  x2 = c(1993.5, 1999.8, 1990.2),
+  y1 = c(3.3*10^7, 1.3*10^9, 7000),
+  y2 = c(12000000, 2*10^8, 32000),
+  type = rep("CPU", 3),
+  text = c("**Expected** number of transistors<br>according to **Moore's Law**",
+           "**Maximum** number of transistors<br>in the respective 2-year period",
+           "**Minimum** number of transistors<br>in the respective 2-year period")
+)
+
+plot <- 
+  df_moore_all %>% 
+  #filter(type == "cpu") %>% 
+  mutate(year_cum = date_of_introduction %/% 2 * 2) %>% 
+  group_by(type, year_cum) %>% 
+  mutate(
+    min = min(transistor_count, na.rm = T),
+    max = max(transistor_count, na.rm = T)
+  ) %>% 
+  ggplot(aes(year_cum, transistor_count)) +
+    geom_text(aes(label = type, x = 1990, y = 1.5*10^11), 
+              color = "grey16",
+              family = "Montserrat Black",
+              size = 28) +
+    geom_segment(aes(x = year_cum, xend = year_cum, 
+                     y = min, yend = max), 
+                 size = 2.5,
+                 color = "grey40",
+                 lineend = "round") +
+    geom_point(data = df_opt, 
+               aes(year_cum, opt), 
+               color = "grey80",
+               shape = 1,
+               size = 2) +
+    geom_point(aes(y = min), 
+               color = "#ffc04d", 
+               size = 0.8) +
+    geom_point(aes(y = max), 
+               color = "#30d59f", 
+               size = 0.8) +
+    geom_curve(data = labels, 
+               aes(x = x1, y = y1, xend = x2, yend = y2), 
+               size = 0.3, 
+               color = c("grey80", "#30d59f", "#ffc04d"), 
+               linetype = "dotted", 
+               curvature = -0.3) +
+    geom_richtext(data = labels, 
+                  aes(x = x1, y = y1, label = text),
+                  color = c("grey80", "#30d59f", "#ffc04d"),
+                  family = "Montserrat",
+                  size = 2,
+                  fill = NA, 
+                  label.color = NA,
+                  hjust = c(1, 1, 0)) +
+    scale_x_continuous(breaks = seq(1962, 2018, by = 8)) +
+    scale_y_log10(breaks = c(1, 10^3, 10^6, 10^9, 10^12),
+                  labels = scales::comma) +
+    coord_cartesian(ylim = c(1, 2*10^12)) +
+    facet_grid(~ type) +
+    theme(axis.text = element_text(family = "Roboto Mono",
+                                   size = 10),
+          axis.title.y = element_text(family = "Montserrat", 
+                                      face = "plain",
+                                      size = 13),
+          strip.text = element_blank(),
+          strip.background = element_blank(),
+          panel.spacing.x = unit(12, "pt")) +
+    labs(x = NULL, y = "Number of Transistors")
+```
+
+```{r title}
+## left-alligned title
+title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "MOORE'S LAW", 
+       subtitle = "*Moore's law* is the observation that the **number of transistors** in a dense integrated circuit **doubles about every two years**.<br>The observation is named after Gordon Moore, the co-founder of Fairchild Semiconductor and CEO of Intel.<br>")+
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        panel.border = element_rect(colour = "transparent"),
+        axis.text = element_blank(),
+        plot.title = element_text(family = "Montserrat Black", 
+                                  size = 30, 
+                                  color = "white"),
+        plot.subtitle = element_markdown(family = "Montserrat", 
+                                         size = 10, 
+                                         color = "grey80",
+                                         lineheight = 1.25))
+```
+
+```{r caption}
+caption <- 
+  ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       caption = "\nVisualization by @CedScherer  |  Source: Wikipedia") +
+  theme(line = element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", 
+                                       color = "transparent"),
+        panel.border = element_rect(color = "transparent"),
+        axis.text = element_blank(),
+        plot.caption = element_text(family = "Montserrat", 
+                                    size = 9, 
+                                    color = "grey80"))
+```
+
+```{r full-panel, fig.width = 14, fig.height = 5.8}
+title + plot + caption + plot_layout(nrow = 1, widths = c(0, 1, 0))
+
+ggsave("./plots/2019_36/2019_36_MooresLaw.pdf", 
+       width = 14, height = 5.8, device = cairo_pdf)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```
