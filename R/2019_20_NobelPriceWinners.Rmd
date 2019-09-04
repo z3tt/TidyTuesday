@@ -14,7 +14,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(scico)
@@ -77,7 +77,7 @@ tile_gender <- df_nobel %>%
           axis.ticks = element_blank(),
           panel.border = element_rect(color = "grey20")) + 
     labs(x = NULL, y = NULL,
-         caption = '\nVisualization by @CedScherer  |  Data: Harvard Dataverse, Li et al. 2018, doi: 10.7910/DVN/6NJ5RN')
+         caption = '\nVisualization by Cédric Scherer  |  Data: Harvard Dataverse, Li et al. 2018, doi: 10.7910/DVN/6NJ5RN')
 ```
 
 ```{r title}

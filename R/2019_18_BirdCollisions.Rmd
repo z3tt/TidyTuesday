@@ -11,10 +11,10 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(ggalluvial)
@@ -110,7 +110,7 @@ zonoalbi <- grid::rasterGrob(img_b, interpolate = T)
                                 label.position = "bottom", reverse = T)) +
     labs(x = "\nMost frequently detected species", y = "Percentage of cases (2000-2016)",
          title = "",
-         caption = "\nVisualization by @CedScherer  |  Data: Winger et al. 2019 (doi: 10.1098/rspb.2019.0364)") +
+         caption = "\nVisualization by Cédric Scherer  |  Data: Winger et al. 2019 (doi: 10.1098/rspb.2019.0364)") +
     theme(axis.title.x = element_text(size = 12),
           axis.title.y = element_text(size = 12),
           axis.text.x = element_text(size = 10, family = "Roboto Mono"),

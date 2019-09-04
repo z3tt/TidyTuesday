@@ -10,11 +10,11 @@ editor_options:
   chunk_output_type: console
 ---
   
-  ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(patchwork)
@@ -208,7 +208,7 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 ## right-alligned caption
 caption <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
-       caption = "\nVisualization by @CedScherer  |  Data source: Wikipedia") +
+       caption = "\nVisualization by Cédric Scherer  |  Data source: Wikipedia") +
   theme(line = element_blank(),
         plot.background = element_rect(fill = "transparent", color = "transparent"),
         panel.background = element_rect(fill = "transparent"),

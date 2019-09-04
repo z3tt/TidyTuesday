@@ -11,10 +11,10 @@ editor_options:
 ---
   
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(patchwork)
@@ -257,7 +257,7 @@ p_wins <-
           strip.background = element_rect(color = "transparent"),
           strip.text = element_text(size = 10, vjust = 1, face = "plain")) +
     labs(x = NULL, y = "Matches won",
-         caption = "\nVisualization by @CedScherer  |  Data: data.world")
+         caption = "\nVisualization by Cédric Scherer  |  Data: data.world")
 ```
 
 ```{r title}

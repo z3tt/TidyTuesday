@@ -11,10 +11,10 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(patchwork)
@@ -102,7 +102,7 @@ words <- df_wines %>%
           panel.border = element_rect(color = "transparent"),
           panel.spacing = unit(0, "lines"),
           axis.ticks = element_blank()) +
-    labs(caption = "\nVisualization by @CedScherer  |  Data source: Kaggle")
+    labs(caption = "\nVisualization by Cédric Scherer  |  Data source: Kaggle")
 ```
 
 ```{r title}

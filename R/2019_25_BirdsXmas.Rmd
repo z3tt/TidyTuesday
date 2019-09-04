@@ -11,10 +11,10 @@ editor_options:
 ---
   
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(patchwork)
@@ -172,8 +172,8 @@ p_top <- df_birds %>%
           strip.background = element_rect(color = "transparent"),
           strip.text = element_text(size = 10),
           panel.spacing = unit(15, "pt")) +
-    labs(x = NULL, y = "Yearly mean per decade\n",
-         caption = "\nVisualization by @CedScherer  |  Data source: Bird Studies Canada")
+    labs(x = NULL, y = "Yearly mean per decade\n", 
+         caption = "\nVisualization by Cédric Scherer  |  Data source: Bird Studies Canada")
 ```
 
 ```{r title}

@@ -11,15 +11,14 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(sf)
 library(maptools)
-library(cartogram)
 library(scico)
 library(patchwork)
 library(cowplot)
@@ -151,7 +150,7 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 ## right-alligned caption
 caption <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
-       caption = '\n\nVisualization by @CedScherer  |  Data: Ritchie & Roser (2019), OurWorldInData.org') +
+       caption = '\n\nVisualization by Cédric Scherer  |  Data: Ritchie & Roser (2019), OurWorldInData.org') +
   theme(line = element_blank(),
         panel.background = element_rect(fill = NA),
         plot.background = element_rect(fill = NA, color = NA),

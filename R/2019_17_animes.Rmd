@@ -11,10 +11,10 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(ggrepel)
@@ -75,7 +75,7 @@ ghibli_scores <- df_ghibli_unique %>%
                           labels = c("  1,000", " 10,000", "100,000", "250,000", "500,000")) +
     guides(size = guide_legend(override.aes = list(alpha = 1))) +
     labs(x = "Average MAL user score", y = "Number of ratings",
-         caption = "\nVisualization by @CedScherer  |  Picture credit: Studio Ghibli, Inc & MangoKingoroo") +
+         caption = "\nVisualization by Cédric Scherer  |  Picture credit: Studio Ghibli, Inc & MangoKingoroo") +
     annotation_custom(b, xmin = 5, xmax = 8, ymin = 400000, ymax = 600000) +
     theme(axis.text = element_text(family = "Roboto Mono"),
           legend.position = c(0.32, 0.4),

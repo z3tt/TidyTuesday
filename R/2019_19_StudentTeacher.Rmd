@@ -11,10 +11,10 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(egg)
@@ -158,7 +158,7 @@ map_country <- df_students_tile %>%
           legend.text = element_text(family = "Roboto Mono", size = 9),
           panel.border = element_rect(colour = "grey20"),
           strip.background = element_rect(colour = "grey20")) +
-    labs(caption = '\nVisualization by @CedScherer  |  Data: "eAtlas of Teachers" by UNESCO', x = NULL, y = NULL)
+    labs(caption = '\nVisualization by Cédric Scherer  |  Data: "eAtlas of Teachers" by UNESCO', x = NULL, y = NULL)
 ```
 
 ```{r title}
@@ -207,7 +207,7 @@ maps_facet <- df_students_tile %>%
           legend.text = element_text(family = "Roboto Mono", size = 9),
           panel.border = element_rect(colour = "grey20"),
           strip.background = element_rect(colour = "grey20")) +
-    labs(caption = '\nVisualization by @CedScherer  |  Data: "eAtlas of Teachers" by UNESCO', x = "", y = NULL)
+    labs(caption = '\nVisualization by Cédric Scherer  |  Data: "eAtlas of Teachers" by UNESCO', x = "", y = NULL)
 
 title_facet <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,

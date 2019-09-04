@@ -11,10 +11,10 @@ editor_options:
 ---
   
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(patchwork)
@@ -87,8 +87,6 @@ p_stellar <-
     geom_path(size = 1, alpha = 0.6) +
     geom_point(data = df_outcomes_stats %>% 
                  filter(winner == 0), size = 4) +
-    #geom_point(data = df_outcomes_stats %>% 
-    #               filter(winner == 0), size = 15, shape = "*") +
     geom_point(data = df_outcomes_stats %>% 
                    filter(winner == 1), 
                aes(points_sum, scores), size = 15, shape = "★") +
@@ -106,7 +104,7 @@ p_stellar <-
           panel.border = element_blank(),
           plot.caption = element_text(size = 15, family = "Passion One", color = "grey20")) +
     labs(x = "\nPoints scored →", y = "\nGoals scored →",
-         caption = "\nVisualization by @CedScherer  |  Data: data.world     \n\n\n\n\n")
+         caption = "\nVisualization by Cédric Scherer  |  Data: data.world     \n\n\n\n\n")
 
 ## colored text legend  
 p_legend <- 
@@ -142,7 +140,7 @@ p_title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
         axis.text = element_blank())
 ```
 
-```{r full-panel, fig.width = 14, fig.height = 5.7}
+```{r full-panel, fig.width = 21, fig.height = 36}
 (p_title / p_legend / p_stellar + plot_layout(heights = c(0, 0.08, 1)))
 
 ggsave("./plots/2019_28/2019_28_FIFA_WWCs_stellar.pdf", width = 21, height = 36, device = cairo_pdf)
@@ -157,8 +155,6 @@ p_stellar_clean <-
     geom_path(size = 1, alpha = 0.6) +
     geom_point(data = df_outcomes_stats %>% 
                  filter(winner == 0), size = 4) +
-    #geom_point(data = df_outcomes_stats %>% 
-    #               filter(winner == 0), size = 15, shape = "*") +
     geom_point(data = df_outcomes_stats %>% 
                    filter(winner == 1), 
                aes(points_sum, scores), size = 15, shape = "★") +
@@ -175,7 +171,7 @@ p_stellar_clean <-
           panel.border = element_rect(color = "transparent"),
           plot.caption = element_text(size = 15, family = "Passion One", color = "grey20")) +
     labs(x = "\nPoints scored →", y = "\nGoals scored →",
-         caption = "\nVisualization by @CedScherer  |  Data: data.world     \n\n\n\n\n")
+         caption = "\nVisualization by Cédric Scherer  |  Data: data.world     \n\n\n\n\n")
 ```
 
 ```{r full-panel-clean, fig.width = 14, fig.height = 5.7}

@@ -11,10 +11,10 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(ggthemes)
@@ -53,7 +53,7 @@ p1 <- df_trade %>%
     labs(x = NULL, y = NULL, 
          title = "",
          subtitle = "\n", 
-         caption = "\nVisualization by @CedScherer  |  Sources: US Census Bureau; BLS") +
+         caption = "\nVisualization by Cédric Scherer  |  Sources: US Census Bureau; BLS") +
     theme_economist() +
     theme(text = element_text(family = "Open Sans"), 
           axis.text = element_text(size = 12),
@@ -99,7 +99,7 @@ p2 <- df_research %>%
     scale_fill_manual(values = c("firebrick4", "turquoise4", "dodgerblue3"), name = NULL) +
     guides(color = guide_legend(override.aes = list(size = 4))) +
     labs(x = NULL, y = NULL, title = "", subtitle = "\n\n", 
-         caption = '\nSources: "Gender in the Global Research Landscape" by Elsevier; The Economist\nVisualization by @CedScherer') +
+         caption = '\nSources: "Gender in the Global Research Landscape" by Elsevier; The Economist\nVisualization by Cédric Scherer') +
     theme_economist() +
     theme(text = element_text(family = "Open Sans"), 
           axis.text = element_text(size = 14),

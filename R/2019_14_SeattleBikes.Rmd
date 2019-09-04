@@ -11,10 +11,10 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(lubridate)
@@ -110,7 +110,7 @@ bikes_month <- df_bikes_month %>%
                                               title.hjust = 0.5, label.hjust = 0.5)) +
     facet_grid(term ~ crossing) +
     labs(x = "Hour of the day", y = NULL,
-         caption = "Visualization by @CedScherer") +
+         caption = "Visualization by Cédric Scherer") +
     theme(strip.text = element_text(face = "plain", size = 10, angle = 0),
           panel.spacing.x = unit(10, "pt"), 
           axis.text.x = element_text(family = "Roboto Mono", size = 8),
@@ -174,7 +174,7 @@ bikes_season <- df_bikes_grouped %>%
                                                 title.hjust = 0.5, label.hjust = 0.5)) +
     facet_grid(season ~ crossing, switch = "y") +
     labs(x = "Hour of the day", y = NULL,
-         caption = "Visualization by @CedScherer") +
+         caption = "Visualization by Cédric Scherer") +
     theme(strip.text.x = element_text(face = "plain", size = 10, angle = 0),
           strip.text.y = element_text(face = "plain", size = 10, angle = 180),
           strip.background = element_rect(fill = "grey20", color = "transparent"),

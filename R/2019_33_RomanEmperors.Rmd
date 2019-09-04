@@ -11,10 +11,10 @@ editor_options:
 ---
   
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(lubridate)
@@ -99,7 +99,7 @@ df_emperors %>%
           plot.subtitle = element_text(family = "Cinzel")) +
     labs(x = NULL, y = NULL, title = "The Emperors of Rome",
          subtitle = "\nTimeline of roman emperors, start of each reign and their cause of death.\nThe darker the circles, the more emperors were reigning during this period.",
-         caption = "\nVisualization by @CedScherer  |  Data: Wikipedia")
+         caption = "\nVisualization by Cédric Scherer  |  Data: Wikipedia")
 
 ggsave("./plots/2019_33/2019_33_RomanEmperors.pdf", width = 7, height = 22, device = cairo_pdf)
 ```

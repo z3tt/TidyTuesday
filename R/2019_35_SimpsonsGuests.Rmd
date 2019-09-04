@@ -11,10 +11,10 @@ editor_options:
 ---
   
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
-```{r prep, message=FALSE, warning=FALSE}
+```{r prep, message=FALSE}
 ## packages
 library(tidyverse)
 library(ggtext)
@@ -165,7 +165,7 @@ legend <-
 caption <- 
   ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
-       caption = "Visualization by @CedScherer  |  Source: Wikipedia  |  Image  Copyright: Matt Groening & 20th Century Fox                                                   ") +
+       caption = "Visualization by Cédric Scherer  |  Source: Wikipedia  |  Image  Copyright: Matt Groening & 20th Century Fox                                                   ") +
   theme(line = element_blank(),
         panel.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", 
