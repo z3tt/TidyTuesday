@@ -11,7 +11,7 @@ editor_options:
 ---
   
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = F)
 ```
 
 ```{r prep, message=FALSE, warning=FALSE}
@@ -87,7 +87,6 @@ labels <- tibble(
 
 plot <- 
   df_moore_all %>% 
-  #filter(type == "cpu") %>% 
   mutate(year_cum = date_of_introduction %/% 2 * 2) %>% 
   group_by(type, year_cum) %>% 
   mutate(
@@ -95,10 +94,17 @@ plot <-
     max = max(transistor_count, na.rm = T)
   ) %>% 
   ggplot(aes(year_cum, transistor_count)) +
-    geom_text(aes(label = type, x = 1990, y = 1.5*10^11), 
+    ## centered in-plot striptext
+    #geom_text(aes(label = type, x = 1990, y = 1.5*10^11), 
+    #          color = "grey16",
+    #          family = "Montserrat Black",
+    #          size = 28) +
+    ## left-alligned in-plot striptext
+    geom_text(aes(label = type, x = 1961, y = 1.5*10^11), 
               color = "grey16",
               family = "Montserrat Black",
-              size = 28) +
+              size = 27,
+              hjust = 0) +
     geom_segment(aes(x = year_cum, xend = year_cum, 
                      y = min, yend = max), 
                  size = 2.5,
@@ -132,13 +138,14 @@ plot <-
     scale_x_continuous(breaks = seq(1962, 2018, by = 8)) +
     scale_y_log10(breaks = c(1, 10^3, 10^6, 10^9, 10^12),
                   labels = scales::comma) +
-    coord_cartesian(ylim = c(1, 2*10^12)) +
+    coord_cartesian(xlim = c(1962, 2018), ylim = c(1, 2*10^12), clip = "off") +
     facet_grid(~ type) +
     theme(axis.text = element_text(family = "Roboto Mono",
                                    size = 10),
           axis.title.y = element_text(family = "Montserrat", 
                                       face = "plain",
-                                      size = 13),
+                                      size = 13,
+                                      color = "grey85"),
           strip.text = element_blank(),
           strip.background = element_blank(),
           panel.spacing.x = unit(12, "pt")) +
@@ -150,7 +157,7 @@ plot <-
 title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
        title = "MOORE'S LAW", 
-       subtitle = "*Moore's law* is the observation that the **number of transistors** in a dense integrated circuit **doubles about every two years**.<br>The observation is named after Gordon Moore, the co-founder of Fairchild Semiconductor and CEO of Intel.<br>")+
+       subtitle = "*Moore's law* is the observation that the **number of transistors** in a dense integrated circuit **doubles about every two years**.<br>The observation is named after *Gordon E. Moore*, the co-founder of Fairchild Semiconductor and CEO of Intel.<br>")+
   theme(line = element_blank(),
         panel.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", color = "transparent"),
@@ -158,10 +165,10 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
         axis.text = element_blank(),
         plot.title = element_text(family = "Montserrat Black", 
                                   size = 30, 
-                                  color = "white"),
+                                  color = "grey95"),
         plot.subtitle = element_markdown(family = "Montserrat", 
                                          size = 10, 
-                                         color = "grey80",
+                                         color = "grey85",
                                          lineheight = 1.25))
 ```
 
@@ -169,7 +176,7 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 caption <- 
   ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
-       caption = "\nVisualization by @CedScherer  |  Source: Wikipedia") +
+       caption = "\nVisualization by Cédric Scherer  |  Source: Wikipedia") +
   theme(line = element_blank(),
         panel.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", 
@@ -178,7 +185,7 @@ caption <-
         axis.text = element_blank(),
         plot.caption = element_text(family = "Montserrat", 
                                     size = 9, 
-                                    color = "grey80"))
+                                    color = "grey85"))
 ```
 
 ```{r full-panel, fig.width = 14, fig.height = 5.8}
