@@ -21,7 +21,7 @@ library(ggtext)
 library(patchwork)
 
 ## ggplot theme updates
-source("./theme/tidy_grey.R")
+source(here::here("theme", "tidy_grey.R"))
 ```
 
 ```{r data}
@@ -80,7 +80,7 @@ labels <- tibble(
   y1 = c(3.3*10^7, 1.3*10^9, 7000),
   y2 = c(12000000, 2*10^8, 32000),
   type = rep("CPU", 3),
-  text = c("**Expected** number of transistors<br>according to **Moore's Law**",
+  text = c("**Predicted** number of transistors<br>according to **Moore's Law**",
            "**Maximum** number of transistors<br>in the respective 2-year period",
            "**Minimum** number of transistors<br>in the respective 2-year period")
 )
@@ -191,7 +191,94 @@ caption <-
 ```{r full-panel, fig.width = 14, fig.height = 5.8}
 title + plot + caption + plot_layout(nrow = 1, widths = c(0, 1, 0))
 
-ggsave("./plots/2019_36/2019_36_MooresLaw.pdf", 
+ggsave(here::here("plots", "2019_36", "2019_36_MooresLaw.pdf"), 
+       width = 14, height = 5.8, device = cairo_pdf)
+```
+
+## 2nd version with prediction as twice the previous maximum
+
+```{r second-version}
+labels_double <- tibble(
+  x1 = c(1982, 1992, 1988, 2005, 1979),
+  x2 = c(1990, 1999.8, 1980.2, 2013.8, 1969.9),
+  y1 = c(3.3*10^7, 8*10^8, 700, 10^10, 30),
+  y2 = c(2360470, 2*10^8, 11500, 10^10, 2250),
+  type = rep("CPU", 5),
+  text = c("**Predicted** transistor count =<br>twice the maximum count of<br>the previous 2-year period",
+           "Maximum transistor count<br>**higher** than predicted",
+           "Maximum transistor count<br>**lower** than predicted",
+           "Maximum transistor count<br>**exactly** as predicted",
+           "No prediction possible")
+)
+
+plot_double <- 
+  df_moore_all %>% 
+  mutate(year_cum = date_of_introduction %/% 2 * 2) %>% 
+  group_by(type, year_cum) %>% 
+  summarize(max = max(transistor_count, na.rm = T)) %>% 
+  group_by(type) %>% 
+  complete(year_cum = seq(1962, 2018, by = 2)) %>% 
+  mutate(
+    exp = lag(max) * 2,
+    exp = if_else(is.na(exp), max, exp),
+    exp = if_else(exp < lag(exp), lag(exp), exp),
+    comp = case_when(
+      max > exp ~ "higher", 
+      max == exp ~ "equal",
+      max < exp ~ "lower",
+      is.na(exp) ~ "not known"
+    )
+  ) %>% 
+  ggplot(aes(year_cum, max)) +
+    geom_text(aes(label = type, x = 1961, y = 1.5*10^11), 
+              color = "grey16",
+              family = "Montserrat Black",
+              size = 27,
+              hjust = 0) +
+    geom_segment(aes(x = year_cum, xend = year_cum, 
+                     y = exp, yend = max, 
+                     color = comp),
+                 size = 0.3) + 
+    geom_curve(data = labels_double, 
+               aes(x = x1, y = y1, xend = x2, yend = y2), 
+               size = 0.3, 
+               color = c("grey60", "#30d59f", "#ffc04d", "#9f30d5", "grey80"),
+               linetype = "dotted",
+               curvature = -0.3) +
+    geom_richtext(data = labels_double, 
+                  aes(x = x1, y = y1, label = text),
+                  color = c("grey60", "#30d59f", "#ffc04d", "#9f30d5", "grey80"),
+                  family = "Montserrat",
+                  size = 2,
+                  fill = NA, 
+                  label.color = NA,
+                  hjust = c(1, 1, 0, 1, 0)) +
+    geom_point(aes(year_cum, exp), 
+               color = "grey60",
+               fill = "grey20",
+               shape = 21,
+               size = 2) +
+    geom_point(aes(color = comp), size = 1.5) +
+    scale_x_continuous(breaks = seq(1962, 2018, by = 8)) +
+    scale_y_log10(breaks = c(1, 10^3, 10^6, 10^9, 10^12),
+                  labels = scales::comma) +
+    scale_color_manual(guide = F, values = c("#9f30d5", "#30d59f", "#ffc04d", "grey80")) +
+    facet_grid(~ type) +
+    coord_cartesian(xlim = c(1962, 2018), ylim = c(1, 2*10^12), clip = "off") +
+    theme(axis.text = element_text(family = "Roboto Mono",
+                                   size = 10),
+          axis.title.y = element_text(family = "Montserrat", 
+                                      face = "plain",
+                                      size = 13,
+                                      color = "grey85"),
+          strip.text = element_blank(),
+          strip.background = element_blank(),
+          panel.spacing.x = unit(12, "pt")) +
+    labs(x = NULL, y = "Number of Transistors")
+
+title + plot_double + caption + plot_layout(nrow = 1, widths = c(0, 1, 0))
+
+ggsave(here::here("plots", "2019_36", "2019_36_MooresLaw_double.pdf"), 
        width = 14, height = 5.8, device = cairo_pdf)
 ```
 
