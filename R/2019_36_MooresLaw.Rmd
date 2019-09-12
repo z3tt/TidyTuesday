@@ -199,16 +199,16 @@ ggsave(here::here("plots", "2019_36", "2019_36_MooresLaw.pdf"),
 
 ```{r double-version, fig.width = 14, fig.height = 5.8}
 labels_double <- tibble(
-  x1 = c(1982, 1992, 1988, 2005, 1979),
-  x2 = c(1990, 1999.8, 1980.2, 2013.8, 1969.9),
-  y1 = c(3.3*10^7, 8*10^8, 700, 10^10, 30),
+  x1 = c(1982, 1991.5, 1988, 2004.7, 1979),
+  x2 = c(1990, 1999.9, 1980, 2013.8, 1970),
+  y1 = c(3.3*10^7, 9*10^8, 500, 1.2*10^10, 8),
   y2 = c(2360470, 2*10^8, 11500, 10^10, 2250),
   type = rep("CPU", 5),
   text = c("**Predicted** transistor count =<br>twice the maximum count of<br>the previous 2-year period",
            "Maximum transistor count<br>**higher** than predicted",
            "Maximum transistor count<br>**lower** than predicted",
            "Maximum transistor count<br>**exactly** as predicted",
-           "No prediction possible")
+           "No prediction possible because<br>no data in previous 2-year period")
 )
 
 plot_double <- 
