@@ -11,7 +11,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
 ```{r prep, message=FALSE}
@@ -22,7 +22,7 @@ library(patchwork)
 library(ggsci)
 
 ## ggplot theme updates
-source("./theme/tidy_grey.R")
+source(here::here("theme", "tidy_grey.R"))
 ```
 
 ```{r data}
@@ -79,10 +79,10 @@ df_light <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/t
 
 ```{r}
 ## collision per light intensity and species (2000-2016)
-img_a <- png::readPNG("./img/ChigacoNight.png") 
+img_a <- png::readPNG(here::here("img", "ChigacoNight.png"))
 chicago <- grid::rasterGrob(img_a, interpolate = T) 
 
-img_b <- png::readPNG("./img/zonotrichia_albicollis.png") 
+img_b <- png::readPNG(here::here("img", "zonotrichia_albicollis.png"))
 zonoalbi <- grid::rasterGrob(img_b, interpolate = T)  
 
 (birds_light <- df_collisions %>% 
@@ -143,7 +143,8 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 ## save as panel
 title + birds_fams + birds_light + plot_layout(width = c(0, 1, 0.7))
 
-ggsave("./plots/2019_18/2019_18_BirdCollisions.pdf", width = 14, height = 5.2, device = cairo_pdf)
+ggsave(here::here("plots", "2019_18", "2019_18_BirdCollisions.pdf"), 
+       width = 14, height = 5.2, device = cairo_pdf)
 ```
 
 ***

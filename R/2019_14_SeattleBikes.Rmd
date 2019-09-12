@@ -11,7 +11,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
 ```{r prep, message=FALSE}
@@ -22,7 +22,7 @@ library(RColorBrewer)
 library(patchwork)
 
 ## ggplot theme updates
-source("./theme/tidy_grey.R")
+source(here::here("theme", "tidy_grey.R"))
 ```
 
 ```{r data}
@@ -98,16 +98,15 @@ bikes_month <- df_bikes_month %>%
                                   "12", "", "", "", "", "",
                                   "18", "", "", "", "", "", "24")) +
     scale_y_discrete(expand = c(0, 0)) +
-    #scale_fill_carto_c(palette = "TealRose", name = "BHourly bike count relative to yearly mean per crossing", 
     scale_fill_distiller(palette = "RdYlGn", name = "Hourly bike count relative to yearly mean per crossing",
-                       limits = c(-1, 2.5),
-                       breaks = seq(-1, 2.5, by = 0.5), 
-                       labels = c("-1.0", "-0.5", "0.0", "0.5", "1.0", "1.5", "2.0", "\u22652.5"),
-                       guide = guide_colorbar(direction = "horizontal",
-                                              barheight = unit(2, units = "mm"), 
-                                              barwidth = unit(120, units = "mm"),
-                                              draw.ulim = FALSE, title.position = 'top',
-                                              title.hjust = 0.5, label.hjust = 0.5)) +
+                         limits = c(-1, 2.5),
+                         breaks = seq(-1, 2.5, by = 0.5), 
+                         labels = c("-1.0", "-0.5", "0.0", "0.5", "1.0", "1.5", "2.0", "\u22652.5"),
+                         guide = guide_colorbar(direction = "horizontal",
+                                                barheight = unit(2, units = "mm"), 
+                                                barwidth = unit(120, units = "mm"),
+                                                draw.ulim = FALSE, title.position = 'top',
+                                                title.hjust = 0.5, label.hjust = 0.5)) +
     facet_grid(term ~ crossing) +
     labs(x = "Hour of the day", y = NULL,
          caption = "Visualization by Cédric Scherer") +
@@ -134,7 +133,8 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 ## full panel
 title + bikes_month + plot_layout(width = c(0, 1))
 
-ggsave("./plots/2019_14/2019_14_SeattleBikes_month.pdf", width = 14, height = 4.75, device = cairo_pdf)
+ggsave(here::here("plots", "2019_14", "2019_14_SeattleBikes_month.pdf"), 
+       width = 14, height = 4.75, device = cairo_pdf)
 ```
 
 ```{r plot-season, fig.width = 14, fig.heigth = 5}
@@ -201,7 +201,8 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 title + bikes_season + plot_layout(width = c(0, 1))
 
 
-ggsave("./plots/2019_14/2019_14_SeattleBikes_season.pdf", width = 14, height = 5, device = cairo_pdf)
+ggsave(here::here("plots", "2019_14", "2019_14_SeattleBikes_season.pdf"), 
+       width = 14, height = 5, device = cairo_pdf)
 ```
 
 ***

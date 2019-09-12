@@ -21,8 +21,7 @@ library(ggtext)
 library(patchwork)
 
 ## ggplot theme updates
-source("./theme/tidy_grey.R")
-
+source(here::here("theme", "tidy_grey.R"))
 theme_update(rect = element_rect(color = NA, 
                                  fill = "#FFCC00"),
              line = element_blank(),
@@ -177,7 +176,8 @@ caption <-
 ```{r full-panel, fig.width = 16, fig.height = 24}
 legend + ranks + caption + plot_layout(ncol = 1, heights = c(0.25, 1, 0))
 
-ggsave("./plots/2019_35/2019_35_SimpsonsGuests.pdf", width = 16, height = 24, device = cairo_pdf)
+ggsave(here::here("plots", "2019_35", "2019_35_SimpsonsGuests.pdf"), 
+       width = 16, height = 24, device = cairo_pdf)
 ```
 
 ***

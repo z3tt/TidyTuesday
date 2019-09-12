@@ -11,7 +11,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
 ```{r prep, message=FALSE}
@@ -24,7 +24,7 @@ library(patchwork)
 library(cowplot)
 
 ## ggplot theme updates
-source("./theme/tidy_grey.R")
+source(here::here("theme", "tidy_grey.R"))
 ```
 
 ```{r data}
@@ -162,7 +162,8 @@ caption <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 title + bar_waste + map_waste_prop + bar_mismanaged + caption +
   plot_layout(widths = c(0, 0.27, 1, 0.25, 0), nrow = 1)
 
-ggsave("./plots/2019_21/2019_21_PlasticWaste.pdf", width = 14, height = 5.2, device = cairo_pdf)
+ggsave(here::here("plots", "2019_21", "2019_21_PlasticWaste.pdf"), 
+       width = 14, height = 5.2, device = cairo_pdf)
 ```
 
 ***

@@ -11,7 +11,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
 ```{r prep, message=FALSE}
@@ -23,7 +23,7 @@ library(LaCroixColoR)
 library(patchwork)
 
 ## ggplot theme updates
-source("./theme/tidy_grey.R")
+source("../theme/tidy_grey.R")
 ```
 
 ```{r data}
@@ -178,7 +178,7 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 ## full panel
 title + lolli_country + map_country + plot_layout(width = c(0, 1, 0.8))
 
-ggsave("./plots/2019_19/2019_19_StudentTeacher.pdf", width = 14, height = 5.5, device = cairo_pdf)
+ggsave("../plots/2019_19/2019_19_StudentTeacher.pdf", width = 14, height = 5.5, device = cairo_pdf)
 ```
 
 ## Version 2: Facet with All Levels of Education
@@ -223,7 +223,8 @@ title_facet <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 ```{r full-panel-2, fig.width = 14, fig.height = 5.4}
 title_facet + maps_facet + plot_layout(widths = c(0, 1))
 
-ggsave("./plots/2019_19/2019_19_StudentTeacher_facet.pdf", width = 14, height = 5.5, device = cairo_pdf)
+ggsave(here::here("plots", "2019_19", "2019_19_StudentTeacher_facet.pdf"), 
+       width = 14, height = 5.5, device = cairo_pdf)
 ```
 
 ***

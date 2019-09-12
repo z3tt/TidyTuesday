@@ -23,7 +23,7 @@ library(showtext)
 library(patchwork)
 
 ## ggplot theme updates
-source("./theme/tidy_grey.R")
+source(here::here("theme", "tidy_grey.R"))
 
 ## add fonts via showtext (extrafont and emojifont do not worl together)
 font_add_google("Poppins", "Poppins")
@@ -97,7 +97,8 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 ## full panel
 title + tile_gender + plot_layout(width = c(0, 1))
 
-ggsave("./plots/2019_20/2019_20_NobelPrizeWinners.pdf", width = 14, height = 5.2, device = cairo_pdf)
+ggsave(here::here("plots", "2019_20", "2019_20_NobelPrizeWinners.pdf"), 
+       width = 14, height = 5.2, device = cairo_pdf)
 ```
 
 ***

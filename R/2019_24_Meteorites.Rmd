@@ -11,7 +11,7 @@ editor_options:
 ---
   
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
 ```{r prep, message=FALSE}
@@ -21,7 +21,7 @@ library(patchwork)
 library(showtext)
 
 ## ggplot theme updates
-source("./theme/tidy_grey.R")
+source(here::here("theme", "tidy_grey.R"))
 theme_update(rect = element_rect(fill = "black", color = "black"))
 
 ## add spacy font
@@ -180,7 +180,8 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   theme(panel.grid.major = element_line(color = "#153915"),
         panel.grid.minor = element_line(color = "#002700")) 
 
-ggsave("./plots/2019_24/2019_24_Meteorites.pdf", width = 14, height = 5.3, device = cairo_pdf)
+ggsave(here::here("plots", "2019_24", "2019_24_Meteorites.pdf"), 
+       width = 14, height = 5.3, device = cairo_pdf)
 ```
 
 ***

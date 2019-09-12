@@ -22,7 +22,7 @@ library(lemon)
 library(showtext)
 
 ## ggplot theme updates
-source("./theme/tidy_grey.R")
+source(here::here("theme", "tidy_grey.R"))
 theme_update(rect = element_rect(fill = "#001a33"),
              strip.background = element_rect(fill = "#001a33", colour = "transparent"), 
              plot.margin = margin(0, 80, 10, 80),
@@ -96,13 +96,19 @@ p_stellar <-
     rcartocolor::scale_color_carto_c(palette = "Emrld", direction = -1, guide = F) +
     coord_capped_cart(bottom = "both", left = "both") +
     theme(axis.text = element_text(color = "grey20", family = "Roboto Mono"),
-          axis.title.x = element_text(size = 18, hjust = 0, family = "Passion One", color = "grey30", face = "plain"),
-          axis.title.y = element_text(size = 18, hjust = 0, family = "Passion One", color = "grey30", face = "plain"),
+          axis.title.x = element_text(size = 18, hjust = 0, 
+                                      family = "Passion One", 
+                                      color = "grey30", face = "plain"),
+          axis.title.y = element_text(size = 18, hjust = 0, 
+                                      family = "Passion One", 
+                                      color = "grey30", face = "plain"),
           axis.ticks = element_line(color = "grey20"),
           axis.line = element_line(color = "grey20"),
-          strip.text = element_text(size = 18, vjust = 1, face = "plain", family = "Passion One", color = "grey30"),
+          strip.text = element_text(size = 18, vjust = 1, face = "plain", 
+                                    family = "Passion One", color = "grey30"),
           panel.border = element_blank(),
-          plot.caption = element_text(size = 15, family = "Passion One", color = "grey20")) +
+          plot.caption = element_text(size = 15, family = "Passion One", 
+                                      color = "grey20")) +
     labs(x = "\nPoints scored →", y = "\nGoals scored →",
          caption = "\nVisualization by Cédric Scherer  |  Data: data.world     \n\n\n\n\n")
 
@@ -114,13 +120,15 @@ p_legend <-
            year = seq(1987, 2019, by = 4)
     ), aes(x, y, color = year, label = as.character(year))) +
     geom_text(size = 10, family = "Roboto Mono", fontface = "bold") +
-    rcartocolor::scale_color_carto_c(palette = "Emrld", direction = -1, guide = F) +
+    rcartocolor::scale_color_carto_c(palette = "Emrld", 
+                                     direction = -1, guide = F) +
     scale_x_continuous(limits = c(2.5, 29)) +
     theme(line = element_blank(),
           axis.title = element_blank(),
           plot.title = element_text(hjust = 0.5),
           panel.background = element_rect(fill = "transparent"),
-          plot.background = element_rect(fill = "transparent", color = "transparent"),
+          plot.background = element_rect(fill = "transparent", 
+                                         color = "transparent"),
           panel.border = element_rect(color = "transparent"),
           axis.text = element_blank())
 
@@ -131,11 +139,19 @@ p_title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
        subtitle = "Number of goals and points scored per national team and FIFA World Cup.\n",
        caption = "\nStats are shown for all tournament matches excluding third place playoffs.\nStars indicate world champions, scored points are calculated based on the 3-1-0 scheme.") +
   theme(line = element_blank(),
-        plot.title = element_text(size = 50, hjust = 0.5, family = "Passion One", lineheight = 0.5, face = "bold"),
-        plot.subtitle = element_text(size = 25, hjust = 0.5, family = "Passion One", lineheight = 0.5, color = "grey60"),
-        plot.caption = element_text(size = 15, hjust = 0.5, color = "grey30", family = "Passion One"),
+        plot.title = element_text(size = 50, hjust = 0.5, 
+                                  family = "Passion One", 
+                                  lineheight = 0.5, face = "bold"),
+        plot.subtitle = element_text(size = 25, hjust = 0.5, 
+                                     family = "Passion One", 
+                                     lineheight = 0.5, 
+                                     color = "grey60"),
+        plot.caption = element_text(size = 15, hjust = 0.5, 
+                                    color = "grey30", 
+                                    family = "Passion One"),
         panel.background = element_rect(fill = "transparent"),
-        plot.background = element_rect(fill = "transparent", color = "transparent"),
+        plot.background = element_rect(fill = "transparent", 
+                                       color = "transparent"),
         panel.border = element_rect(color = "transparent"),
         axis.text = element_blank())
 ```
@@ -143,7 +159,8 @@ p_title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 ```{r full-panel, fig.width = 21, fig.height = 36}
 (p_title / p_legend / p_stellar + plot_layout(heights = c(0, 0.08, 1)))
 
-ggsave("./plots/2019_28/2019_28_FIFA_WWCs_stellar.pdf", width = 21, height = 36, device = cairo_pdf)
+ggsave(here::here("plots", "2019_28", "2019_28_FIFA_WWCs_stellar.pdf"), 
+       width = 21, height = 36, device = cairo_pdf)
 ```
 
 --------
@@ -177,7 +194,8 @@ p_stellar_clean <-
 ```{r full-panel-clean, fig.width = 14, fig.height = 5.7}
 (p_title / p_legend / p_stellar_clean + plot_layout(heights = c(0, 0.08, 1)))
 
-ggsave("./plots/2019_28/2019_28_FIFA_WWCs_stellar_clean.pdf", width = 21, height = 36, device = cairo_pdf)
+ggsave(here::here("plots", "2019_28", "2019_28_FIFA_WWCs_stellar_clean.pdf"), 
+       width = 21, height = 36, device = cairo_pdf)
 ```
 
 ***

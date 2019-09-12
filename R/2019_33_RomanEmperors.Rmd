@@ -22,7 +22,7 @@ library(ggrepel)
 library(showtext)
 
 ## ggplot theme updates
-source("./theme/tidy_grey.R")
+source(here::here("theme", "tidy_grey.R"))
 theme_update(line = element_blank(),
              rect = element_rect(fill = "#f7f5ee", color = "transparent"),
              panel.border = element_blank(),
@@ -101,7 +101,8 @@ df_emperors %>%
          subtitle = "\nTimeline of roman emperors, start of each reign and their cause of death.\nThe darker the circles, the more emperors were reigning during this period.",
          caption = "\nVisualization by Cédric Scherer  |  Data: Wikipedia")
 
-ggsave("./plots/2019_33/2019_33_RomanEmperors.pdf", width = 7, height = 22, device = cairo_pdf)
+ggsave(here::here("plots", "2019_33", "2019_33_RomanEmperors.pdf"), 
+       width = 7, height = 22, device = cairo_pdf)
 ```
 
 ***

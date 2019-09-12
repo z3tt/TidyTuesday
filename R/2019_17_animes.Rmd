@@ -11,7 +11,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
 ```{r prep, message=FALSE}
@@ -22,7 +22,7 @@ library(patchwork)
 library(ghibli)
 
 ## ggplot theme updates
-source("./theme/tidy_grey.R")
+source(here::here("theme", "tidy_grey.R"))
 ```
 
 ```{r data}
@@ -32,7 +32,7 @@ df_ghibli <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/
 ```
 
 ```{r plot-genres}
-img_a <- png::readPNG("./img/totoro.png") 
+img_a <- png::readPNG(here::here("img", "totoro.png")) 
 a <- grid::rasterGrob(img_a, interpolate = T) 
 
 ghibli_genres <- df_ghibli %>% 
@@ -53,7 +53,7 @@ ghibli_genres <- df_ghibli %>%
 ```
 
 ```{r plot-ratings}
-img_b <- png::readPNG("./img/ghibli.png") 
+img_b <- png::readPNG(here::here("img", "ghibli.png"))
 b <- grid::rasterGrob(img_b, interpolate = T) 
 
 set.seed(1)
@@ -102,7 +102,8 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 ## full panel
 title + ghibli_genres + ghibli_scores + plot_layout(width = c(0, 1, 1))
 
-ggsave("./plots/2019_17/2019_17_animes.png", width = 14, height = 5.1, dpi = 300)
+ggsave(here::here("plots", "2019_17", "2019_17_animes.png"), 
+       width = 14, height = 5.1, dpi = 300)
 ```
 
 ***
