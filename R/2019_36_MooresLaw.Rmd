@@ -223,6 +223,7 @@ plot_double <-
     exp = if_else(is.na(exp), max, exp),
     exp = if_else(exp < lag(exp), lag(exp), exp),
     exp = if_else(is.na(max), NA_real_, exp),
+    exp = if_else(is.na(lag(max)), NA_real_, exp),
     comp = case_when(
       max > exp ~ "higher", 
       max == exp ~ "equal",
