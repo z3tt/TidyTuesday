@@ -197,7 +197,7 @@ ggsave(here::here("plots", "2019_36", "2019_36_MooresLaw.pdf"),
 
 ## 2nd version with prediction as twice the previous maximum
 
-```{r second-version}
+```{r double-version, fig.width = 14, fig.height = 5.8}
 labels_double <- tibble(
   x1 = c(1982, 1992, 1988, 2005, 1979),
   x2 = c(1990, 1999.8, 1980.2, 2013.8, 1969.9),
@@ -222,6 +222,7 @@ plot_double <-
     exp = lag(max) * 2,
     exp = if_else(is.na(exp), max, exp),
     exp = if_else(exp < lag(exp), lag(exp), exp),
+    exp = if_else(is.na(max), NA_real_, exp),
     comp = case_when(
       max > exp ~ "higher", 
       max == exp ~ "equal",
