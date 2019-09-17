@@ -3,7 +3,6 @@ My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascie
 Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
 ### [Week 2019/36](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_36)️ 🖥️ Moore's Law by [Wikipedia](https://en.wikipedia.org/wiki/Transistor_count)
-![./plots/2019_36/2019_36_MooresLaw.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_36/2019_36_MooresLaw.png)
 ![./plots/2019_36/2019_36_MooresLaw_double.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_36/2019_36_MooresLaw_double.png)
 <br/><br/>
 
@@ -50,7 +49,6 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ### [Week 2019/19](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_19)️ 👨‍🏫 Global Student to Teachers Ratios by [UNESCO's "eAtlas of Teachers"](http://data.uis.unesco.org/index.aspx?queryid=180)
 ![./plots/2019_19/2019_19_StudentTeacher.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_19/2019_19_StudentTeacher.png)
-![./plots/2019_19/2019_19_StudentTeacher_facet.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_19/2019_19_StudentTeacher_facet.png)
 <br/><br/>  
 
 ### [Week 2019/18](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_18)️ 🏨🐦 Chicago Bird Collisions by [Winger et al, 2019](https://doi.org/10.1098/rspb.2019.0364)
