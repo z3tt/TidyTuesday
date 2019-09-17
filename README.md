@@ -8,7 +8,7 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 <br/><br/>
 
 ### Week 2019/35 💛 Simpsons Guest Stars by [Wikipedia](https://en.wikipedia.org/wiki/List_of_The_Simpsons_guest_stars)
-![./plots/2019_35/2019_35_SimpsonsGuests.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_35/2019_35_SimpsonsGuests.png)
+![./plots/2019_35/2019_35_SimpsonsGuests_sd.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_35/2019_35_SimpsonsGuests_sd.png)
 <br/><br/>
 
 ### Week 2019/34 ☢️ Nuclear Explosions by [SIPRI](https://github.com/data-is-plural/nuclear-explosions/blob/master/documents/sipri-report-original.pdf)
@@ -16,12 +16,12 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 <br/><br/>
 
 ### Week 2019/33 🌿 Roman Emperors by [Wikipedia](https://en.wikipedia.org/wiki/List_of_Roman_emperors)
-![./plots/2019_33/2019_33_RomanEmperors.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_33/2019_33_RomanEmperors.png)
+![./plots/2019_33/2019_33_RomanEmperors_sd.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_33/2019_33_RomanEmperors_sd.png)
 <br/><br/>
 
 ### Week 2019/28 ⚽ FIFA Women's World Cup by [data.world](https://data.world/sportsvizsunday/womens-world-cup-data)
 ![./plots/2019_28/2019_28_FIFA_WWCs.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_28/2019_28_FIFA_WWCs.png)
-![./plots/2019_28/2019_28_FIFA_WWCs_stellar.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_28/2019_28_FIFA_WWCs_stellar.png)
+![./plots/2019_28/2019_28_FIFA_WWCs_stellar_sd.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_28/2019_28_FIFA_WWCs_stellar_sd.png)
 <br/><br/>
 
 ### Week 2019/27 💰 Media Franchise Revenues by [Wikipedia](https://en.wikipedia.org/wiki/List_of_highest-grossing_media_franchises)
