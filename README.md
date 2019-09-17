@@ -27,15 +27,15 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 ![./plots/2019_27/2019_27_FranchiseRevenue.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_27/2019_27_FranchiseRevenue.png)
 <br/><br/>
 
-### [Week 2019/25](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_25️ 🎅🏽🐦 Christmas Bird Counts	by [Bird Studies Canada](https://www.birdscanada.org/index.jsp)
+### [Week 2019/25](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_25️) 🎅🏽🐦 Christmas Bird Counts	by [Bird Studies Canada](https://www.birdscanada.org/index.jsp)
 ![./plots/2019_25/2019_25_BirdsXmas.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_25/2019_25_BirdsXmas.png)
 <br/><br/>
 
-### [Week 2019/24](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_24️ 🌠 Meteorites by [NASA](https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh/data)
+### [Week 2019/24](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_24️) 🌠 Meteorites by [NASA](https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh/data)
 ![./plots/2019_24/2019_24_Meteorites.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_24/2019_24_Meteorites.png)
 <br/><br/>
 
-### [Week 2019/22](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_22️ 🍷️ Wine Ratings	by [Vivino](https://www.kaggle.com/zynicide/wine-reviews)
+### [Week 2019/22](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_22️) 🍷️ Wine Ratings	by [Vivino](https://www.kaggle.com/zynicide/wine-reviews)
 ![./plots/2019_22/2019_22_Wines.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_22/2019_22_Wines.png)
 <br/><br/>
 
@@ -43,7 +43,7 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 ![./plots/2019_21/2019_21_PlasticWaste.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_21/2019_21_PlasticWaste.png)
 <br/><br/>
 
-### [Week 2019/20](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_20️ 🎖️ Nobel Prize Winners by [Harvard Dataverse](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/6NJ5RN)
+### [Week 2019/20](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_20️) 🎖️ Nobel Prize Winners by [Harvard Dataverse](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/6NJ5RN)
 ![./plots/2019_20/2019_20_NobelPrizeWinners.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_20/2019_20_NobelPrizeWinners.png)
 <br/><br/>
 
@@ -55,7 +55,7 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 ![./plots/2019_18/2019_18_BirdCollisions.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_18/2019_18_BirdCollisions.png)
 <br/><br/>   
 
-### [Week 2019/17](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_17️ 🐉 Anime Data by [MyAnimeList.net](https://myanimelist.net/)
+### [Week 2019/17](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_17️) 🐉 Anime Data by [MyAnimeList.net](https://myanimelist.net/)
 ![./plots/2019_17/2019_17_Animes.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_17/2019_17_animes.png)
 <br/><br/>   
 
