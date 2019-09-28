@@ -1,0 +1,360 @@
+---
+title: "TidyTuesday 2019/39 - School Diversity by NCES"
+author: "Cedric Scherer"
+date: "25th of September 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(ggbeeswarm)
+library(biscale)
+library(fiftystater)
+library(geofacet)
+library(patchwork)
+library(cowplot)
+library(ggtext)
+
+## ggplot theme updates
+source(here::here("theme", "tidy_grey.R"))
+
+theme_set(theme_custom(base_family = "Montserrat"))
+theme_update(rect = element_rect(fill = "grey10"),
+             panel.border = element_rect(color = "grey30"),
+             axis.ticks = element_line(color = "grey30"),
+             axis.text = element_text(color = "grey50"),
+             plot.title = element_text(size = 30, 
+                                       family = "Montserrat ExtraBold",
+                                       hjust = 0.5),
+             plot.subtitle = element_markdown(size = 12, 
+                                              family = "Bitter", 
+                                              color = "grey50", 
+                                              lineheight = 1.4,
+                                              hjust = 0.5),
+             plot.caption = element_text(size = 9, 
+                                         family = "Bitter", 
+                                         color = "grey50"))
+```
+
+```{r data}
+df_schools <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-24/school_diversity.csv")
+```
+
+```{r prep-data}
+df_school_index <- 
+  df_schools %>% 
+  group_by(ST) %>% 
+  mutate_at(vars(AIAN:Multi), ~ replace_na(., 0)) %>% 
+  mutate(
+    total = AIAN + Asian + Black + Hispanic + White + Multi,
+    prop_whites = median(White)
+  ) %>%
+  ungroup() %>% 
+  mutate(prop_whites = White) %>% 
+  dplyr::select(LEAID, ST, SCHOOL_YEAR, AIAN:Multi, total, prop_whites) %>% 
+  gather(ethnicity, value, -c(LEAID, ST, SCHOOL_YEAR, total, prop_whites)) %>% 
+  filter(value > 0) %>% 
+  group_by(LEAID, ST, SCHOOL_YEAR, prop_whites) %>% 
+  summarize(
+    simpson = (1 - sum(value * (value - 1)) / (100*(100 - 1))),
+    shannon = -sum((value / total) * log(value / total))
+  ) %>% 
+  ungroup()
+```
+
+```{r biscale-map}
+## biscale map
+df_schools_biscale <- 
+  df_school_index %>% 
+  filter(SCHOOL_YEAR == "2016-2017") %>% 
+  group_by(ST) %>% 
+  summarize(
+    simpson = median(simpson),
+    prop_whites = median(prop_whites)
+  ) %>% 
+  bi_class(x = simpson, y = prop_whites, style = "quantile", dim = 3)
+
+map <- 
+  fifty_states %>%
+  as_tibble() %>%
+  mutate(region = stringr::str_to_title(id)) %>% 
+  left_join(state_ranks[, 1:2], by = c("region" = "name")) %>% 
+  full_join(df_schools_biscale, by = c("state" = "ST")) %>% 
+  ggplot() +
+    geom_map(aes(map_id = id, fill = bi_class), 
+             map = fifty_states,
+             color = "grey20",
+             size = 0.01) +  
+    expand_limits(x = fifty_states$long, y = fifty_states$lat) +
+    fifty_states_inset_boxes() +
+    bi_scale_fill(pal = "GrPink", dim = 3, guide = F) +
+    coord_map() +
+    scale_x_continuous(breaks = NULL) + 
+    scale_y_continuous(breaks = NULL) +
+    theme(panel.background = element_blank(),
+          panel.border = element_blank()) +
+    labs(x = NULL, y = NULL,
+         title = "How divers are schools in the US?", 
+         subtitle = "<br>Bivariate map showing the combination of racial diversity measured as <b style='color:#C85A5A'>Simpson index</b>, a quantitative diversity measure,<br>and the <b style='color:#64ACBE'>proportion of students with white ethnicity</b> during the <b>school year 2016–2017</b>.")
+
+legend <- 
+  bi_legend(pal = "GrPink",
+            dim = 3,
+            xlab = "Diversity ",
+            ylab = "% Whites ") +
+  theme_custom() +
+  theme(rect = element_rect(fill = "grey10"),
+        panel.border = element_blank(),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title.x = element_text(size = 10,
+                                    color = "grey70"),
+        axis.title.y = element_text(size = 10,
+                                    color = "grey70"))
+
+map_legend <- ggdraw() +
+  draw_plot(map, 0, 0, 1, 1) +
+  draw_plot(legend, 0.75, 0.1, 0.2, 0.2)
+```
+
+```{r beeswarm-diversity}
+## beeswarm diversity
+beeswarm_simpson <- 
+  df_school_index %>% 
+  filter(SCHOOL_YEAR == "2016-2017") %>% 
+  group_by(ST) %>% 
+  mutate(
+    median = median(simpson),
+    simpson_h = if_else(simpson >= median, simpson, NA_real_),
+    simpson_l = if_else(simpson < median, simpson, NA_real_)
+  ) %>% 
+  ungroup() %>% 
+  mutate(median_all = median(simpson)) %>% 
+  group_by(ST, median_all) %>% 
+  mutate(diff = unique(median) - unique(median_all)) %>% 
+  ungroup() %>% 
+  mutate(ST = fct_reorder(ST, -median)) %>% 
+  ggplot(aes(ST, simpson,
+             fill = diff)) + 
+    geom_hline(aes(yintercept = median_all), 
+               color = "grey70", 
+               linetype = "dashed",
+               size = 0.1) +
+    ggbeeswarm::geom_beeswarm(aes(ST, simpson_l), 
+                              priority = 'descending', 
+                              cex = 0.32,
+                              size = 1.2, 
+                              stroke = 0.05,
+                              color = "grey40", 
+                              shape = 21) +
+    ggbeeswarm::geom_beeswarm(aes(ST, simpson_h),
+                              cex = 0.32,
+                              size = 1.2,
+                              stroke = 0.05,
+                              color = "white", 
+                              shape = 21) +
+    geom_point(aes(ST, median),
+               color = "grey10", 
+               shape = 21, 
+               size = 3,
+               stroke = 0.6) +
+    scale_fill_gradient2(low = "#E8E8E8", 
+                         mid = "#E4ACAC",
+                         high = "#C85A5A",
+                         guide = F) +
+    theme(axis.text.x = element_text(size = 9,
+                                     face = "bold"),
+          axis.text.y = element_text(size = 9, 
+                                     family = "Roboto Mono")) +
+    labs(x = NULL, y = NULL, title = NULL,
+         subtitle = "<b style='color:#E4ACAC'>Simpson diversity index</b> for all schools grouped per state, ranked from states with <b style='color:#C85A5A'>high diversity</b> to those with <b style='color:#E8E8E8'>low diversity</b>.<br>Larger dots represent each state's median diversity with darker colored points laying below and lighter colored points laying above this value.<br>")
+```
+
+```{r beeswarm-whites}
+## beeswarm whites
+beeswarm_whites <- 
+  df_school_index %>% 
+  filter(SCHOOL_YEAR == "2016-2017") %>% 
+  group_by(ST) %>% 
+  mutate(
+    median = median(prop_whites),
+    whites_h = if_else(prop_whites >= median, prop_whites, NA_real_),
+    whites_l = if_else(prop_whites < median, prop_whites, NA_real_)
+  ) %>% 
+  ungroup() %>% 
+  mutate(median_all = median(prop_whites)) %>% 
+  group_by(ST, median_all) %>% 
+  mutate(diff = unique(median) - unique(median_all)) %>% 
+  ungroup() %>% 
+  mutate(ST = fct_reorder(ST, median)) %>% 
+  ggplot(aes(ST, median,
+             fill = diff)) + 
+    geom_hline(aes(yintercept = median_all), 
+               color = "grey70", 
+               linetype = "dashed",
+               size = 0.1) +
+    ggbeeswarm::geom_beeswarm(aes(ST, whites_l), 
+                              priority = 'descending', 
+                              cex = 0.23,
+                              size = 1.5,
+                              stroke = 0.05,
+                              color = "white", 
+                              shape = 21) +
+    ggbeeswarm::geom_beeswarm(aes(ST, whites_h),
+                              cex = 0.23,
+                              size = 1.2, 
+                              stroke = 0.05,
+                              color = "grey40", 
+                              shape = 21) +
+    geom_point(aes(ST, median),
+               color = "grey10",
+               shape = 21, 
+               size = 3,
+               stroke = 0.6) +
+    scale_y_continuous(breaks = seq(0, 100, by = 20),
+                       labels = glue::glue("{seq(0, 100, by = 20)}%")) +   
+    scale_fill_gradient2(low = "#E8E8E8", 
+                         mid = "#B0D5DF",
+                         high = "#07C4f4",
+                         guide = F) +
+    theme(axis.text.x = element_text(size = 9,
+                                     face = "bold"),
+          axis.text.y = element_text(size = 9,
+                                     family = "Roboto Mono")) +
+    labs(x = NULL, y = NULL,
+         subtitle = "<br><b style='color:#B0D5DF'>Proportion of white students</b> for all schools grouped per state, ranked from states with <b style='color:#E8E8E8'>few white students</b> to those with <b style='color:#07C4f4'>many white students</b>.<br>Larger dots represent each state's median proportion with lighter colored points laying below and darker colored points laying above this value.<br>",
+         caption = "\n\nVisualization by Cédric Scherer  |  Data: NCES")
+```
+
+```{r full-panel, fig.width = 14, fig.height = 16.5}
+## panel
+map_legend / beeswarm_simpson / beeswarm_whites + plot_layout(heights = c(1, 0.25, 0.25))
+
+ggsave(here::here("plots", "2019_39", "2019_39_SchoolDiversity.pdf"), 
+       width = 14, height = 17, device = cairo_pdf)
+```
+
+
+```{r geofacet, fig.width = 28, fig.height = 22}
+## geofacet diversity
+df_median_all <- df_school_index %>% 
+  group_by(SCHOOL_YEAR) %>% 
+  summarize(median = median(simpson))
+
+df_school_index %>% 
+  semi_join(state_ranks, by = c("ST" = "state")) %>% 
+  mutate(
+    SCHOOL_YEAR = if_else(SCHOOL_YEAR == "1994-1995", "'94/'95", "'16/'17"),
+    SCHOOL_YEAR = fct_rev(SCHOOL_YEAR)
+  ) %>% 
+  group_by(ST, SCHOOL_YEAR) %>% 
+  mutate(
+    median = median(simpson),
+    simpson_h1 = if_else(SCHOOL_YEAR == "'94/'95" & simpson >= median, 
+                         simpson, NA_real_),
+    simpson_l1 = if_else(SCHOOL_YEAR == "'94/'95" & simpson < median, 
+                         simpson, NA_real_),
+    simpson_h2 = if_else(SCHOOL_YEAR == "'16/'17" & simpson >= median, 
+                         simpson, NA_real_),
+    simpson_l2 = if_else(SCHOOL_YEAR == "'16/'17" & simpson < median, 
+                         simpson, NA_real_)
+  ) %>% 
+  group_by(ST) %>% 
+  mutate(
+    zeros_1 = sum(if_else(SCHOOL_YEAR == "'94/'95" & simpson == 0, 1, 0)),
+    zeros_2 = sum(if_else(SCHOOL_YEAR == "'16/'17" & simpson == 0, 1, 0)),
+    zeros_1 = if_else(zeros_1 == 0, NA_real_, zeros_1),
+    zeros_2 = if_else(zeros_2 == 0, NA_real_, zeros_2)
+  ) %>% 
+  ggplot(aes(1, simpson)) + 
+    annotate("segment",
+             x = -Inf, xend = Inf,
+             y = df_median_all$median[1],
+             yend = df_median_all$median[1],
+             color = "grey70",
+             size = 0.1,
+             linetype = "dotted") +
+    annotate("segment",
+             x = -Inf, xend = Inf,
+             y = df_median_all$median[2],
+             yend = df_median_all$median[2],
+             color = "goldenrod3",
+             size = 0.1,
+             linetype = "dotted") +
+    ggbeeswarm::geom_beeswarm(aes(SCHOOL_YEAR, simpson_l1),
+                              groupOnX = F,
+                              priority = 'descending', 
+                              cex = 0.06,
+                              size = 0.005, 
+                              color = "grey50") +
+    ggbeeswarm::geom_beeswarm(aes(SCHOOL_YEAR, simpson_h1), 
+                              groupOnX = F,
+                              cex = 0.06,
+                              size = 0.005, 
+                              color = "grey90") +
+    ggbeeswarm::geom_beeswarm(aes(SCHOOL_YEAR, simpson_l2), 
+                              groupOnX = F,
+                              priority = 'descending', 
+                              cex = 0.06,
+                              size = 0.005, 
+                              color = "firebrick") +
+    ggbeeswarm::geom_beeswarm(aes(SCHOOL_YEAR, simpson_h2), 
+                              groupOnX = F,
+                              cex = 0.06,
+                              size = 0.005, 
+                              color = "goldenrod") +
+    scale_x_discrete(expand = c(0.6, 0.6)) +
+    scale_y_continuous(limits = c(-0.02, 0.82), 
+                       breaks = seq(0, 0.8, by = 0.2),
+                       labels = c("0", ".2", ".4", ".6", ".8")) +
+    coord_flip(xlim = c(0.75, 2.25), clip = "off") + 
+    geofacet::facet_geo(~ ST, grid = "us_state_grid2", label = "name") +
+    theme_custom(base_size = 24, base_family = "Montserrat") +
+    theme(rect = element_rect(fill = "grey10"),
+          plot.title = element_text(size = 50,
+                                    family = "Montserrat ExtraBold",
+                                    hjust = 0.5,
+                                    lineheight = 1.2),
+          plot.subtitle = element_markdown(size = 22, 
+                                           family = "Bitter", 
+                                           color = "grey50", 
+                                           hjust = 0.5,
+                                           lineheight = 1.4),
+          plot.caption = element_markdown(family = "Bitter", 
+                                          size = 18,
+                                          color = "grey50"),
+          axis.text.x = element_text(size = 14, 
+                                     family = "Roboto Mono",
+                                     color = "grey40"),
+          axis.text.y = element_blank(),
+          axis.ticks.x = element_line(color = "grey30"),
+          axis.ticks.y = element_blank(),
+          strip.background = element_blank(),
+          strip.text = element_text(size = 18,
+                                    family = "Roboto Condensed",
+                                    color = "grey80"),
+          panel.border = element_rect(color = "grey30")) +
+    labs(x = NULL, y = NULL, 
+         title = "How the growing racial diversity in the US is reflected in schools", 
+         subtitle = "Comparison of the Simpson diversity index, a quantitative measure that reflects the racial diversity, during the school years <b style='color:#b3b3b3'>1994–1995</b><br>and <b style='color:#cd9b1d'>2016–2017</b> for schools with the racial <b>diversity being lower than (<b style='color:#b22222'>•</b> or <b style='color:#7f7f7f'>•</b>) or higher than/equal to (<b style='color:#daa520'>•</b> or <b style='color:#e5e5e5'>•</b>) the state's median</b>.<br>Dotted lines indicate the US median diversity. <br>",
+         caption = "Visualization by Cédric Scherer  |  Data: NCES")
+  
+ggsave(here::here("plots", "2019_39", "2019_39_SchoolDiversity_geofacet_raw.pdf"), 
+       width = 28, height = 22, device = cairo_pdf)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```
