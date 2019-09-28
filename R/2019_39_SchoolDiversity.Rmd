@@ -104,7 +104,7 @@ map <-
     theme(panel.background = element_blank(),
           panel.border = element_blank()) +
     labs(x = NULL, y = NULL,
-         title = "How divers are schools in the US?", 
+         title = "How diverse are schools in the US?", 
          subtitle = "<br>Bivariate map showing the combination of racial diversity measured as <b style='color:#C85A5A'>Simpson index</b>, a quantitative diversity measure,<br>and the <b style='color:#64ACBE'>proportion of students with white ethnicity</b> during the <b>school year 2016–2017</b>.")
 
 legend <- 
