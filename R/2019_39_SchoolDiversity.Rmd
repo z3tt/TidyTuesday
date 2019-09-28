@@ -72,6 +72,8 @@ df_school_index <-
   ungroup()
 ```
 
+## Main plot
+
 ```{r biscale-map}
 ## biscale map
 df_schools_biscale <- 
@@ -244,22 +246,33 @@ ggsave(here::here("plots", "2019_39", "2019_39_SchoolDiversity.pdf"),
        width = 14, height = 17, device = cairo_pdf)
 ```
 
-```{r corr-plot}
+## Pointdensity plot
+
+```{r corr-plot, fig.width = 16, fig.height = 18}
 df_school_index %>% 
   ggplot(aes(simpson, prop_whites)) +
-  ggpointdensity::geom_pointdensity() +
-  scale_color_viridis_c(option = "magma", guide = F, begin = 0.2) +
-  scale_y_continuous(limits = c(0, 100)) +
-  scale_x_continuous(limits = c(0, 1)) +
-  labs(x = "Simpson Diversity Index", y = "Proporiton of White Students",
-       title = "Correlation between the Simpsons diversity index and the proportion of white students in the school year 2016–2017",
+  ggpointdensity::geom_pointdensity(size = 0.3) +
+  rcartocolor::scale_color_carto_c(palette = "SunsetDark",
+                                   name = "Density:",
+                                   limits = c(0, NA)) + 
+  scale_y_continuous(limits = c(0, 100), 
+                     breaks = seq(0, 100, by = 20),
+                     labels = glue::glue("{seq(0, 100, by = 20)}%")) +
+  labs(x = "Simpson Diversity Index", y = "Proportion of White Students",
+       title = "How are those measurements correlated?",
+       subtitle = "Pointdensity scatterplot of the  <b style='color:#d3d3d3'>Simpson diversity index</b> and the <b style='color:#d3d3d3'>proportion of white students</b><br>in US schools during the school year 2016–2017<br>",
        caption ="\nVisualization by Cédric Scherer  |  Data: NCES") +
-  theme(axis.text = element_text(family = "Roboto Mono", color = "grey70"))
+  theme(axis.text = element_text(family = "Roboto Mono", color = "grey70"),
+        legend.position = c(0.9, 0.85),
+        legend.title = element_text(face = "bold", color = "grey70"),
+        legend.text = element_text(family = "Roboto Mono", color = "grey70"),
+        legend.key.width = unit(0.5, "lines"))
 
 ggsave(here::here("plots", "2019_39", "2019_39_SchoolDiversity_correlation.pdf"),
-       width = 8, height = 8, device = cairo_pdf)
+       width = 11, height = 12, device = cairo_pdf)
 ```
 
+## Geofacet
 
 ```{r geofacet, fig.width = 28, fig.height = 22}
 ## geofacet diversity
