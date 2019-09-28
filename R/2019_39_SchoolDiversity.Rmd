@@ -248,7 +248,7 @@ ggsave(here::here("plots", "2019_39", "2019_39_SchoolDiversity.pdf"),
 
 ## Pointdensity plot
 
-```{r corr-plot, fig.width = 16, fig.height = 18}
+```{r corr-plot, fig.width = 11.5, fig.height = 12}
 df_school_index %>% 
   ggplot(aes(simpson, prop_whites)) +
   ggpointdensity::geom_pointdensity(size = 0.3) +
@@ -260,16 +260,18 @@ df_school_index %>%
                      labels = glue::glue("{seq(0, 100, by = 20)}%")) +
   labs(x = "Simpson Diversity Index", y = "Proportion of White Students",
        title = "How are those measurements correlated?",
-       subtitle = "Pointdensity scatterplot of the  <b style='color:#d3d3d3'>Simpson diversity index</b> and the <b style='color:#d3d3d3'>proportion of white students</b><br>in US schools during the school year 2016–2017<br>",
+       subtitle = "Pointdensity scatterplot of the  <b style='color:#d3d3d3'>Simpson diversity index</b> and the <b style='color:#d3d3d3'>proportion of white students</b> in US schools during the school year 2016–2017<br>",
        caption ="\nVisualization by Cédric Scherer  |  Data: NCES") +
   theme(axis.text = element_text(family = "Roboto Mono", color = "grey70"),
+        plot.title = element_text(size = 24),
+        plot.subtitle = element_markdown(size = 10),
         legend.position = c(0.9, 0.85),
         legend.title = element_text(face = "bold", color = "grey70"),
         legend.text = element_text(family = "Roboto Mono", color = "grey70"),
         legend.key.width = unit(0.5, "lines"))
 
 ggsave(here::here("plots", "2019_39", "2019_39_SchoolDiversity_correlation.pdf"),
-       width = 11, height = 12, device = cairo_pdf)
+       width = 11.5, height = 12, device = cairo_pdf)
 ```
 
 ## Geofacet
