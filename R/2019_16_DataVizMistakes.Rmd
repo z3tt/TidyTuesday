@@ -150,6 +150,34 @@ ggsave(here::here("plots", "2019_16", "2019_16_DataVizMistakes.png"),
        width = 14, height = 5.6, dpi = 300)
 ```
 
+## Remix with white background
+
+## Emoji and title
+
+```{r plot-shrug-light}
+theme_update(rect = element_rect(fill = "white"))
+
+p_emoji_light <- tibble(a = 1, b = 1) %>% 
+  ggplot(aes(a, b)) + 
+    geom_emoji(emoji = "1f937", size = 0.25) +
+    annotate("text", x = 1, y = 1.015, label = "Better?", family = "Merriweather", 
+             fontface = "bold", size = 9, color = "grey30") +
+    scale_x_continuous(limits = c(0.975, 1.025)) +
+    scale_y_continuous(limits = c(0.975, 1.025)) +
+    coord_fixed() +
+    labs(title = 'The Economist’s "Mistakes, we’ve drawn a few - Learning from our errors in data visualisation"                 ',
+         subtitle = "Redesigns of data visualizations originally published by The Economist which Sarah Leo found to be misleading (left) and too crowded given the limited space (right).                         \nIn the article, Sarah asked for new ideas how these visualizations can be redesigned to adress these shortcomings following the The Economist's design rules.                           \n") +
+    theme_void() + 
+    theme(panel.background = element_rect(fill = "white"), 
+          plot.background = element_rect(fill = "white"),
+          plot.title = element_text(size = 18, color = "black", hjust = 0.5, family = "Poppins", face = "bold"),
+          plot.subtitle = element_text(size = 10, color = "grey30", hjust = 0.5, family = "Merriweather", lineheight = 1.3))
+    
+(p_trade + p_emoji_light + p_research) + plot_layout(nrow = 1, widths = c(1, 0.35, 0.85))
+
+ggsave(here::here("plots", "2019_16", "2019_16_DataVizMistakes_light.png"), 
+       width = 14, height = 6, dpi = 300)
+```
 ***
 
 ```{r session}

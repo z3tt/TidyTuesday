@@ -81,7 +81,7 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 ***
 
 ### [Week 2019/16](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_16)️ 📊 Data Viz Mistakes by [The Economist](https://medium.economist.com/mistakes-weve-drawn-a-few-8cdd8a42d368)
-![./plots/2019_16/2019_16_DataVizMistakes.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_16/2019_16_DataVizMistakes.png)
+![./plots/2019_16/2019_16_DataVizMistakes_light.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_16/2019_16_DataVizMistakes_light.png)
 
 ***
 
