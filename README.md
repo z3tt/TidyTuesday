@@ -67,7 +67,6 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ### [Week 2019/19](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_19)️ 👨‍🏫 Global Student to Teachers Ratios by [UNESCO's "eAtlas of Teachers"](http://data.uis.unesco.org/index.aspx?queryid=180)
 ![./plots/2019_19/2019_19_StudentTeacher.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_19/2019_19_StudentTeacher.png)
-![./plots/2019_19/2019_19_StudentTeacher_facet.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_19/2019_19_StudentTeacher_facet.png)
 
 ***
 
@@ -81,14 +80,13 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
-### [Week 2019/16](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_16)️ 📊 [Data Viz Mistakes](https://medium.economist.com/mistakes-weve-drawn-a-few-8cdd8a42d368) by The Economist
+### [Week 2019/16](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_16)️ 📊 Data Viz Mistakes by [The Economist](https://medium.economist.com/mistakes-weve-drawn-a-few-8cdd8a42d368)
 ![./plots/2019_16/2019_16_DataVizMistakes.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_16/2019_16_DataVizMistakes.png)
 
 ***
 
-### [Week 2019/14](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_14)️ 🚴 [Seattle Bike Traffic](https://www.seattletimes.com/seattle-news/transportation/what-we-can-learn-from-seattles-bike-counter-data/) by seattle.gov
+### [Week 2019/14](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_14)️ 🚴 Seattle Bike Traffic by [seattle.gov](https://www.seattletimes.com/seattle-news/transportation/what-we-can-learn-from-seattles-bike-counter-data/)
 ![./plots/2019_14/2019_14_bikes_month.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_14/2019_14_SeattleBikes_month.png)
-![./plots/2019_14/2019_14_bikes_season.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_14/2019_14_SeattleBikes_season.png)
 
 ***
 
