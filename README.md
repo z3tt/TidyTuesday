@@ -2,6 +2,8 @@
 My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).  
 Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
+All contributions and full versions can be found [here](https://github.com/Z3tt/TidyTuesday/blob/master/plots/all/).
+
 ***
 
 ### [Week 2019/40](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_40)️ 🍕 Pizza Ratings by [Jared Lander](https://twitter.com/jaredlander/status/1178122846419193858?s=20) & [Bartools Sports](https://github.com/tylerjrichards/Barstool_Pizza)
