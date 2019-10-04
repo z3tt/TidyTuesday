@@ -4,6 +4,6 @@
 <br>
 ![./plots/2019_40/2019_40_Pizza_jared.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_40/2019_40_Pizza_jared.png)
 
-**Ratings on Bartool Sports by Tyler Richards:**  
+**Ratings on Barstool Sports by Tyler Richards:**  
 <br>
 ![./plots/2019_40/2019_40_Pizza_barstool.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_40/2019_40_Pizza_barstool.png)
