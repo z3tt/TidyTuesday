@@ -77,7 +77,7 @@ p_trade <- ggdraw(p1) +
 ```{r data-reseach}
 df_research <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-16/women_research.csv") %>% 
   mutate(
-    field = if_else(field == "Women inventores", "Inventores", field),
+    field = if_else(field == "Women inventores", "Inventores°", field),
     field = if_else(field == "Computer science, maths", "Computer sciences", field),
     field = fct_reorder(field, percent_women),
     type = if_else(country %in% c("Japan", "EU28", "Portugal"), country, NA_character_),
@@ -99,7 +99,7 @@ p2 <- df_research %>%
     scale_fill_manual(values = c("firebrick4", "turquoise4", "dodgerblue3"), name = NULL) +
     guides(color = guide_legend(override.aes = list(size = 4))) +
     labs(x = NULL, y = NULL, title = "", subtitle = "\n\n", 
-         caption = '\nSources: "Gender in the Global Research Landscape" by Elsevier; The Economist\nVisualization by Cédric Scherer') +
+         caption = '\n° Number of inventores who filed patent applications\nSources: "Gender in the Global Research Landscape" by Elsevier; The Economist\nVisualization by Cédric Scherer') +
     theme_economist() +
     theme(text = element_text(family = "Open Sans"), 
           axis.text = element_text(size = 14),
