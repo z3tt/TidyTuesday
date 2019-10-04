@@ -4,6 +4,11 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
+### [Week 2019/40](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_40)️ 🍕 Pizza Ratings by [Jared Lander](https://twitter.com/jaredlander/status/1178122846419193858?s=20) & [Bartools Sports](https://github.com/tylerjrichards/Barstool_Pizza)
+![./plots/2019_40/2019_40_Pizza_jared.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_40/2019_40_Pizza_jared_teaser.png)
+
+***
+
 ### [Week 2019/39](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_39)️ 🏫️ School Diversity by [NCES](https://nces.ed.gov/ccd/pubschuniv.asp)
 ![./plots/2019_39/2019_39_SchoolDiversity.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_39/2019_39_SchoolDiversity.png)
 
