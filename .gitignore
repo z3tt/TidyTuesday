@@ -46,4 +46,4 @@ rsconnect/
 *.pdf
 
 # files in _all directory
-/_all/*.png
+/plots/_all/*.png
