@@ -38,18 +38,20 @@ set.seed(2019)
 df_cars_top <- 
   df_cars %>%
   pivot_longer(cols = c("city08", "cityA08"), 
-               names_to = "city_fuel",
-               values_to = "city_mpg") %>%
-  filter(city_mpg > 0) %>%
+               names_to = "fuel",
+               values_to = "mpg") %>%
+  filter(mpg > 0) %>%
   group_by(make) %>%
-  summarize(median = median(city_mpg)) %>%
+  summarize(median = median(mpg)) %>%
   ungroup()  %>% 
   arrange(-median) %>% 
   top_n(20, median) %>%
   mutate(
     make = fct_shuffle(make),
     make_id =  as.numeric(make),
-    median_0 = 0,
+    median_0 = 0,  
+    ## determine status each 5 miles
+    ## (otherwise speed would vary a lot between cars)
     median_5 = if_else(median > 5, 5, median),
     median_10 = if_else(median > 10, 10, median),
     median_15 = if_else(median > 15, 15, median),
@@ -85,18 +87,23 @@ lines <-
 df_cars_anim <- 
   ggplot(df_cars_top, 
          aes(make_id, median, group = make_id)) +
+    ## lower tire track
     geom_segment(aes(x = make_id - 0.15, xend = make_id - 0.15, 
                      y = 0, yend = median),
                  size = 1.7) +
+    ## upper tire track
     geom_segment(aes(x = make_id + 0.15, xend = make_id + 0.15, 
                      y = 0, yend = median),
                  size = 1.7) +
+    ## car
     geom_image(aes(make_id, median + 1.5, image = car), size = 0.05, asp = 0.7) +
+    ## guard stripes 
     geom_vline(data = lines,
                aes(xintercept = val),
                color = "white",
                linetype = "dashed",
                size = 0.3) +
+    ## labels manufacturer
     geom_text(aes(make_id, -16, label = make),
               color = "grey80",
               hjust = 0,
@@ -146,11 +153,11 @@ set.seed(2019)
 df_cars_top <- 
   df_cars %>%
   pivot_longer(cols = c("city08", "cityA08"), 
-               names_to = "city_fuel", 
-               values_to = "city_mpg") %>%
-  filter(city_mpg > 0) %>%
+               names_to = "fuel", 
+               values_to = "mpg") %>%
+  filter(mpg > 0) %>%
   group_by(make) %>%
-  summarize(median = median(city_mpg)) %>%
+  summarize(median = median(mpg)) %>%
   ungroup()  %>% 
   arrange(-median) %>% 
   top_n(20, median) %>%
@@ -235,7 +242,9 @@ set.seed(2019)
 
 df_cars_top_high <- 
   df_cars %>%
-  pivot_longer(cols = c("highway08", "highwayA08"), names_to = "fuel", values_to = "mpg") %>%
+  pivot_longer(cols = c("highway08", "highwayA08"), 
+               names_to = "fuel", 
+               values_to = "mpg") %>%
   filter(mpg > 0) %>%
   group_by(make) %>%
   summarize(median = median(mpg)) %>%
@@ -246,10 +255,10 @@ df_cars_top_high <-
     make = if_else(make == "Panoz Auto-Development", "Panoz", make),
     make = fct_shuffle(make),
     make_id =  as.numeric(make),
-    median_0 = -3.7,
-    median_102 = -3.7,
-    median_105 = if_else(median > 0, 0, median),
-    median_110 = if_else(median > 5, 5, median),
+    median_0 = -3.7,  ## so that cars stand behind the line (but segments are not visible)
+    median_102 = -3.7,  ## to avoid starting before starting sequence is over
+    median_105 = if_else(median > 0, 0, median),  ## slowly going into position
+    median_110 = if_else(median > 5, 5, median),  ## and going for the first 5 miles
     median_115 = if_else(median > 10, 10, median),
     median_120 = if_else(median > 15, 15, median),
     median_125 = if_else(median > 20, 20, median),
@@ -359,7 +368,7 @@ animate(df_cars_anim_high, width = 1300, height = 950,
                                               "2019_42_big_cars_highway.gif")))
 ```
 
-## Plot savings
+## Plot money savings
 
 ```{r, plot-savings, fig.width = 16, fig.height = 10}
 set.seed(2019)
