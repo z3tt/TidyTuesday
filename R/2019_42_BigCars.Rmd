@@ -344,7 +344,13 @@ df_cars_anim_high <-
       labs(x = NULL, y = NULL,
            title = "How far can you go with 1 gallon of gas?",
            subtitle = "Top 20 most energy efficient brands in highway driving. Estimates are based on median MPG and MPGe of all models since 1984.\n\n",
-           caption = "\n\nVisualization by Cédric Scherer  |  Data: EPA  |  Icon: mynamepong via flaticon.com") +
+           caption = paste(
+             "\n\nVisualization by Cédric Scherer  ",
+             emo::ji("oncoming_automobile"), 
+             "  Data: EPA  ", 
+             emo::ji("fuelpump"), 
+             "  Icon: mynamepong via flaticon.com"
+           )) +
   transition_reveal(state)
 
 animate(df_cars_anim_high, width = 1300, height = 950, 
