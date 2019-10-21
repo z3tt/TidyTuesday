@@ -7,7 +7,7 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 ***
 
 ### [Week 2019/42](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_42)️ 🚘 Big Cars by [EPA](https://www.fueleconomy.gov/feg/download.shtml)
-![./plots/2019_42/2019_42_big_cars_race.gif](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_42/2019_42_big_cars_race.gif)
+![./plots/2019_42/2019_42_big_cars_highway.gif](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_42/2019_42_big_cars_highway.gif)
 
 ***
 
