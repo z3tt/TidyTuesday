@@ -1,0 +1,440 @@
+---
+title: "TidyTuesday 2019/42 - Car Fuel Economy by EPA"
+author: "Cedric Scherer"
+date: "20th of October 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(gganimate)
+library(ggimage)
+library(emo)
+
+## ggplot theme
+source(here::here("theme", "tidy_grey.R"))
+```
+
+```{r data}
+df_cars <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-15/big_epa_cars.csv")
+```
+
+## Animation city mpg 
+
+```{r animation-city, fig.width = 13, fig.height = 9.5}
+## set seed for shuffling
+set.seed(2019)
+
+df_cars_top <- 
+  df_cars %>%
+  pivot_longer(cols = c("city08", "cityA08"), 
+               names_to = "city_fuel",
+               values_to = "city_mpg") %>%
+  filter(city_mpg > 0) %>%
+  group_by(make) %>%
+  summarize(median = median(city_mpg)) %>%
+  ungroup()  %>% 
+  arrange(-median) %>% 
+  top_n(20, median) %>%
+  mutate(
+    make = fct_shuffle(make),
+    make_id =  as.numeric(make),
+    median_0 = 0,
+    median_5 = if_else(median > 5, 5, median),
+    median_10 = if_else(median > 10, 10, median),
+    median_15 = if_else(median > 15, 15, median),
+    median_20 = if_else(median > 20, 20, median),
+    median_25 = if_else(median > 25, 25, median),
+    median_30 = if_else(median > 30, 30, median),
+    median_35 = if_else(median > 35, 35, median),
+    median_40 = if_else(median > 40, 40, median),
+    median_45 = if_else(median > 45, 45, median),
+    median_50 = if_else(median > 50, 50, median),
+    median_55 = if_else(median > 55, 55, median),
+    median_60 = if_else(median > 60, 60, median),
+    median_65 = if_else(median > 65, 65, median),
+    median_70 = if_else(median > 70, 70, median),
+    median_75 = if_else(median > 75, 75, median),
+    median_80 = if_else(median > 80, 80, median),
+    median_85 = if_else(median > 85, 85, median),
+    median_90 = if_else(median > 90, 90, median),
+    median_95 = if_else(median > 95, 95, median)
+  ) %>% 
+  dplyr::select(-median) %>% 
+  gather(state, median, -make, -make_id) %>% 
+  mutate(state = as.numeric(str_sub(state, 8)))
+
+car <- here::here("img", "car.png")
+
+lines <-
+  df_cars_top %>% 
+  group_by(make_id) %>% 
+  summarize(val = unique(make_id) + 0.5) %>% 
+  add_row(make_id = 0, val = 0.5)
+
+df_cars_anim <- 
+  ggplot(df_cars_top, 
+         aes(make_id, median, group = make_id)) +
+    geom_segment(aes(x = make_id - 0.15, xend = make_id - 0.15, 
+                     y = 0, yend = median),
+                 size = 1.7) +
+    geom_segment(aes(x = make_id + 0.15, xend = make_id + 0.15, 
+                     y = 0, yend = median),
+                 size = 1.7) +
+    geom_image(aes(make_id, median + 1.5, image = car), size = 0.05, asp = 0.7) +
+    geom_vline(data = lines,
+               aes(xintercept = val),
+               color = "white",
+               linetype = "dashed",
+               size = 0.3) +
+    geom_text(aes(make_id, -16, label = make),
+              color = "grey80",
+              hjust = 0,
+              family = "Montserrat",
+              size = 5,
+              fontface = "bold") +
+    scale_x_continuous(expand = c(0.01, 0.01)) +
+    scale_y_continuous(limits = c(-17, 102), 
+                       expand = c(0.001, 0.001),
+                       breaks = seq(0, 100, by = 10),
+                       labels = c("0 miles", as.character(seq(10, 100, by = 10)))) + 
+    coord_flip() + 
+    theme_custom(base_family = "Montserrat") +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_text(size = 16),
+          axis.ticks.y = element_blank(),
+          axis.text.y = element_blank(),
+          plot.title = element_text(size = 32),
+          plot.subtitle = element_text(size = 18,
+                                       lineheight = 1.2),
+          plot.caption = element_text(size = 16,
+                                      color = "grey80"),
+          panel.border = element_blank(),
+          panel.grid.major.x = element_line(color = "grey10", 
+                                            size = 0.2),
+          plot.margin = margin(12, 18, 12, 12)) +
+      labs(x = NULL, y = NULL,
+           title = "How far can you go with 1 gallon of gas?",
+           subtitle = "Top 20 most energy efficient brands in city driving. Estimates are based on median MPG and MPGe of all models since 1984.\n\n",
+           caption = "\n\nVisualization by Cédric Scherer  |  Data: EPA  |  Icon: mynamepong via flaticon.com") +
+  transition_reveal(state)
+
+animate(df_cars_anim, 
+        nframes = 5 * n_distinct(df_cars_top$state), 
+        width = 1300, height = 950, 
+        fps = 10, detail = 5, 
+        start_pause = 5, end_pause = 10,
+        renderer = gifski_renderer(here::here("plots", "2019_42", 
+                                              "2019_42_big_cars_city.gif")))
+```
+
+## Animation city mpg with varying speed
+
+```{r with-varying-speed, fig.width = 13, fig.height = 9.5}
+set.seed(2019)
+
+df_cars_top <- 
+  df_cars %>%
+  pivot_longer(cols = c("city08", "cityA08"), 
+               names_to = "city_fuel", 
+               values_to = "city_mpg") %>%
+  filter(city_mpg > 0) %>%
+  group_by(make) %>%
+  summarize(median = median(city_mpg)) %>%
+  ungroup()  %>% 
+  arrange(-median) %>% 
+  top_n(20, median) %>%
+  mutate(
+    make = fct_shuffle(make),
+    make_id =  as.numeric(make),
+    state = 1
+  ) 
+
+lines <-
+  df_cars_top %>% 
+  group_by(make_id) %>% 
+  summarize(val = unique(make_id) + 0.5) %>% 
+  add_row(make_id = 0, val = 0.5)
+
+df_cars_anim <- 
+  df_cars_top %>% 
+  mutate(
+    median = 0,
+    state = 0
+  ) %>% 
+  bind_rows(df_cars_top) %>% 
+  ggplot(aes(make_id, median, group = make_id)) +
+    geom_segment(aes(x = make_id - 0.15, xend = make_id - 0.15, 
+                     y = 0, yend = median),
+                 size = 1.7) +
+    geom_segment(aes(x = make_id + 0.15, xend = make_id + 0.15, 
+                     y = 0, yend = median),
+                 size = 1.7) +
+    geom_image(aes(make_id, median + 1.5, image = car), size = 0.05, asp = 0.7) +
+    geom_vline(data = lines,
+               aes(xintercept = val),
+               color = "white",
+               linetype = "dashed",
+               size = 0.3) +
+    geom_text(aes(make_id, -16, label = make),
+              color = "grey80",
+              hjust = 0,
+              family = "Montserrat",
+              size = 5,
+              fontface = "bold") +
+    scale_x_continuous(expand = c(0.01, 0.01)) +
+    scale_y_continuous(limits = c(-17, 102), 
+                       expand = c(0.001, 0.001),
+                       breaks = seq(0, 100, by = 10),
+                       labels = c("0 miles", as.character(seq(10, 100, by = 10)))) + 
+    coord_flip() + 
+    theme_custom(base_family = "Montserrat") +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_text(size = 16,
+                                     vjust = 0),
+          axis.ticks.y = element_blank(),
+          axis.text.y = element_blank(),
+          plot.title = element_text(size = 32),
+          plot.subtitle = element_text(size = 18,
+                                       lineheight = 1.2),
+          plot.caption = element_text(size = 16,
+                                      color = "grey80"),
+          panel.border = element_blank(),
+          panel.grid.major.x = element_line(color = "grey10", 
+                                            size = 0.2),
+          plot.margin = margin(12, 18, 12, 12)) +
+      labs(x = NULL, y = NULL,
+           title = "How far can you go with 1 gallon of gas?",
+           subtitle = "Top 20 most energy efficient brands in city driving. Estimates are based on median MPG and MPGe of all models since 1984.\n\n",
+           caption = "\n\nVisualization by Cédric Scherer  |  Data: EPA  |  Icon: mynamepong via flaticon.com") +
+  transition_reveal(state)
+
+animate(df_cars_anim, 
+        nframes = 50, 
+        width = 1300, height = 950, 
+        fps = 10, detail = 5, 
+        start_pause = 5, end_pause = 10,
+        renderer = gifski_renderer(here::here("plots", "2019_42", 
+                                              "2019_42_big_cars_city_vary.gif")))
+```
+
+## Animation of highway mpg with race start sequence
+
+```{r animation-highway}
+set.seed(2019)
+
+df_cars_top_high <- 
+  df_cars %>%
+  pivot_longer(cols = c("highway08", "highwayA08"), names_to = "fuel", values_to = "mpg") %>%
+  filter(mpg > 0) %>%
+  group_by(make) %>%
+  summarize(median = median(mpg)) %>%
+  ungroup()  %>% 
+  arrange(-median) %>% 
+  top_n(20, median) %>%
+  mutate(
+    make = if_else(make == "Panoz Auto-Development", "Panoz", make),
+    make = fct_shuffle(make),
+    make_id =  as.numeric(make),
+    median_0 = -3.7,
+    median_102 = -3.7,
+    median_105 = if_else(median > 0, 0, median),
+    median_110 = if_else(median > 5, 5, median),
+    median_115 = if_else(median > 10, 10, median),
+    median_120 = if_else(median > 15, 15, median),
+    median_125 = if_else(median > 20, 20, median),
+    median_130 = if_else(median > 25, 25, median),
+    median_135 = if_else(median > 30, 30, median),
+    median_140 = if_else(median > 35, 35, median),
+    median_145 = if_else(median > 40, 40, median),
+    median_150 = if_else(median > 45, 45, median),
+    median_155 = if_else(median > 50, 50, median),
+    median_160 = if_else(median > 55, 55, median),
+    median_165 = if_else(median > 60, 60, median),
+    median_170 = if_else(median > 65, 65, median),
+    median_175 = if_else(median > 70, 70, median),
+    median_180 = if_else(median > 75, 75, median),
+    median_185 = if_else(median > 80, 80, median),
+    median_190 = if_else(median > 85, 85, median),
+    median_195 = if_else(median > 90, 90, median)
+  ) %>% 
+  dplyr::select(-median) %>% 
+  gather(state, median, -make, -make_id) %>% 
+  mutate(state = as.numeric(str_sub(state, 8)))
+
+start <-
+  tibble(
+    state = c(0, 25, 50, 75, 104),
+    label = c("3", "2", "1", "START!", "")
+  )
+
+car <- here::here("img", "car.png")
+
+lines_high <-
+  df_cars_top_high %>% 
+  group_by(make_id) %>% 
+  summarize(val = unique(make_id) + 0.5) %>% 
+  add_row(make_id = 0, val = 0.5)
+
+df_cars_anim_high <- 
+  df_cars_top_high %>% 
+  bind_rows(start) %>% 
+  mutate(label = if_else(is.na(label), "", label)) %>% 
+  ggplot(aes(make_id, median, group = make_id)) +
+    annotate("segment", 
+             x = -Inf, xend = Inf,
+             y = 0, yend = 0,
+             color = "grey80",
+             size = 2) +
+    geom_segment(aes(x = make_id - 0.15, xend = make_id - 0.15, 
+                     y = -0.3, yend = median),
+                 size = 1.7) +
+    geom_segment(aes(x = make_id + 0.1, xend = make_id + 0.1, 
+                     y = -0.3, yend = median),
+                 size = 1.7) +
+    geom_image(aes(make_id, median + 1.5, image = car), size = 0.05, asp = 0.7) +
+    geom_vline(data = lines_high,
+               aes(xintercept = val),
+               color = "white",
+               linetype = "dashed",
+               size = 0.3) +
+    geom_text(aes(make_id, -18, label = make),
+              color = "grey80",
+              hjust = 0,
+              family = "Montserrat,",
+              size = 5,
+              fontface = "bold") +
+    geom_text(aes(13, 50, label = label),
+              color = "white",
+              hjust = 0.5,
+              family = "Racing Sans One",
+              size = 100,
+              fontface = "bold") +
+    scale_x_continuous(expand = c(0.01, 0.01)) +
+    scale_y_continuous(limits = c(-19, 102), 
+                       expand = c(0.001, 0.001),
+                       breaks = seq(0, 100, by = 10),
+                       labels = c("0 miles", as.character(seq(10, 100, by = 10)))) + 
+    coord_flip() + 
+    theme_custom(base_family = "Montserrat") +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_text(size = 16),
+          axis.ticks.y = element_blank(),
+          axis.text.y = element_blank(),
+          plot.title = element_text(size = 32),
+          plot.subtitle = element_text(size = 18,
+                                       lineheight = 1.2),
+          plot.caption = element_text(size = 16,
+                                      color = "grey80",
+                                      family = "Racing Sans One"),
+          panel.border = element_blank(),
+          panel.grid.major.x = element_line(color = "grey10", 
+                                            size = 0.2),
+          plot.margin = margin(12, 18, 12, 12)) +
+      labs(x = NULL, y = NULL,
+           title = "How far can you go with 1 gallon of gas?",
+           subtitle = "Top 20 most energy efficient brands in highway driving. Estimates are based on median MPG and MPGe of all models since 1984.\n\n",
+           caption = "\n\nVisualization by Cédric Scherer  |  Data: EPA  |  Icon: mynamepong via flaticon.com") +
+  transition_reveal(state)
+
+animate(df_cars_anim_high, width = 1300, height = 950, 
+        nframes = 585, fps = 50, detail = 5, end_pause = 50,
+        renderer = gifski_renderer(here::here("plots", "2019_42", 
+                                              "2019_42_big_cars_highway.gif")))
+```
+
+## Plot savings
+
+```{r, plot-savings, fig.width = 16, fig.height = 10}
+set.seed(2019)
+
+df_cars %>% 
+  #filter(fuelType1 == "Electricity") %>% 
+  filter(highwayE > 0) %>% 
+  group_by(make) %>% 
+  summarize(avg = mean(youSaveSpend)) %>% 
+  filter(avg > 0) %>% 
+  ungroup() %>% 
+  mutate(
+    make = fct_reorder(make, avg),
+    make_id =  as.numeric(make)
+  ) %>% 
+  ggplot(aes(make_id, avg, group = make_id)) +
+    geom_segment(aes(x = make_id - 0.15, xend = make_id - 0.15, 
+                     y = 0, yend = avg),
+                 size = 1.7) +
+    geom_segment(aes(x = make_id + 0.15, xend = make_id + 0.15, 
+                     y = 0, yend = avg),
+                 size = 1.7) +
+    geom_image(aes(make_id, avg + 1.5, image = car), size = 0.05, asp = 0.7) +
+    geom_text(aes(make_id, -50, label = make),
+              color = "grey80",
+              hjust = 1,
+              family = "Racing Sans One",
+              size = 6,
+              fontface = "plain") +
+    annotate("segment",
+             x = -Inf, xend = Inf,
+             y = 0, yend = 0,
+             color = "grey50",
+             size = 0.4) +
+    scale_x_continuous(expand = c(0.02, 0.02)) +
+    scale_y_continuous(limits = c(-800, 4900), 
+                       expand = c(0.001, 0.001),
+                       breaks = seq(0, 4700, by = 500),
+                       labels = glue::glue("{seq(0, 4500, by = 500)}$"),
+                       position = "right") + 
+    coord_flip() + 
+    theme_custom(base_family = "Montserrat") +
+    theme(axis.ticks.x = element_blank(),
+          axis.text.x = element_text(size = 12),
+          axis.ticks.y = element_blank(),
+          axis.text.y = element_blank(),
+          plot.title = element_text(size = 32),
+          plot.subtitle = element_text(size = 15,
+                                       lineheight = 1.2),
+          plot.caption = element_text(size = 13, family = "Racing Sans One"),
+          panel.border = element_blank(),
+          panel.grid.major.x = element_line(color = "grey50", 
+                                            size = 0.2),
+          plot.margin = margin(12, 18, 12, 12)) +
+      labs(x = NULL, y = NULL,
+           title = paste(
+             "How much money can you save with an electric car?", 
+             emo::ji("money_with_wings")
+            ),
+           subtitle = paste(
+             "Estimates are based on mean savings of cars that use electricity", 
+             emo::ji("electric_plug"),
+             "compared to an average car ", 
+             emo::ji("fuelpump"),
+             " over a period of 5 years.\n"
+           ),
+           caption = paste(
+             "\nVisualization by Cédric Scherer ", 
+             emo::ji("electric_plug"), 
+             " Data: EPA  ", 
+             emo::ji("oncoming_automobile"), 
+             "  Icon: mynamepong via flaticon.com"
+           ))
+
+ggsave(here::here("plots", "2019_42", 
+                  "2019_42_big_cars_savings.png"), 
+       width = 16, height = 10, dpi = 300)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```
