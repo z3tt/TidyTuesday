@@ -256,26 +256,26 @@ df_cars_top_high <-
     make = fct_shuffle(make),
     make_id =  as.numeric(make),
     median_0 = -3.7,  ## so that cars stand behind the line (but segments are not visible)
-    median_102 = -3.7,  ## to avoid starting before starting sequence is over
-    median_105 = if_else(median > 0, 0, median),  ## slowly going into position
-    median_110 = if_else(median > 5, 5, median),  ## and going for the first 5 miles
-    median_115 = if_else(median > 10, 10, median),
-    median_120 = if_else(median > 15, 15, median),
-    median_125 = if_else(median > 20, 20, median),
-    median_130 = if_else(median > 25, 25, median),
-    median_135 = if_else(median > 30, 30, median),
-    median_140 = if_else(median > 35, 35, median),
-    median_145 = if_else(median > 40, 40, median),
-    median_150 = if_else(median > 45, 45, median),
-    median_155 = if_else(median > 50, 50, median),
-    median_160 = if_else(median > 55, 55, median),
-    median_165 = if_else(median > 60, 60, median),
-    median_170 = if_else(median > 65, 65, median),
-    median_175 = if_else(median > 70, 70, median),
-    median_180 = if_else(median > 75, 75, median),
-    median_185 = if_else(median > 80, 80, median),
-    median_190 = if_else(median > 85, 85, median),
-    median_195 = if_else(median > 90, 90, median)
+    median_97 = -3.7,  ## to avoid starting before starting sequence is over
+    median_100 = if_else(median > 0, 0, median),  ## slowly going into position
+    median_105 = if_else(median > 5, 5, median),  ## and going for the first 5 miles
+    median_110 = if_else(median > 10, 10, median),
+    median_115 = if_else(median > 15, 15, median),
+    median_120 = if_else(median > 20, 20, median),
+    median_125 = if_else(median > 25, 25, median),
+    median_130 = if_else(median > 30, 30, median),
+    median_135 = if_else(median > 35, 35, median),
+    median_140 = if_else(median > 40, 40, median),
+    median_145 = if_else(median > 45, 45, median),
+    median_150 = if_else(median > 50, 50, median),
+    median_155 = if_else(median > 55, 55, median),
+    median_160 = if_else(median > 60, 60, median),
+    median_165 = if_else(median > 65, 65, median),
+    median_170 = if_else(median > 70, 70, median),
+    median_175 = if_else(median > 75, 75, median),
+    median_180 = if_else(median > 80, 80, median),
+    median_185 = if_else(median > 85, 85, median),
+    median_190 = if_else(median > 90, 90, median)
   ) %>% 
   dplyr::select(-median) %>% 
   gather(state, median, -make, -make_id) %>% 
@@ -283,7 +283,7 @@ df_cars_top_high <-
 
 start <-
   tibble(
-    state = c(0, 25, 50, 75, 104),
+    state = c(0, 25, 50, 75, 103),
     label = c("3", "2", "1", "START!", "")
   )
 
@@ -320,7 +320,7 @@ df_cars_anim_high <-
     geom_text(aes(make_id, -18, label = make),
               color = "grey80",
               hjust = 0,
-              family = "Montserrat,",
+              family = "Montserrat",
               size = 5,
               fontface = "bold") +
     geom_text(aes(13, 50, label = label),
@@ -363,7 +363,7 @@ df_cars_anim_high <-
   transition_reveal(state)
 
 animate(df_cars_anim_high, width = 1300, height = 950, 
-        nframes = 585, fps = 50, detail = 5, end_pause = 50,
+        nframes = 570, fps = 50, detail = 5, end_pause = 50,
         renderer = gifski_renderer(here::here("plots", "2019_42", 
                                               "2019_42_big_cars_highway.gif")))
 ```
@@ -374,7 +374,6 @@ animate(df_cars_anim_high, width = 1300, height = 950,
 set.seed(2019)
 
 df_cars %>% 
-  #filter(fuelType1 == "Electricity") %>% 
   filter(highwayE > 0) %>% 
   group_by(make) %>% 
   summarize(avg = mean(youSaveSpend)) %>% 
@@ -418,7 +417,9 @@ df_cars %>%
           plot.title = element_text(size = 32),
           plot.subtitle = element_text(size = 15,
                                        lineheight = 1.2),
-          plot.caption = element_text(size = 13, family = "Racing Sans One"),
+          plot.caption = element_text(size = 13, 
+                                      family = "Racing Sans One",
+                                      color = "grey80"),
           panel.border = element_blank(),
           panel.grid.major.x = element_line(color = "grey50", 
                                             size = 0.2),
