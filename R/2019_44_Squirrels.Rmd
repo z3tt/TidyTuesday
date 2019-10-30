@@ -1,0 +1,130 @@
+---
+title: "TidyTuesday 2019/44 - NYC Squirrels by NYC Squirrel Census"
+author: "Cedric Scherer"
+date: "30th of October 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(sf)
+library(ggpointdensity)
+library(patchwork)
+
+## ggplot theme
+source(here::here("theme", "tidy_grey.R"))
+
+library(showtext)
+
+font_add_google("Alice", "Alice")
+
+
+theme_update(rect = element_rect(fill = "#f2eadf"),
+             axis.text = element_blank(),
+             axis.title = element_blank(),
+             axis.ticks = element_blank(),
+             panel.border = element_rect(color = "grey55", size = 2))
+```
+
+```{r data}
+df_squirrels <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-29/nyc_squirrels.csv")
+
+cp <- sf::read_sf(dsn = here::here("data", "shp_CentralPark", "CentralPark.shp"), layer = "CentralPark")
+```
+
+```{r map-squirrel-density}
+map_density <- 
+  ggplot(df_squirrels) +
+    geom_sf(data = cp, color = "grey65") +
+    geom_point(aes(long, lat), size = 1.8, color = "grey55") +
+    ggpointdensity::geom_pointdensity(aes(long, lat),
+                                      size = 1.25) +
+    scale_x_continuous(limits = c(-73.982, -73.9495)) +
+    scale_y_continuous(limits = c(40.7648, 40.8)) +
+    #scale_color_gradientn(colors = wesanderson::wes_palette("Zissou1", 100, type = "continuous"))
+    #scico::scale_color_scico("lajolla", direction = -1)
+    rcartocolor::scale_color_carto_c(palette = "Sunset", 
+                                     direction = -1,
+                                     name = "Number of Squirrel Sightings\nin NYC's Central Park",
+                                     guide = guide_colorbar(direction = "horizontal",
+                                                            barheight = unit(3, units = "mm"), 
+                                                            barwidth = unit(100, units = "mm"),
+                                                            draw.ulim = FALSE, title.position = 'top',
+                                                            title.hjust = 0.5, label.hjust = 0.5)) +
+    
+    annotate("text", x = -73.9625, y = 40.786, 
+             label = "Jacqueline Kennedy\nOnassis Reservoir",
+             family = "Alice", color = "#2e85b0", size = 4.5, fontface = "bold") +
+    labs(caption = "  Visualization by Cédric Scherer • Data: NYC Squirrel Census • Map: OpenStreetMap") +
+    theme(legend.position = c(0.3, 0.905),
+          legend.title = element_text(family = "Alice",
+                                     size = 20,
+                                     face = "bold",
+                                     color = "grey40",
+                                     lineheight = 1.025,
+                                     margin = margin(b = 6)), 
+          legend.text = element_text(family = "Alice",
+                                     size = 15,
+                                     color = "grey40"),
+          legend.background = element_rect(fill = "#f2eadf", 
+                                           color = "grey55", 
+                                           size = 1.2),
+          legend.margin = margin(7, 9, 7, 9, "mm"),
+          plot.caption = element_text(family = "Alice", 
+                                      color = "grey40", 
+                                      hjust = 0),
+          plot.margin = margin(12, 6, 12, 18),
+          panel.background = element_rect(fill = "grey85", colour = NA))
+```
+
+```{r map-fur-color}
+map_fur <- 
+  df_squirrels %>% 
+  filter(!is.na(primary_fur_color)) %>% 
+  mutate(primary_fur_color = glue::glue("{primary_fur_color} Squirrels")) %>% 
+  ggplot() +
+    geom_sf(data = cp, color = "grey65", size = 0.3) +
+    geom_point(aes(long, lat, fill = primary_fur_color, alpha = primary_fur_color),
+               shape = 21, color = "grey20", size = 1.2, 
+               stroke = 0.3) +
+    scale_x_continuous(limits = c(-73.982, -73.9495)) +
+    scale_y_continuous(limits = c(40.7648, 40.8)) +
+    scale_fill_manual(values = c("black", "#d2691e", "grey60"),
+                      guide = F) +
+    scale_alpha_manual(values = c(0.6, 0.6, 0.2),
+                      guide = F) +
+    facet_grid(primary_fur_color~.) +
+    theme(strip.background = element_rect(fill = "transparent",
+                                          color = "transparent"),
+          strip.text.y = element_text(family = "Alice", 
+                                      color = "grey55",
+                                      size = 20,
+                                      face = "plain",
+                                      margin = margin(l = 15)),
+          plot.margin = margin(12, 0, 12, 6),
+          panel.background = element_rect(fill = "grey85", colour = NA),
+          panel.spacing = unit(20, "pt"))
+
+map_density + map_fur + plot_layout(widths = c(1, 0.4))
+```
+
+```{r full-panel, fig.width = 13, fig.height = 12.8}
+ggsave(here::here("plots", "2019_44", "2019_44_squirrels.pdf"), width = 13, height = 12.8, device = cairo_pdf)
+```
+
+***
+
+```{r session-info}
+sessionInfo()
+```
+
