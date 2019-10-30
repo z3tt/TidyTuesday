@@ -114,11 +114,11 @@ map_fur <-
           plot.margin = margin(12, 0, 12, 6),
           panel.background = element_rect(fill = "grey85", colour = NA),
           panel.spacing = unit(20, "pt"))
-
-map_density + map_fur + plot_layout(widths = c(1, 0.4))
 ```
 
 ```{r full-panel, fig.width = 13, fig.height = 12.8}
+map_density + map_fur + plot_layout(widths = c(1, 0.4))
+
 ggsave(here::here("plots", "2019_44", "2019_44_squirrels.pdf"), width = 13, height = 12.8, device = cairo_pdf)
 ```
 
