@@ -33,7 +33,8 @@ theme_update(rect = element_rect(fill = "#f2eadf"),
              axis.text = element_blank(),
              axis.title = element_blank(),
              axis.ticks = element_blank(),
-             panel.border = element_rect(color = "grey55", size = 2))
+             panel.border = element_rect(color = "grey55", 
+                                         size = 2))
 ```
 
 ```{r data}
@@ -51,20 +52,21 @@ map_density <-
                                       size = 1.25) +
     scale_x_continuous(limits = c(-73.982, -73.9495)) +
     scale_y_continuous(limits = c(40.7648, 40.8)) +
-    #scale_color_gradientn(colors = wesanderson::wes_palette("Zissou1", 100, type = "continuous"))
-    #scico::scale_color_scico("lajolla", direction = -1)
     rcartocolor::scale_color_carto_c(palette = "Sunset", 
                                      direction = -1,
                                      name = "Number of Squirrel Sightings\nin NYC's Central Park",
                                      guide = guide_colorbar(direction = "horizontal",
                                                             barheight = unit(3, units = "mm"), 
                                                             barwidth = unit(100, units = "mm"),
-                                                            draw.ulim = FALSE, title.position = 'top',
-                                                            title.hjust = 0.5, label.hjust = 0.5)) +
+                                                            draw.ulim = FALSE, 
+                                                            title.position = 'top',
+                                                            title.hjust = 0.5, 
+                                                            label.hjust = 0.5)) +
     
     annotate("text", x = -73.9625, y = 40.786, 
              label = "Jacqueline Kennedy\nOnassis Reservoir",
-             family = "Alice", color = "#2e85b0", size = 4.5, fontface = "bold") +
+             family = "Alice", fontface = "bold", 
+             color = "#2e85b0", size = 4.5) +
     labs(caption = "  Visualization by Cédric Scherer • Data: NYC Squirrel Census • Map: OpenStreetMap") +
     theme(legend.position = c(0.3, 0.905),
           legend.title = element_text(family = "Alice",
@@ -94,9 +96,11 @@ map_fur <-
   mutate(primary_fur_color = glue::glue("{primary_fur_color} Squirrels")) %>% 
   ggplot() +
     geom_sf(data = cp, color = "grey65", size = 0.3) +
-    geom_point(aes(long, lat, fill = primary_fur_color, alpha = primary_fur_color),
-               shape = 21, color = "grey20", size = 1.2, 
-               stroke = 0.3) +
+    geom_point(aes(long, lat, 
+                   fill = primary_fur_color,
+                   alpha = primary_fur_color),
+               shape = 21, color = "grey20", 
+               size = 1.2, stroke = 0.3) +
     scale_x_continuous(limits = c(-73.982, -73.9495)) +
     scale_y_continuous(limits = c(40.7648, 40.8)) +
     scale_fill_manual(values = c("black", "#d2691e", "grey60"),
@@ -119,7 +123,8 @@ map_fur <-
 ```{r full-panel, fig.width = 13, fig.height = 12.8}
 map_density + map_fur + plot_layout(widths = c(1, 0.4))
 
-ggsave(here::here("plots", "2019_44", "2019_44_squirrels.pdf"), width = 13, height = 12.8, device = cairo_pdf)
+ggsave(here::here("plots", "2019_44", "2019_44_squirrels.pdf"), 
+       width = 13, height = 12.8, device = cairo_pdf)
 ```
 
 ***
