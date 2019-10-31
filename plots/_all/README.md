@@ -4,6 +4,39 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
+### [Week 2019/44](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_44)️ 🐿️ NYC Squirrels by [Squirrel Census](https://data.cityofnewyork.us/Environment/2018-Central-Park-Squirrel-Census-Squirrel-Data/vfnx-vebw)
+![./plots/2019_44/2019_44_squirrels.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_44/2019_44_squirrels.png)
+
+**Reversed color palette for the 50% who find it more intuitive this way:**
+<br>
+![./plots/2019_44/2019_44_squirrels_rev.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_44/2019_44_squirrels_rev.png)
+
+**Different Color palette which makes it more intuitive to read for everyone (maybe):**
+<br>
+![./plots/2019_44/2019_44_squirrels_burg.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_44/2019_44_squirrels_burg.png)
+
+***
+
+### [Week 2019/42](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_42)️ 🚘 Big Cars by [EPA](https://www.fueleconomy.gov/feg/download.shtml)
+
+**Animation with start sequence showing MPG on the highway:**
+<br>
+![./plots/2019_42/2019_42_big_cars_highway.gif](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_42/2019_42_big_cars_highway.gif)
+
+**Plot of savings of electric cars:**
+<br>
+![./plots/2019_42/2019_42_big_cars_savings.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_42/2019_42_big_cars_savings.png)
+
+**Original animation showing MPG in the city:**
+<br>
+![./plots/2019_42/2019_42_big_cars_city.gif](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_42/2019_42_big_cars_city.gif)
+
+**Version with varying speed of the original version [as suggested by Jon Harmon](https://twitter.com/JonTheGeek/status/1186231746507018241):**
+<br>
+![./plots/2019_42/2019_42_big_cars_city_vary.gif](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_42/2019_42_big_cars_city_vary.gif)
+
+***
+
 ### [Week 2019/40](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_40)️ 🍕 Pizza Ratings by [Jared Lander](https://twitter.com/jaredlander/status/1178122846419193858?s=20) & [Bartools Sports](https://github.com/tylerjrichards/Barstool_Pizza)
 
 **Ratings at the NYC R Meetups by Jared Lander:**  
