@@ -142,7 +142,7 @@ animate(df_cars_anim,
         fps = 10, detail = 5, 
         start_pause = 5, end_pause = 10,
         renderer = gifski_renderer(here::here("plots", "2019_42", 
-                                              "2019_42_big_cars_city.gif")))
+                                              "2019_42_BigCars_City.gif")))
 ```
 
 ## Animation city mpg with varying speed
@@ -232,7 +232,7 @@ animate(df_cars_anim,
         fps = 10, detail = 5, 
         start_pause = 5, end_pause = 10,
         renderer = gifski_renderer(here::here("plots", "2019_42", 
-                                              "2019_42_big_cars_city_vary.gif")))
+                                              "2019_42_BigCars_City_vary.gif")))
 ```
 
 ## Animation of highway mpg with race start sequence
@@ -365,7 +365,7 @@ df_cars_anim_high <-
 animate(df_cars_anim_high, width = 1300, height = 950, 
         nframes = 570, fps = 50, detail = 5, end_pause = 50,
         renderer = gifski_renderer(here::here("plots", "2019_42", 
-                                              "2019_42_big_cars_highway.gif")))
+                                              "2019_42_BigCars_Highway.gif")))
 ```
 
 ## Plot money savings
@@ -445,7 +445,7 @@ df_cars %>%
            ))
 
 ggsave(here::here("plots", "2019_42", 
-                  "2019_42_big_cars_savings.png"), 
+                  "2019_42_BigCars_Savings.png"), 
        width = 16, height = 10, dpi = 300)
 ```
 
