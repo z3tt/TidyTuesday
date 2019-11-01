@@ -46,8 +46,8 @@ cp <- sf::read_sf(dsn = here::here("data", "shp_CentralPark", "CentralPark.shp")
 ```{r map-squirrel-density}
 map_density <- 
   ggplot(df_squirrels) +
-    geom_sf(data = cp, color = "grey65") +
-    geom_point(aes(long, lat), size = 1.5, color = "grey55") +
+    geom_sf(data = cp, color = "grey70") +
+    geom_point(aes(long, lat), size = 1.8, color = "grey55") +
     ggpointdensity::geom_pointdensity(aes(long, lat),
                                       adjust = 0.001,
                                       size = 1.2) +
@@ -55,7 +55,7 @@ map_density <-
     scale_y_continuous(limits = c(40.7648, 40.8)) +
     rcartocolor::scale_color_carto_c(palette = "Sunset", 
                                      direction = -1,
-                                     breaks = c(4, 46, 86),
+                                     breaks = c(4, 45, 86),
                                      labels = c("low", "**<span style='font-family:Cambria'>←  </span> Clustering of Sightings <span style='font-family:Cambria'>  →</span>**", "high"),
                                      name = "Squirrel Sightings\nin NYC's Central Park",
                                      guide = guide_colorbar(direction = "horizontal",
@@ -72,13 +72,13 @@ map_density <-
              family = "Alice", fontface = "bold", 
              color = "#2e85b0", size = 4.5) +  ## 580000 in combination with palette = "Burg"
     labs(caption = "  Visualization by Cédric Scherer • Data: NYC Squirrel Census • Map: OpenStreetMap") +
-    theme(legend.position = c(0.3, 0.905),
+    theme(legend.position = c(0.295, 0.9),
           legend.title = element_text(family = "Alice",
-                                     size = 20,
+                                     size = 26,
                                      face = "bold",
                                      color = "grey40",
                                      lineheight = 1.025,
-                                     margin = margin(b = 6)), 
+                                     margin = margin(b = 4)), 
           legend.text = element_markdown(family = "Alice",
                                      size = 15,
                                      color = "grey40"),
@@ -99,7 +99,7 @@ map_fur <-
   filter(!is.na(primary_fur_color)) %>% 
   mutate(primary_fur_color = glue::glue("{primary_fur_color} Squirrels")) %>% 
   ggplot() +
-    geom_sf(data = cp, color = "grey65", size = 0.3) +
+    geom_sf(data = cp, color = "grey70", size = 0.3) +
     geom_point(aes(long, lat, 
                    fill = primary_fur_color,
                    alpha = primary_fur_color),
@@ -116,7 +116,7 @@ map_fur <-
                                           color = "transparent"),
           strip.text.y = element_text(family = "Alice", 
                                       color = "grey55",
-                                      size = 20,
+                                      size = 22,
                                       face = "bold",
                                       margin = margin(l = 15)),
           plot.margin = margin(12, 0, 12, 6),
@@ -127,7 +127,7 @@ map_fur <-
 ```{r full-panel, fig.width = 13, fig.height = 12.8}
 map_density + map_fur + plot_layout(widths = c(1, 0.4))
 
-ggsave(here::here("plots", "2019_44", "2019_44_squirrels.pdf"), 
+ggsave(here::here("plots", "2019_44", "2019_44_Squirrels.pdf"), 
        width = 13, height = 12.8, device = cairo_pdf)
 ```
 
