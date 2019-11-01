@@ -47,18 +47,22 @@ cp <- sf::read_sf(dsn = here::here("data", "shp_CentralPark", "CentralPark.shp")
 map_density <- 
   ggplot(df_squirrels) +
     geom_sf(data = cp, color = "grey65") +
-    geom_point(aes(long, lat), size = 1.8, color = "grey55") +
+    geom_point(aes(long, lat), size = 1.5, color = "grey55") +
     ggpointdensity::geom_pointdensity(aes(long, lat),
-                                      size = 1.25) +
+                                      adjust = 0.001,
+                                      size = 1.2) +
     scale_x_continuous(limits = c(-73.982, -73.9495)) +
     scale_y_continuous(limits = c(40.7648, 40.8)) +
     rcartocolor::scale_color_carto_c(palette = "Sunset", 
                                      direction = -1,
-                                     name = "Number of Squirrel Sightings\nin NYC's Central Park",
+                                     breaks = c(4, 46, 86),
+                                     labels = c("low", "**<span style='font-family:Cambria'>←  </span> Clustering of Sightings <span style='font-family:Cambria'>  →</span>**", "high"),
+                                     name = "Squirrel Sightings\nin NYC's Central Park",
                                      guide = guide_colorbar(direction = "horizontal",
                                                             barheight = unit(3, units = "mm"), 
                                                             barwidth = unit(100, units = "mm"),
                                                             draw.ulim = FALSE, 
+                                                            ticks.colour = "transparent",
                                                             title.position = 'top',
                                                             title.hjust = 0.5, 
                                                             label.hjust = 0.5)) +
@@ -66,7 +70,7 @@ map_density <-
     annotate("text", x = -73.9625, y = 40.786, 
              label = "Jacqueline Kennedy\nOnassis Reservoir",
              family = "Alice", fontface = "bold", 
-             color = "#2e85b0", size = 4.5) +
+             color = "#2e85b0", size = 4.5) +  ## 580000 in combination with palette = "Burg"
     labs(caption = "  Visualization by Cédric Scherer • Data: NYC Squirrel Census • Map: OpenStreetMap") +
     theme(legend.position = c(0.3, 0.905),
           legend.title = element_text(family = "Alice",
@@ -75,7 +79,7 @@ map_density <-
                                      color = "grey40",
                                      lineheight = 1.025,
                                      margin = margin(b = 6)), 
-          legend.text = element_text(family = "Alice",
+          legend.text = element_markdown(family = "Alice",
                                      size = 15,
                                      color = "grey40"),
           legend.background = element_rect(fill = "#f2eadf", 
@@ -86,7 +90,7 @@ map_density <-
                                       color = "grey40", 
                                       hjust = 0),
           plot.margin = margin(12, 6, 12, 18),
-          panel.background = element_rect(fill = "grey85", colour = NA))
+          panel.background = element_rect(fill = "grey90", colour = NA))
 ```
 
 ```{r map-fur-color}
@@ -100,12 +104,12 @@ map_fur <-
                    fill = primary_fur_color,
                    alpha = primary_fur_color),
                shape = 21, color = "grey20", 
-               size = 1.2, stroke = 0.3) +
+               size = 1.2, stroke = 0.2) +
     scale_x_continuous(limits = c(-73.982, -73.9495)) +
     scale_y_continuous(limits = c(40.7648, 40.8)) +
     scale_fill_manual(values = c("black", "#d2691e", "grey60"),
                       guide = F) +
-    scale_alpha_manual(values = c(0.6, 0.6, 0.2),
+    scale_alpha_manual(values = c(0.4, 0.4, 0.2),
                       guide = F) +
     facet_grid(primary_fur_color~.) +
     theme(strip.background = element_rect(fill = "transparent",
@@ -113,10 +117,10 @@ map_fur <-
           strip.text.y = element_text(family = "Alice", 
                                       color = "grey55",
                                       size = 20,
-                                      face = "plain",
+                                      face = "bold",
                                       margin = margin(l = 15)),
           plot.margin = margin(12, 0, 12, 6),
-          panel.background = element_rect(fill = "grey85", colour = NA),
+          panel.background = element_rect(fill = "grey90", colour = NA),
           panel.spacing = unit(20, "pt"))
 ```
 
