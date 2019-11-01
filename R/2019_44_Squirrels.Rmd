@@ -55,7 +55,7 @@ map_density <-
     scale_y_continuous(limits = c(40.7648, 40.8)) +
     rcartocolor::scale_color_carto_c(palette = "Sunset", 
                                      direction = -1,
-                                     breaks = c(4, 45, 86),
+                                     breaks = c(4, 44.5, 86),
                                      labels = c("low", "**<span style='font-family:Cambria'>←  </span> Clustering of Sightings <span style='font-family:Cambria'>  →</span>**", "high"),
                                      name = "Squirrel Sightings\nin NYC's Central Park",
                                      guide = guide_colorbar(direction = "horizontal",
@@ -129,6 +129,39 @@ map_density + map_fur + plot_layout(widths = c(1, 0.4))
 
 ggsave(here::here("plots", "2019_44", "2019_44_Squirrels.pdf"), 
        width = 13, height = 12.8, device = cairo_pdf)
+```
+
+## Hex map
+
+```{r hex-map, fig.width = 11.5, fig.height = 12}
+ggplot(df_squirrels) + 
+  geom_hex(aes(long, lat, color = ..count..)) + 
+  coord_fixed() + 
+  scale_x_continuous(labels = scales::unit_format(accuracy = 0.01, sep = "", unit = "°W"), position = "top") + 
+  scale_y_continuous(labels = scales::unit_format(accuracy = 0.01, sep = "", unit = "°N")) +
+  rcartocolor::scale_color_carto_c(palette = "Sunset", name = "Number of Squirrels Counted\nin NYC's Central Park", 
+                                   breaks = c(1,seq(5, 40, by = 5)),
+                                   guide = guide_colorbar(barheight = unit(5, units = "mm"), 
+                                                          barwidth = unit(120, units = "mm"),
+                                                          direction = "horizontal",
+                                                          title.position = "top",
+                                                          title.hjust = 0.5)) +
+  rcartocolor::scale_fill_carto_c(palette = "Sunset", guide = F) +
+  annotate("text", x = -73.963, y = 40.786, 
+             label = "Jacqueline Kennedy\nOnassis Reservoir",
+             family = "Alice", fontface = "bold", 
+             color = "#2e85b0", size = 4.5) +
+  labs(x = NULL, y = NULL, caption = "\nVisualization by Cédric Scherer • Data by NYC Squirrel Census") + 
+  theme_light() + 
+  theme(axis.text = element_text(family = "Roboto Mono", size = 15, color = "grey50"),
+        panel.grid.minor = element_blank(), 
+        plot.caption = element_text(family = "Alice", size = 13, color = "grey50"),
+        legend.position = c(0.28, 0.86), 
+        legend.title = element_text(size = 25, family = "Alice", face = "bold"), 
+        legend.text = element_text(family = "Alice", size = 20, color = "grey50"), 
+        legend.background = element_rect(fill = NA))
+
+ggsave(here::here("plots", "2019_44", "2019_44_Squirrels_hex.pdf"), width = 11.5, height = 12, device = cairo_pdf)
 ```
 
 ***

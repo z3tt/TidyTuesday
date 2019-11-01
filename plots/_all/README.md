@@ -12,9 +12,13 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 <br>
 ![./plots/2019_44/2019_44_Squirrels_rev.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_44/2019_44_Squirrels_rev.png)
 
-**Different Color palette which makes it more intuitive to read for everyone (maybe):**
+**Different color palette which makes it more intuitive to read for everyone (maybe):**
 <br>
 ![./plots/2019_44/2019_44_Squirrels_burg.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_44/2019_44_Squirrels_burg.png)
+
+**Hex map of squirrel sightings:**
+<br>
+![./plots/2019_44/2019_44_squirrels_hex.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_44/2019_44_squirrels_hex.png)
 
 ***
 
