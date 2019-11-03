@@ -1,0 +1,182 @@
+---
+title: "TidyTuesday 2018/03 - Gobal Mortality by OurWorldInData.org"
+author: "Cedric Scherer"
+date: "30th of October 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(sf)
+library(maptools)
+library(cartogram)
+
+## ggplot theme updates
+source(here::here("theme", "tidy_grey.R"))
+
+theme_update(
+  axis.ticks = element_blank(),
+  axis.text = element_blank(),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.border = element_rect(color = NA),
+  plot.title = element_text(family = "Bitter", size = 32, hjust = 0.5),
+  plot.subtitle = element_text(family = "Montserrat", color = "grey80", size = 18, face = "bold", hjust = 0.5, margin = margin(b = 6)),
+  plot.caption = element_text(family = "Bitter", color = "grey60", size = 14, hjust = 0.5, lineheight = 1.2),
+  legend.position = "bottom",
+  legend.title = element_text(family = "Bitter", color = "grey60", face = "bold", size = 14),
+  legend.text = element_text(family = "Roboto Mono", color = "grey60", size = 10)
+)
+```
+
+```{r data}
+df_mortality <- readxl::read_excel(here::here("data", "global_mortality.xlsx")) %>% 
+  janitor::clean_names()
+
+data("wrld_simpl")
+```
+
+```{r carto-calculations, eval = F}
+sf_mortality <- 
+  wrld_simpl %>%
+  st_as_sf() %>%
+  st_transform(crs = "+proj=robin") %>% 
+  mutate(country_code = as.character(ISO3)) %>% 
+  left_join(df_mortality) %>% 
+  filter(year == 2016)
+
+## causes with more than 20 percent in at least 1 country
+df_mortality %>% 
+  gather(cause, percent, -country, -country_code, -year) %>% 
+  filter(percent >= 25) %>% 
+  distinct(cause)
+
+## calculate carto data
+carto_cvd <-
+  sf_mortality %>% 
+  cartogram_cont("cardiovascular_diseases_percent", itermax = 150)
+
+carto_cancer <-
+  sf_mortality %>% 
+  cartogram_cont("cancers_percent", itermax = 150)
+
+carto_diabetes <-
+  sf_mortality %>% 
+  cartogram_cont("diabetes_percent", itermax = 150)
+
+carto_hiv <-
+  sf_mortality %>% 
+  cartogram_cont("hiv_aids_percent", itermax = 150)
+
+carto_malaria2 <-
+  sf_mortality %>% 
+  mutate(malaria_percent = if_else(malaria_percent == 0, 0.01, malaria_percent)) %>% 
+  cartogram_cont("malaria_percent", itermax = 150)
+
+carto_conflict <-
+  sf_mortality %>% 
+  mutate(conflict_percent = if_else(conflict_percent == 0, 0.001, conflict_percent)) %>% 
+  cartogram_cont("conflict_percent", itermax = 150)
+  
+cartos <- c(carto_cvd, carto_cancer, carto_diabetes, carto_hiv, carto_malaria, carto_conflict)
+saveRDS(cartos, here::here("plots", "2018_03", "cartos.Rds"))
+```
+
+
+```{r cartograms}
+base_map <-
+  ggplot() +
+    rcartocolor::scale_fill_carto_c(palette = "BluYl", 
+                                    direction = -1, 
+                                    guide = F,
+                                    limits = c(0, 65.2)) +
+  scale_x_continuous(breaks = c()) +
+  scale_y_continuous(breaks = c())
+  
+map_cdv <- 
+  base_map +
+  geom_sf(data = carto_cvd, 
+          aes(geometry = geometry, 
+              fill = cardiovascular_diseases_percent),
+          color = "transparent", size = 0.1) +
+  labs(subtitle = "Cardiovascular Diseases")
+  
+map_cancer <- 
+  base_map +
+  geom_sf(data = carto_cancer, 
+          aes(geometry = geometry, 
+              fill = cancers_percent),
+          color = "transparent", size = 0.1) +
+  labs(title = "\nWhat do most people die from?\n\n",
+       subtitle = "Cancers",
+       caption = "\n\nThe leading causes of death across the world still vary significantly.\nThese Cartograms show causes of deaths in 2016 that exceeded 20 percent of total deaths in at least 1 country.\n\n")
+
+map_diabetes <- 
+  base_map +
+  geom_sf(data = carto_diabetes, 
+          aes(geometry = geometry, 
+              fill = diabetes_percent),
+          color = "transparent", size = 0.1) +
+  labs(subtitle = "Diabetes")
+
+map_hiv <- 
+  base_map +
+  geom_sf(data = carto_hiv, 
+          aes(geometry = geometry, 
+              fill = hiv_aids_percent),
+          color = "transparent", size = 0.1) +
+  labs(subtitle = "HIV Infections & Aids")
+
+map_malaria <- 
+  ggplot(carto_malaria) +
+  geom_sf(aes(geometry = geometry, 
+              fill = malaria_percent),
+          color = "transparent", size = 0.1) +
+  rcartocolor::scale_fill_carto_c(palette = "BluYl", 
+                                  direction = -1, 
+                                  name = "\n\nShare of Deaths",
+                                  limits = c(0, 65.2),  ## max percent overall
+                                  breaks = seq(0, 65, by = 5),
+                                  labels = glue::glue("{seq(0, 65, by = 5)}%")) +
+  guides(fill = guide_colorbar(barheight = unit(2.3, units = "mm"),  
+                               barwidth = unit(230, units = "mm"),
+                               direction = "horizontal",
+                               ticks.colour = "grey20",
+                               title.position = "top",
+                               label.position = "top",
+                               title.hjust = 0.5)) +
+  labs(subtitle = "Malaria Infections", 
+       caption = "The data refers to the specific cause of death, which is distinguished from risk factors for death, such as air pollution, diet and other lifestyle factors.\n\n\n\nVisualization by Cédric Scherer  •  Data by OurWorldInData.org\n") +
+  theme(plot.caption = element_text(size = 9))
+
+map_conflict <- 
+  base_map +
+  geom_sf(data = carto_conflict, 
+          aes(geometry = geometry, 
+              fill = conflict_percent),
+          color = "transparent", size = 0.1) +
+  labs(subtitle = "Wars & Conflicts")
+```
+
+```{r full-panel, fig.width = 18, fig.height = 12.5}
+map_cdv + map_cancer + map_diabetes + map_hiv + map_malaria + map_conflict + plot_layout(ncol = 3)
+
+ggsave(here::here("plots", "2018_03", "2018_03_Global_Mortality.pdf"), width = 18, height = 12.5, device = cairo_pdf)
+```
+
+***
+
+```{r session-info}
+sessionInfo()
+```
+

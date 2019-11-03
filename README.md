@@ -1,9 +1,13 @@
 # TidyTuesday
-My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).  
+My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday) (in order of contributioon).  
 Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
 All contributions and full versions can be found [here](https://github.com/Z3tt/TidyTuesday/tree/master/plots/_all).
 
+***
+
+### [Week 2018/03](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_44) ⚱️ Global Mortality by [OurWorldInData.org](https://ourworldindata.org/plastic-pollution)
+![./plots/2018_03/2018_03_Global_Mortality.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2018_03/2018_03_Global_Mortality.png)
 ***
 
 ### [Week 2019/44](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_44)️ 🐿️ NYC Squirrels by [Squirrel Census](https://data.cityofnewyork.us/Environment/2018-Central-Park-Squirrel-Census-Squirrel-Data/vfnx-vebw)
@@ -72,7 +76,7 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ***
 
-### [Week 2019/21](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_21)️ 🚮 Global Plastic Waste by [Our World In Data](https://ourworldindata.org/plastic-pollution)
+### [Week 2019/21](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_21)️ 🚮 Global Plastic Waste by [OurWorldInData.org](https://ourworldindata.org/plastic-pollution)
 ![./plots/2019_21/2019_21_PlasticWaste.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_21/2019_21_PlasticWaste.png)
 
 ***
@@ -92,11 +96,6 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ***
 
-### [Week 2019/17](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_17️) 🐉 Anime Data by [MyAnimeList.net](https://myanimelist.net/)
-![./plots/2019_17/2019_17_Animes.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_17/2019_17_animes.png)
-
-***
-
 ### [Week 2019/16](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_16)️ 📊 Data Viz Mistakes by [The Economist](https://medium.economist.com/mistakes-weve-drawn-a-few-8cdd8a42d368)
 ![./plots/2019_16/2019_16_DataVizMistakes_light.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_16/2019_16_DataVizMistakes_light.png)
 
@@ -104,6 +103,11 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ### [Week 2019/14](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_14)️ 🚴 Seattle Bike Traffic by [seattle.gov](https://www.seattletimes.com/seattle-news/transportation/what-we-can-learn-from-seattles-bike-counter-data/)
 ![./plots/2019_14/2019_14_bikes_month.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_14/2019_14_SeattleBikes_month.png)
+
+***
+
+### [Week 2019/17](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_17️) 🐉 Anime Data by [MyAnimeList.net](https://myanimelist.net/)
+![./plots/2019_17/2019_17_Animes.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_17/2019_17_animes.png)
 
 ***
 
