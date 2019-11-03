@@ -1,5 +1,5 @@
 ---
-title: "TidyTuesday 2019/21 - "
+title: "TidyTuesday 2019/21 - Global Plastic Waste by OurWorldInData.org"
 author: "Cedric Scherer"
 date: "7th of May 2019"
 output:
@@ -158,7 +158,7 @@ caption <- ggplot(data.frame(x = 1:2, y = 1:10)) +
         axis.text = element_blank())
 ```
 
-```{r full-panel}
+```{r full-panel, fig.width = 14, fig.height = 5.2}
 title + bar_waste + map_waste_prop + bar_mismanaged + caption +
   plot_layout(widths = c(0, 0.27, 1, 0.25, 0), nrow = 1)
 
