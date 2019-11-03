@@ -18,6 +18,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = F)
 ## packages
 library(tidyverse)
 library(sf)
+library(ggtext)
 library(ggpointdensity)
 library(patchwork)
 
@@ -134,12 +135,17 @@ ggsave(here::here("plots", "2019_44", "2019_44_Squirrels.pdf"),
 ## Hex map
 
 ```{r hex-map, fig.width = 11.5, fig.height = 12}
+img_a <- png::readPNG(here::here("img", "compass.png")) 
+a <- grid::rasterGrob(img_a, interpolate = T) 
+
 ggplot(df_squirrels) + 
-  geom_hex(aes(long, lat, color = ..count..)) + 
+  geom_hex(aes(long, lat, color = ..count..), size = 0.03) + 
   coord_fixed() + 
-  scale_x_continuous(labels = scales::unit_format(accuracy = 0.01, sep = "", unit = "°W"), position = "top") + 
+  scale_x_continuous(labels = scales::unit_format(accuracy = 0.01, sep = "", unit = "°W"), 
+                     position = "top") + 
   scale_y_continuous(labels = scales::unit_format(accuracy = 0.01, sep = "", unit = "°N")) +
-  rcartocolor::scale_color_carto_c(palette = "Sunset", name = "Number of Squirrels Counted\nin NYC's Central Park", 
+  rcartocolor::scale_color_carto_c(palette = "Sunset", 
+                                   name = "Number of Squirrels Counted\nin NYC's Central Park", 
                                    breaks = c(1,seq(5, 40, by = 5)),
                                    guide = guide_colorbar(barheight = unit(5, units = "mm"), 
                                                           barwidth = unit(120, units = "mm"),
@@ -151,6 +157,7 @@ ggplot(df_squirrels) +
              label = "Jacqueline Kennedy\nOnassis Reservoir",
              family = "Alice", fontface = "bold", 
              color = "#2e85b0", size = 4.5) +
+  annotation_custom(a, xmin = -73.957, xmax = -73.953, ymin = 40.773, ymax = 40.777) +
   labs(x = NULL, y = NULL, caption = "\nVisualization by Cédric Scherer • Data by NYC Squirrel Census") + 
   theme_light() + 
   theme(axis.text = element_text(family = "Roboto Mono", size = 15, color = "grey50"),
