@@ -1,5 +1,5 @@
 # TidyTuesday
-My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday) (in order of contributioon).  
+My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday) (in order of contribution).  
 Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
 All contributions and full versions can be found [here](https://github.com/Z3tt/TidyTuesday/tree/master/plots/_all).
