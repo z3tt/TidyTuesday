@@ -479,7 +479,7 @@ map_hex_diversity <-
             fontface = "bold") +
   coord_map() +
   rcartocolor::scale_fill_carto_c(palette = "SunsetDark", 
-                                  name = "Simpson diversity index\nduring the 2016/17 school year ",
+                                  name = "Simpson diversity index\nduring the 2016/17 school year",
                                   limits = c(0, 0.65)) +
   guides(fill = guide_colorbar(barheight = unit(2.5, units = "mm"),  
                                barwidth = unit(90, units = "mm"),
@@ -500,7 +500,7 @@ map_hex_change <-
             family = "Montserrat",
             fontface = "bold") +
   coord_map() +
-  rcartocolor::scale_fill_carto_c(palette = "OrYel",
+  rcartocolor::scale_fill_carto_c(palette = "PurpOr", na.value = "grey85",
                                   name = "Change in the Simpson diversity index\ncompared to the 1994/95 school year") +
   guides(fill = guide_colorbar(barheight = unit(2.5, units = "mm"),  
                                barwidth = unit(90, units = "mm"),
