@@ -21,9 +21,13 @@ library(ggbeeswarm)
 library(biscale)
 library(fiftystater)
 library(geofacet)
-library(patchwork)
 library(cowplot)
+library(patchwork)
 library(ggtext)
+library(broom)
+library(geojsonio)
+library(rgdal)
+library(rgeos)
 
 ## ggplot theme updates
 source(here::here("theme", "tidy_grey.R"))
@@ -99,7 +103,7 @@ map <-
              size = 0.01) +  
     expand_limits(x = fifty_states$long, y = fifty_states$lat) +
     fifty_states_inset_boxes() +
-    bi_scale_fill(pal = "GrPink", dim = 3, guide = F) +
+    bi_scale_fill(pal = "Brown", dim = 3, guide = F) +
     coord_map() +
     scale_x_continuous(breaks = NULL) + 
     scale_y_continuous(breaks = NULL) +
@@ -107,10 +111,10 @@ map <-
           panel.border = element_blank()) +
     labs(x = NULL, y = NULL,
          title = "How diverse are schools in the US?", 
-         subtitle = "<br>Bivariate map showing the combination of racial diversity measured as <b style='color:#C85A5A'>Simpson index</b>, a quantitative diversity measure,<br>and the <b style='color:#64ACBE'>proportion of students with white ethnicity</b> during the <b>school year 2016–2017</b>.")
+         subtitle = "<br>Bivariate map showing the combination of racial diversity measured as <b style='color:#C8B35A'>Simpson index</b>, a quantitative diversity measure,<br>and the <b style='color:#9972AF'>proportion of students with white ethnicity</b> during the <b>school year 2016–2017</b>.")
 
 legend <- 
-  bi_legend(pal = "GrPink",
+  bi_legend(pal = "Brown",
             dim = 3,
             xlab = "Diversity ",
             ylab = "% Whites ") +
@@ -148,10 +152,6 @@ beeswarm_simpson <-
   mutate(ST = fct_reorder(ST, -median)) %>% 
   ggplot(aes(ST, simpson,
              fill = diff)) + 
-    geom_hline(aes(yintercept = median_all), 
-               color = "grey70", 
-               linetype = "dashed",
-               size = 0.1) +
     ggbeeswarm::geom_beeswarm(aes(ST, simpson_l), 
                               priority = 'descending', 
                               cex = 0.32,
@@ -165,21 +165,25 @@ beeswarm_simpson <-
                               stroke = 0.05,
                               color = "white", 
                               shape = 21) +
+    geom_hline(aes(yintercept = median_all), 
+               color = "grey50", 
+               linetype = "dashed",
+               size = 0.1) +
     geom_point(aes(ST, median),
                color = "grey10", 
                shape = 21, 
                size = 3,
                stroke = 0.6) +
     scale_fill_gradient2(low = "#E8E8E8", 
-                         mid = "#E4ACAC",
-                         high = "#C85A5A",
+                         mid = "#E4D9AC",
+                         high = "#C8B35A",
                          guide = F) +
     theme(axis.text.x = element_text(size = 9,
                                      face = "bold"),
           axis.text.y = element_text(size = 9, 
                                      family = "Roboto Mono")) +
     labs(x = NULL, y = NULL, title = NULL,
-         subtitle = "<b style='color:#E4ACAC'>Simpson diversity index</b> for all schools grouped per state, ranked from states with <b style='color:#C85A5A'>high diversity</b> to those with <b style='color:#E8E8E8'>low diversity</b>.<br>Larger dots represent each state's median diversity with darker colored points laying below and lighter colored points laying above this value.<br>")
+         subtitle = "<b style='color:#E4D9AC'>Simpson diversity index</b> for all schools grouped per state, ranked from states with <b style='color:#C8B35A'>high diversity</b> to those with <b style='color:#E8E8E8'>low diversity</b>.<br>Larger dots represent each state's median diversity with darker colored points laying below and lighter colored points laying above this value.<br>")
 ```
 
 ```{r beeswarm-whites}
@@ -201,14 +205,10 @@ beeswarm_whites <-
   mutate(ST = fct_reorder(ST, median)) %>% 
   ggplot(aes(ST, median,
              fill = diff)) + 
-    geom_hline(aes(yintercept = median_all), 
-               color = "grey70", 
-               linetype = "dashed",
-               size = 0.1) +
     ggbeeswarm::geom_beeswarm(aes(ST, whites_l), 
                               priority = 'descending', 
                               cex = 0.23,
-                              size = 1.5,
+                              size = 1.2,
                               stroke = 0.05,
                               color = "white", 
                               shape = 21) +
@@ -218,6 +218,10 @@ beeswarm_whites <-
                               stroke = 0.05,
                               color = "grey40", 
                               shape = 21) +
+    geom_hline(aes(yintercept = median_all), 
+               color = "grey50", 
+               linetype = "dashed",
+               size = 0.1) +
     geom_point(aes(ST, median),
                color = "grey10",
                shape = 21, 
@@ -226,15 +230,15 @@ beeswarm_whites <-
     scale_y_continuous(breaks = seq(0, 100, by = 20),
                        labels = glue::glue("{seq(0, 100, by = 20)}%")) +   
     scale_fill_gradient2(low = "#E8E8E8", 
-                         mid = "#B0D5DF",
-                         high = "#07C4f4",
+                         mid = "#CBB8D7",
+                         high = "#9972AF",
                          guide = F) +
     theme(axis.text.x = element_text(size = 9,
                                      face = "bold"),
           axis.text.y = element_text(size = 9,
                                      family = "Roboto Mono")) +
     labs(x = NULL, y = NULL,
-         subtitle = "<br><b style='color:#B0D5DF'>Proportion of white students</b> for all schools grouped per state, ranked from states with <b style='color:#E8E8E8'>few white students</b> to those with <b style='color:#07C4f4'>many white students</b>.<br>Larger dots represent each state's median proportion with lighter colored points laying below and darker colored points laying above this value.<br>",
+         subtitle = "<br><b style='color:#CBB8D7'>Proportion of white students</b> for all schools grouped per state, ranked from states with <b style='color:#E8E8E8'>few white students</b> to those with <b style='color:#9972AF'>many white students</b>.<br>Larger dots represent each state's median proportion with lighter colored points laying below and darker colored points laying above this value.<br>",
          caption = "\n\nVisualization by Cédric Scherer  |  Data: NCES")
 ```
 
@@ -242,9 +246,10 @@ beeswarm_whites <-
 ## panel
 map_legend / beeswarm_simpson / beeswarm_whites + plot_layout(heights = c(1, 0.25, 0.25))
 
-ggsave(here::here("plots", "2019_39", "2019_39_SchoolDiversity.pdf"), 
+ggsave(here::here("plots", "2019_39", "2019_39_SchoolDiversity_brpurp.pdf"), 
        width = 14, height = 17, device = cairo_pdf)
 ```
+
 
 ## Pointdensity plot
 
@@ -273,6 +278,7 @@ df_school_index %>%
 ggsave(here::here("plots", "2019_39", "2019_39_SchoolDiversity_correlation.pdf"),
        width = 11.5, height = 12, device = cairo_pdf)
 ```
+
 
 ## Geofacet
 
@@ -382,6 +388,138 @@ df_school_index %>%
   
 ggsave(here::here("plots", "2019_39", "2019_39_SchoolDiversity_geofacet_raw.pdf"), 
        width = 28, height = 22, device = cairo_pdf)
+```
+
+
+## Hex bin maps 
+
+```{r theme-hex-bin-maps, message=FALSE, warning=FALSE}
+## ggplot theme updates (different theme here, thus reload and new changes)
+source(here::here("theme", "tidy_grey.R"))
+
+theme_set(theme_custom(base_family = "Merriweather Sans"))
+
+theme_update(rect = element_rect(fill = "grey10"),
+             panel.border = element_blank(),
+             axis.ticks = element_blank(),
+             axis.text = element_blank(),
+             axis.title = element_blank(),
+             legend.position = c(0.48, 0.92),
+             legend.title = element_text(size = 12, 
+                                         color = "grey75",
+                                         lineheight = 1.04),
+             legend.text = element_text(family = "Roboto Mono", 
+                                        color = "grey75", 
+                                        size = 11),
+             plot.title = element_text(size = 27,
+                                       hjust = 0.5,
+                                       margin = margin(t = 15, b = 40)),
+             plot.caption = element_text(size = 12, 
+                                         color = "grey45",
+                                         hjust = 0.5,
+                                         margin = margin(t = 30, b = 10)))
+```
+
+```{r hex-bin-maps, fig.width = 15, fig.height = 6.5}
+## load data key state names <-> ISO2
+df_states <- readr::read_csv(here::here("data", "50_us_states_all_data.csv"), col_names = F) %>% 
+  dplyr::select(state = "X2", ISO2 = "X3") %>% 
+  add_row(state = "District of Columbia", ISO2 = "DC")
+
+## load US hex bin map
+map_hex <- geojson_read(here::here("data", "us_states_hexgrid.geojson.json"),  what = "sp")
+
+map_hex@data <-
+  map_hex@data %>%
+  mutate(google_name = gsub(" \\(United States\\)", "", google_name))
+
+## fortify
+map_hex_fortified <- tidy(map_hex, region = "google_name")
+
+## centroids for labels
+centroids <- cbind.data.frame(data.frame(gCentroid(map_hex, byid = T), id = map_hex@data$iso3166_2))
+
+## calculate Simpson index and spread per school year
+df_schools_index_wide <- 
+  df_schools %>% 
+  group_by(ST) %>% 
+  mutate_at(vars(AIAN:Multi), ~ replace_na(., 0)) %>% 
+  mutate(
+    total = AIAN + Asian + Black + Hispanic + White + Multi,
+    prop_whites = median(White)
+  ) %>%
+  ungroup() %>% 
+  mutate(prop_whites = White) %>% 
+  dplyr::select(LEAID, ST, SCHOOL_YEAR, AIAN:Multi, total) %>% 
+  gather(ethnicity, value, -c(LEAID, ST, SCHOOL_YEAR, total)) %>% 
+  filter(value > 0) %>% 
+  group_by(LEAID, ST, SCHOOL_YEAR) %>% 
+  summarize(simpson = (1 - sum(value * (value - 1)) / (100*(100 - 1)))) %>% 
+  group_by(ST, SCHOOL_YEAR) %>% 
+  summarize(simpson = mean(simpson, na.rm = T)) %>% 
+  pivot_wider(names_from = SCHOOL_YEAR, values_from = simpson) %>% 
+  mutate(change = `2016-2017` - `1994-1995`)
+
+## combine data
+df_schools_hex <- 
+  map_hex_fortified %>%
+  left_join(df_states, by = c("id" = "state")) %>% 
+  left_join(df_schools_index_wide, by = c("ISO2" = "ST"))
+
+## hex bin map diversity 2016/17
+map_hex_diversity <-
+ ggplot(df_schools_hex) +
+  geom_polygon(aes(long, lat, 
+                   group = group, 
+                   fill = `2016-2017`), 
+               color = "grey85") +
+  geom_text(data = centroids, 
+            aes(x = x, y = y, label = id),
+            family = "Montserrat",
+            fontface = "bold") +
+  coord_map() +
+  rcartocolor::scale_fill_carto_c(palette = "SunsetDark", 
+                                  name = "Simpson diversity index\nduring the 2016/17 school year ",
+                                  limits = c(0, 0.65)) +
+  guides(fill = guide_colorbar(barheight = unit(2.5, units = "mm"),  
+                               barwidth = unit(90, units = "mm"),
+                               direction = "horizontal",
+                               ticks.colour = "grey10",
+                               title.position = "top",
+                               title.hjust = 0.5))
+
+## hex bin map change diversity
+map_hex_change <-
+ ggplot(df_schools_hex) +
+  geom_polygon(aes(long, lat, 
+                   group = group, 
+                   fill = change), 
+               color = "grey85") +
+  geom_text(data = centroids, 
+            aes(x = x, y = y, label = id),
+            family = "Montserrat",
+            fontface = "bold") +
+  coord_map() +
+  rcartocolor::scale_fill_carto_c(palette = "OrYel",
+                                  name = "Change in the Simpson diversity index\ncompared to the 1994/95 school year",
+                                  direction = -1) +
+  guides(fill = guide_colorbar(barheight = unit(2.5, units = "mm"),  
+                               barwidth = unit(90, units = "mm"),
+                               direction = "horizontal",
+                               ticks.colour = "grey10",
+                               title.position = "top",
+                               title.hjust = 0.5))
+
+## centered title + caption
+title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(title = "United States schools became more racially diverse over the last decades",
+       caption = "Visualization by Cédric Scherer  •  Data by National Center for Education Statistics (NCES)")
+
+## full panel
+map_hex_diversity + title + map_hex_change + plot_layout(nrow = 1, widths = c(1, 0.01, 1))
+
+ggsave(here::here("plots", "2019_39", "2019_39_SchoolDiversity_hex.pdf"), 
+       width = 15, height = 6.5, device = cairo_pdf)
 ```
 
 ***
