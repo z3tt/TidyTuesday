@@ -1,7 +1,7 @@
 ---
 title: "TidyTuesday 2018/03 - Gobal Mortality by OurWorldInData.org"
 author: "Cedric Scherer"
-date: "30th of October 2019"
+date: "3rd of November 2019"
 output:
   html_document:
   theme: paper
