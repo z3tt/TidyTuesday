@@ -1,5 +1,5 @@
 # TidyTuesday
-My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday) (in order of contribution).  
+My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday) (ordered by date of contribution).  
 Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
 All contributions and full versions can be found [here](https://github.com/Z3tt/TidyTuesday/tree/master/plots/_all).
@@ -8,6 +8,7 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ### [Week 2018/03](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_44) ⚱️ Global Mortality by [OurWorldInData.org](https://ourworldindata.org/plastic-pollution)
 ![./plots/2018_03/2018_03_Global_Mortality.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2018_03/2018_03_Global_Mortality.png)
+
 ***
 
 ### [Week 2019/44](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_44)️ 🐿️ NYC Squirrels by [Squirrel Census](https://data.cityofnewyork.us/Environment/2018-Central-Park-Squirrel-Census-Squirrel-Data/vfnx-vebw)
