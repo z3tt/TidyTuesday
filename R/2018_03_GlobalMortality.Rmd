@@ -1,7 +1,7 @@
 ---
 title: "TidyTuesday 2018/03 - Gobal Mortality by OurWorldInData.org"
 author: "Cedric Scherer"
-date: "3rd of November 2019"
+date: "3rd of October 2019"
 output:
   html_document:
   theme: paper
@@ -96,7 +96,7 @@ if(!file.exists(here::here("data", "cartogram-data", "carto_cvd.Rds"))) {
   saveRDS(carto_hiv,      here::here("data", "cartogram-data", "carto_hiv.Rds"))
   saveRDS(carto_malaria,  here::here("data", "cartogram-data", "carto_malaria.Rds"))
   saveRDS(carto_conflict, here::here("data", "cartogram-data", "carto_conflict.Rds"))
-} else {
+}else {
   carto_cvd      <- readRDS(here::here("data", "cartogram-data", "carto_cvd.Rds"))
   carto_cancer   <- readRDS(here::here("data", "cartogram-data", "carto_cancer.Rds"))
   carto_diabetes <- readRDS(here::here("data", "cartogram-data", "carto_diabetes.Rds"))
@@ -178,13 +178,13 @@ map_conflict <-
           aes(geometry = geometry, 
               fill = conflict_percent),
           color = "transparent", size = 0.1) +
-  labs(subtitle = "Wars & Conflicts")
+  labs(subtitle = "War & Conflicts")
 ```
 
 ```{r full-panel, fig.width = 18, fig.height = 12.5}
 map_cdv + map_cancer + map_diabetes + map_hiv + map_malaria + map_conflict + plot_layout(ncol = 3)
 
-ggsave(here::here("plots", "2018_03", "2018_03_Global_Mortality.pdf"), width = 18, height = 12.5, device = cairo_pdf)
+ggsave(here::here("plots", "2018_03", "2018_03_GlobalMortality.pdf"), width = 18, height = 12.5, device = cairo_pdf)
 ```
 
 
@@ -202,7 +202,7 @@ if(!file.exists(here::here("data", "cartogram-data", "carto_alcohol.Rds"))) {
   
   saveRDS(carto_alcohol, here::here("data", "cartogram-data", "carto_alcohol.Rds"))
   readRDS(carto_drugs,   here::here("data", "cartogram-data", "carto_drugs.Rds"))
-} else {
+}else {
   carto_alcohol <- readRDS(here::here("data", "cartogram-data", "carto_alcohol.Rds"))
   carto_drugs   <- readRDS(here::here("data", "cartogram-data", "carto_drugs.Rds"))
 }
