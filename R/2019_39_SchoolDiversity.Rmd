@@ -501,8 +501,7 @@ map_hex_change <-
             fontface = "bold") +
   coord_map() +
   rcartocolor::scale_fill_carto_c(palette = "OrYel",
-                                  name = "Change in the Simpson diversity index\ncompared to the 1994/95 school year",
-                                  direction = -1) +
+                                  name = "Change in the Simpson diversity index\ncompared to the 1994/95 school year") +
   guides(fill = guide_colorbar(barheight = unit(2.5, units = "mm"),  
                                barwidth = unit(90, units = "mm"),
                                direction = "horizontal",
