@@ -9,3 +9,7 @@
 **Geofacet comparing 1994-1995 with 2016-2017:**  
 <br>
 ![./plots/2019_39/2019_39_SchoolDiversity_geofacet.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_39/2019_39_SchoolDiversity_geofacet.png)
+
+**Hex Bin Map created for the #30DayMapChallenge in November 2019:**
+<br>
+![./plots/2019_39/2019_39_SchoolDiversity_hex.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_39/2019_39_SchoolDiversity_hex.png)

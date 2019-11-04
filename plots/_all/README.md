@@ -65,6 +65,10 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 <br>
 ![./plots/2019_39/2019_39_SchoolDiversity_geofacet.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_39/2019_39_SchoolDiversity_geofacet.png)
 
+**Hex Bin Map created for the #30DayMapChallenge in November 2019:**
+<br>
+![./plots/2019_39/2019_39_SchoolDiversity_hex.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2019_39/2019_39_SchoolDiversity_hex.png)
+
 ***
 
 ### [Week 2019/36](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_36)️ 🖥️ Moore's Law by [Wikipedia](https://en.wikipedia.org/wiki/Transistor_count)
