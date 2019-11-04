@@ -6,7 +6,7 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ***
 
-### [Week 2018/03](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_44) ⚱️ Global Mortality by [OurWorldInData.org](https://ourworldindata.org/plastic-pollution)
+### [Week 2018/03](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2018_03) ⚱️ Global Mortality by [OurWorldInData.org](https://ourworldindata.org/what-does-the-world-die-from)
 ![./plots/2018_03/2018_03_Global_Mortality.png](https://github.com/Z3tt/TidyTuesday/blob/master/plots/2018_03/2018_03_Global_Mortality.png)
 
 ***
