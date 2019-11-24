@@ -1,0 +1,132 @@
+---
+title: "#TidyTuesday Week 2018/33: Malaria by World Health Organisation (WHO)"
+author: "Cedric Scherer"
+date: "24th of November 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(sf)
+library(biscale)
+library(cowplot)
+library(extrafont)
+
+extrafont::loadfonts()
+
+theme_set(theme_minimal())
+
+theme_update(
+  axis.ticks = element_blank(),
+  axis.text = element_blank(),
+  panel.grid.major = element_blank(),
+  panel.background = element_rect(color = NA, 
+                                  fill = "white"),
+  plot.background = element_rect(color = "#806A8A", 
+                                 fill = "white",
+                                 size = 5),
+  plot.title = element_text(family = "Changa One", 
+                            color = "black",
+                            size = 44, 
+                            face = "bold",
+                            hjust = 0.5,
+                            margin = margin(t = 36, b = 6)),
+  plot.subtitle = element_text(family = "Changa One", 
+                               color = "#CABED0",
+                               size = 21, 
+                               hjust = 0.5,
+                               margin = margin(t = 6, b = 20)),
+  plot.caption = element_text(family = "Changa One", 
+                              color = "#806A8A", 
+                              size = 21, 
+                              face = "plain",
+                              hjust = 0.5,
+                              margin = margin(t = 0, b = 36))
+)
+```
+
+```{r data-prep}
+df_malaria <- 
+  readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-11-13/malaria_deaths.csv") %>% 
+  rename(malaria_deaths = "Deaths - Malaria - Sex: Both - Age: Age-standardized (Rate) (per 100,000 people)")
+  
+sf_world <- 
+  st_as_sf(rworldmap::getMap(resolution = "low")) %>%
+  st_transform(crs = "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs") %>% 
+  dplyr::select(ISO_A3, continent)
+
+sf_malaria <-
+  sf_world %>% 
+  full_join(df_malaria, by = c("ISO_A3" = "Code"))
+```
+
+```{r map, fig.width = 18, fig.height = 11.9}
+sf_malaria_bi <-
+  sf_malaria %>% 
+  filter(
+    continent == "Africa",
+    !is.na(Year)
+  ) %>% 
+  group_by(ISO_A3) %>% 
+  summarize(
+    var = var(malaria_deaths, na.rm = T),
+    mean = mean(malaria_deaths, na.rm = T)
+  )  %>% 
+  bi_class(x = mean, y = var, style = "quantile", dim = 3)
+
+
+bi_map <- 
+  ggplot(sf_malaria_bi) +
+    geom_sf(data = sf_world %>% filter(continent == "Africa"),
+            color = "grey20",
+            fill = "grey70",
+            lwd = 0.2) +
+    geom_sf(aes(fill = bi_class), 
+            color = "grey20",
+            lwd = 0.2) +
+    bi_scale_fill(pal = "DkViolet", dim = 3, guide = F) +
+    scale_x_continuous(expand = c(0.03, 0.03)) +
+    scale_y_continuous(expand = c(0.03, 0.03), limits = c(-4200000, NA)) +
+    labs(x = NULL, y = NULL,
+         title = "Malaria Death Rates between 1990 and 2016",
+         subtitle = "A bivariate map showing mean and variance of annual Malaria death rates in African countries",
+         caption = "Visualization by Cédric Scherer  •  Data by World Health Organization (WHO) ")
+
+legend <- 
+  bi_legend(pal = "DkViolet",
+            dim = 3,
+            xlab = "Mean ",
+            ylab = "Variance ") +
+  bi_theme(base_family = "Changa One") +
+  theme(rect = element_rect(fill = "grey10"),
+        panel.border = element_blank(),
+        axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title.x = element_text(size = 21,
+                                    color = "#BC7C8F"),
+        axis.title.y = element_text(size = 21,
+                                    color = "#89A1C8"))
+
+map_legend <- 
+  ggdraw() +
+  draw_plot(bi_map, 0, 0, 1, 1) +
+  draw_plot(legend, 0.15, 0.25, 0.2, 0.2)
+
+ggsave(here::here("plots", "2018_33", "2018_33_MalariaDeaths.pdf"),
+       plot = map_legend, width = 15, height = 16.5, device = cairo_pdf)
+```
+
+***
+  
+```{r session-info}
+sessionInfo()
+```
