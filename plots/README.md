@@ -6,6 +6,11 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ***
 
+### [Week 2018/33](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2018_33) 🦟 Malaria Deaths by [WHO via OurWorldInData.org](https://ourworldindata.org/malaria)
+![./plots/2018_33/2018_33_MalariaDeaths.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2018_33/2018_33_MalariaDeaths.png)
+
+***
+
 ### [Week 2018/03](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2018_03) ⚱️ Global Mortality by [OurWorldInData.org](https://ourworldindata.org/what-does-the-world-die-from)
 ![./plots/2018_03/2018_03_GlobalMortality.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2018_03/2018_03_GlobalMortality.png)
 
