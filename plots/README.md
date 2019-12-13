@@ -6,9 +6,9 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ***
 
-### [Week 2019/50](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_50) 🎤 [Replicating Plots in R](https://simplystatistics.org/2019/08/28/you-can-replicate-almost-any-plot-with-ggplot2/) by [Matt Daniels](https://pudding.cool/projects/vocabulary/)
-![./plots/2019_50/2019_50_Replicate_Rap_bee.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_50/2019_50_Replicate_Rap_bee.png)  
-![./plots/2019_50/2019_50_Replicate_Rap_text.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_50/2019_50_Replicate_Rap_text.png)
+### [Week 2019/50](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_50) 🎤 [Replicating Plots](https://simplystatistics.org/2019/08/28/you-can-replicate-almost-any-plot-with-ggplot2/) by [Matt Daniels](https://pudding.cool/projects/vocabulary/) in R
+![./plots/2019_50/2019_50_Replicate_Rap_bee_original.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_50/2019_50_Replicate_Rap_bee_original.png)  
+![./plots/2019_50/2019_50_Replicate_Rap_text_original.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_50/2019_50_Replicate_Rap_text_original.png)
 
 ***
 
