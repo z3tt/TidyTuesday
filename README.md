@@ -6,6 +6,12 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ***
 
+### [Week 2019/50](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_50) 🎤 [Replicating Plots in R](https://simplystatistics.org/2019/08/28/you-can-replicate-almost-any-plot-with-ggplot2/) by [Matt Daniels](https://pudding.cool/projects/vocabulary/)
+![./plots/2019_50/2019_50_Replicate_Rap_bee.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019:50/2019_50_Replicate_Rap_bee.png)  
+![./plots/2019_50/2019_50_Replicate_Rap_text.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019:50/2019_50_Replicate_Rap_text.png)
+
+***
+
 ### [Week 2018/03](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2018_03) ⚱️ Global Mortality by [OurWorldInData.org](https://ourworldindata.org/what-does-the-world-die-from)
 ![./plots/2018_03/2018_03_GlobalMortality.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2018_03/2018_03_GlobalMortality.png)
 
