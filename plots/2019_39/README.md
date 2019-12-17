@@ -1,4 +1,4 @@
-### Week 2019/39 🏫️ School Diversity by [NCES](https://nces.ed.gov/ccd/pubschuniv.asp)
+### [Week 2019/39](https://github.com/Z3tt/TidyTuesday/blob/master/R/2019_39_SchoolDiversity.Rmd) 🏫️ School Diversity by [NCES](https://nces.ed.gov/ccd/pubschuniv.asp)
 
 ![./plots/2019_39/2019_39_SchoolDiversity.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_39/2019_39_SchoolDiversity.png)
 

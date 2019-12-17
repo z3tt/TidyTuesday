@@ -1,4 +1,4 @@
-### Week 2019/36 🖥️ Moore's Law by [Wikipedia](https://en.wikipedia.org/wiki/Transistor_count)
+### [Week 2019/36](https://github.com/Z3tt/TidyTuesday/blob/master/R/2019_36_MooresLaw.Rmd) 🖥️ Moore's Law by [Wikipedia](https://en.wikipedia.org/wiki/Transistor_count)
 
 **Predictions based on exponential growth:**  
 <br>
