@@ -1,0 +1,92 @@
+---
+title: "TidyTuesday 2019/51 - Dog Adoptions by PetFinder.com"
+author: "Cedric Scherer"
+date: "17th of December 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(geofacet)
+library(ggtext)
+
+## ggplot theme updates
+source(here::here("theme", "tidy_grey.R"))
+
+theme_set(theme_custom(base_family = "Rockwell"))
+theme_update(rect = element_rect(fill = "#f5f3f3"),
+             plot.margin = margin(20, 20, 20, 20),
+             panel.border = element_rect(color = "grey75"),
+             axis.ticks.x = element_blank(),
+             axis.text.x = element_blank(),
+             axis.ticks.y = element_line(color = "grey75"),
+             axis.text.y = element_text(color = "grey55", size = 8),
+             plot.title = element_markdown(size = 26, 
+                                           family = "Rockwell Extra Bold",
+                                           color = "grey40",
+                                           hjust = 0.23,
+                                           margin = margin(t = 0, b = 7)),
+             plot.subtitle = element_text(size = 11, 
+                                          family = "Rockwell",
+                                          color = "grey40",
+                                          hjust = 0.26,
+                                           margin = margin(t = 0, b = 15)),
+             plot.caption = element_text(size = 9, 
+                                         family = "Rockwell", 
+                                         color = "grey55",
+                                         hjust = 0.47),
+             
+             strip.background = element_rect(color = NA, fill = NA),
+             strip.text = element_text(color = "grey55", size = 14, face = "plain"))
+```
+
+```{r data}
+df_dogs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-17/dog_moves.csv')
+```
+
+```{r geofacet, fig.width = 9, fig.height = 12}
+df_dogs %>% 
+  mutate(
+    na_imported = if_else(is.na(imported), 315, NA_real_),
+    na_exported = if_else(is.na(exported), -315, NA_real_)
+  ) %>% 
+  replace_na(list(exported = 0, imported = 0)) %>% 
+  mutate(
+    exported = exported * -1,
+    location = if_else(location == "Washington DC", "District of Columbia", location)
+  ) %>% 
+  full_join(us_state_grid2, by = c("location" = "name")) %>% 
+  ggplot() + 
+    geom_col(aes(x = 1, y = imported), fill = "#0095ff") +
+    geom_col(aes(x = 1, y = exported), fill = "#9d1e1e") +
+    geom_point(aes(x = 1, y = na_imported), color = "#0095ff", shape = "*", size = 3.5) +
+    geom_point(aes(x = 1, y = na_exported), color = "#9d1e1e", shape = "*", size = 3.5) +
+    geofacet::facet_geo(~ location, grid = "us_state_grid2", label = "code") +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(limits = c(-635, 635),
+                       breaks = seq(-500, 500, by = 250),
+                       labels = c(500, 250, 0, 250, 500)) +
+    labs(x = NULL, y = NULL, 
+         title = "<span style='color:#0095ff'>Imports</span> and <span style='color:#9d1e1e'>Exports</span> of Dogs by State",
+         subtitle = "Based on PetFinder.com data on adoptable dogs in the USA, collected on 2019/09/20. * indicates missing data.",
+         caption = "Visualization by Cédric Scherer  |  Data: Petfinder.com via ThePudding")
+  
+ggsave(here::here("plots", "2019_51", "2019_51_DogAdoptions.pdf"), 
+       width = 9, height = 12, device = cairo_pdf)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```

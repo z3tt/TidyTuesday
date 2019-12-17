@@ -6,13 +6,18 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ***
 
+### [Week 2019/51](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_51) 🐩 Adoptable Dogs by [Petfinder.com and ThePudding.com](https://github.com/the-pudding/data/blob/master/dog-shelters/README.md)
+![./plots/2019_51/2019_51_DogAdoptions.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_51/2019_51_DogAdoptions.png)
+
+***
+
 ### [Week 2019/50](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_50) 🎤 [Replicating Plots](https://simplystatistics.org/2019/08/28/you-can-replicate-almost-any-plot-with-ggplot2/) by [Matt Daniels](https://pudding.cool/projects/vocabulary/) in R
 ![./plots/2019_50/2019_50_Replicate_Rap_bee_original.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_50/2019_50_Replicate_Rap_bee_original.png)  
 ![./plots/2019_50/2019_50_Replicate_Rap_text_original.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_50/2019_50_Replicate_Rap_text_original.png)
 
 ***
 
-### [Week 2018/33](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2018_33) 🦟 Malaria Deaths by [WHO via OurWorldInData.org](https://ourworldindata.org/malaria)
+### [Week 2018/33](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2018_33) 🏥 Malaria by [OurWorldInData.org](ourworldindata.org)
 ![./plots/2018_33/2018_33_MalariaDeaths.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2018_33/2018_33_MalariaDeaths.png)
 
 ***
