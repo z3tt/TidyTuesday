@@ -1,5 +1,5 @@
 ---
-title: "#TidyTuesday Week 2018/33: Malaria by World Health Organisation (WHO)"
+title: "#TidyTuesday Week 2018/33: Malaria by World Health Organisation (WHO) via OurWorldInData.org"
 author: "Cedric Scherer"
 date: "24th of November 2019"
 output:
