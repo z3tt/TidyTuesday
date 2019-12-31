@@ -1,0 +1,183 @@
+---
+title: "TidyTuesday 2019/52 - Christmas Songs by Billboard"
+author: "Cedric Scherer"
+date: "30th of December 2019"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(ggtext)
+library(showtext)
+
+## ggplot theme updates
+font_add_google("Lobster", "Lobster")
+font_add_google("Oswald", "Oswald")
+
+theme_set(theme_void())
+theme_update(plot.margin = margin(20, 30, 20, 30),
+             plot.title = element_text(size = 30, 
+                                       family = "Lobster",
+                                       color = "#165b33",
+                                       face = "bold",
+                                       hjust = 0.5,
+                                       margin = margin(t = 0, b = 15)),
+             plot.caption = element_text(size = 9, 
+                                         family = "Lobster", 
+                                         color = "grey70",
+                                         face = "plain",
+                                         hjust = 1,
+                                         margin = margin(t = -25, r = 15, b = 0)))
+```
+
+```{r data}
+df_xmas <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-24/christmas_songs.csv")
+```
+
+```{r top-songs, fig.width = 10.2, fig.height = 6.5}
+df_xmas_top <- 
+  df_xmas %>% 
+  mutate(
+    song = tolower(song),
+    song = tools::toTitleCase(song),
+    song = Hmisc::capitalize(song)
+  ) %>% 
+  group_by(song) %>% 
+  summarize(
+    n = n(),
+    performer = first(performer),
+    top_1 = length(song[week_position == 100]),
+    top_3 = length(song[week_position > 97]),
+    top_10 = length(song[week_position > 90]),
+    top_50 = length(song[week_position > 50])
+  ) %>%
+  ungroup() 
+
+df_xmas_top %>% 
+  filter(n >= 9) %>% 
+  mutate(
+    song = if_else(song == "All i Want for Christmas is you", "All I Want for Christmas is You", song),
+    n_help = n + 0.01 * top_10,
+    song = fct_reorder(song, n_help),
+    label = glue::glue(' {unique(performer)} — "{unique(song)}"'),
+    count = if_else(
+      song == "Jingle Bell Rock", 
+      glue::glue("<span style='color:#f8b229'>{top_10}x ranked in the Billboard Top 10</span>   |   <span style='color:#bb2528'>{n}x ranked in the Billboard Top 100</span>"), 
+      glue::glue("<span style='color:#f8b229'>{top_10}</span>   |   <span style='color:#bb2528'>{n}</span>")
+    )
+  ) %>% 
+  ggplot(aes(as.numeric(song), n)) +
+    geom_col(width = 0.2,
+             fill = "#bb2528") +
+    geom_col(aes(as.numeric(song), top_10), 
+             width = 0.05, 
+             fill = "#f8b229") +
+    geom_text(aes(as.numeric(song) + 0.35, 0, 
+                  label = label), 
+              size = 3.3, 
+              family = "Lobster",
+              color = "grey50",
+              hjust = 0) +
+    geom_richtext(aes(as.numeric(song) + 0.32, n, 
+                      label = count), 
+                  size = 2.7, 
+                  fill = NA, 
+                  family = "Oswald",
+                  color = "grey50",
+                  fontface = "bold",
+                  label.color = NA,
+                  hjust = 1) +
+    coord_flip() +
+    scale_x_continuous(expand = c(0.01, 0.01), limits = c(0.9, 14.5)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    labs(x = NULL, y = NULL,
+         title = "Christmas Songs Charting the Billboard Top 10 & Top 100",
+         caption = "Visualization by Cédric Scherer\nData: Weekly Billboard Top 100 from 1958 to 2017")
+
+ggsave(here::here("plots", "2019_52", "2019_52_ChristmasSongs.pdf"), 
+       width = 10.2, height = 6.5, device = cairo_pdf)
+```
+
+```{r top-songs-extended, fig.width = 10.2, fig.height = 16}
+df_xmas_top %>% 
+  filter(n >= 5) %>% 
+  mutate(
+    song = if_else(song == "All i Want for Christmas is you", "All I Want for Christmas is You", song),
+    n_help = n + 0.01 * top_10,
+    song = fct_reorder(song, n_help),
+    label = glue::glue(' {unique(performer)} — "{unique(song)}"'),
+    count_long = if_else(
+      song == "Jingle Bell Rock", 
+      as.character(glue::glue("<span style='color:#f8b229'>{top_10}x ranked in the Billboard Top 10</span>   |   <span style='color:#bb2528'>{n}x ranked in the Billboard Top 100</span>")), 
+      NA_character_
+    ),
+    count_short = if_else(
+      song == "Jingle Bell Rock", 
+      NA_character_,
+      as.character(glue::glue("<span style='color:#f8b229'>{top_10}</span>   |   <span style='color:#bb2528'>{n}</span>"))
+    )
+  ) %>% 
+  ggplot(aes(as.numeric(song), n)) +
+    geom_col(width = 0.2,
+             fill = "#bb2528") +
+    geom_col(aes(as.numeric(song), top_10), 
+             width = 0.05, 
+             fill = "#f8b229") +
+    geom_text(aes(as.numeric(song) + 0.4, 0, 
+                  label = label), 
+              size = 3.8, 
+              family = "Lobster",
+              color = "grey50",
+              hjust = 0) +
+    geom_richtext(aes(as.numeric(song) + 0.32, n, 
+                      label = count_long), 
+                  size = 2.5, 
+                  fill = NA, 
+                  family = "Oswald",
+                  color = "grey50",
+                  fontface = "bold",
+                  label.color = NA,
+                  hjust = 1) +
+    geom_richtext(aes(as.numeric(song), n + 0.07, 
+                      label = count_short), 
+                  size = 2.5, 
+                  fill = NA, 
+                  family = "Oswald",
+                  color = "grey50",
+                  fontface = "bold",
+                  label.color = NA,
+                  hjust = 0) +
+    coord_flip() +
+    scale_x_continuous(expand = c(0.01, 0.01), limits = c(0.5, 33.5)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    labs(x = NULL, y = NULL,
+         title = "Christmas Songs Charting the Billboard Top 10 & Top 100",
+         subtitle = "(Extended Version)",
+         caption = "Visualization by Cédric Scherer\nData: Weekly Billboard Top 100 from 1958 to 2017") +
+    theme(plot.title = element_text(margin = margin(t = 0, b = 5)),
+          plot.subtitle = element_text(size = 18, 
+                                       family = "Lobster",
+                                       color = "#165b33",
+                                       face = "bold",
+                                       hjust = 0.5,
+                                       margin = margin(t = 0, b = 15)),)
+
+ggsave(here::here("plots", "2019_52", "2019_52_ChristmasSongs_ext.pdf"), 
+       width = 10.2, height = 16, device = cairo_pdf)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```
