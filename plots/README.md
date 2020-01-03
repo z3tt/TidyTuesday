@@ -54,7 +54,6 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ### [Week 2019/39](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_39)️ 🏫️ School Diversity by [NCES](https://nces.ed.gov/ccd/pubschuniv.asp)
 ![./plots/2019_39/2019_39_SchoolDiversity_brpurp.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_39/2019_39_SchoolDiversity_brpurp.png)
-![./plots/2019_39/2019_39_SchoolDiversity_hex.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_39/2019_39_SchoolDiversity_hex.png)
 
 ***
 
