@@ -6,6 +6,16 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ***
 
+### [Week 2020/02](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_02) 🔥 Australian Fires by [NASA FIRMS](https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms)
+![./plots/2020_02/2020_02_AustralianFires.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_02/2020_02_AustralianFires.png)
+
+***
+
+### [Week 2020/01](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_01) ❄️️ White Christmas in Berlin by [Deutscher Wetterdienst](https://www.dwd.de/DE/leistungen/klimadatendeutschland/klarchivtagmonat.html)
+![./plots/2020_01/2020_01_WhiteXmasBerlin.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_01/2020_01_WhiteXmasBerlin.png)
+
+***
+
 ### [Week 2019/38](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_38) 🏞️ National Park Visits by [data.world](https://data.world/inform8n/us-national-parks-visitation-1904-2016-with-boundaries)
 ![./plots/2019_38/2019_38_NationalParks.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_38/2019_38_NationalParks.png)
 

@@ -2,6 +2,55 @@
 My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).  
 Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
+### [Week 2020/02](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_02) 🔥 Australian Fires by [NASA FIRMS](https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms)
+![./plots/2020_02/2020_02_AustralianFires.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_02/2020_02_AustralianFires.png)
+
+***
+
+### [Week 2020/01](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_01) ❄️️ White Christmas in Berlin by [Deutscher Wetterdienst](https://www.dwd.de/DE/leistungen/klimadatendeutschland/klarchivtagmonat.html)
+![./plots/2020_01/2020_01_WhiteXmasBerlin.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_01/2020_01_WhiteXmasBerlin.png)
+
+***
+
+### [Week 2019/38](https://github.com/Z3tt/TidyTuesday/blob/master/R/2019_38_NationalParks.Rmd) 🏞️ National Park Visits by [data.world](https://data.world/inform8n/us-national-parks-visitation-1904-2016-with-boundaries)
+![./plots/2019_38/2019_38_NationalParks.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_38/2019_38_NationalParks.png)
+
+***
+
+### [Week 2019/52](https://github.com/Z3tt/TidyTuesday/tree/master/R/2019_52_ChristmasSongs) 🎄 Christmas Songs by [Billboard Top 100](https://www.kaggle.com/sharkbait1223/billboard-top-100-christmas-carol-dataset)
+![./plots/2019_52/2019_52_ChristmasSongs.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_52/2019_52_ChristmasSongs.png)
+
+**Extended Version:**
+<br>
+![./plots/2019_52/2019_52_ChristmasSongs_ext.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_52/2019_52_ChristmasSongs_ext.png)
+
+***
+
+### [Week 2019/50](https://github.com/Z3tt/TidyTuesday/blob/master/R/2019_50_Replicates.Rmd) 🎤 [Replicating Plots in R](https://simplystatistics.org/2019/08/28/you-can-replicate-almost-any-plot-with-ggplot2/) by [Matt Daniels](https://pudding.cool/projects/vocabulary/)
+
+**Replicates:**
+<br>
+![./plots/2019_50/2019_50_Replicate_Rap_bee.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_50/2019_50_Replicate_Rap_bee.png)<br>
+![./plots/2019_50/2019_50_Replicate_Rap_text.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_50/2019_50_Replicate_Rap_text.png)
+
+
+**Comparison with the original contributions:**
+<br>
+![./plots/2019_50/2019_50_Replicate_Rap_bee_original.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_50/2019_50_Replicate_Rap_bee_original.png)  
+![./plots/2019_50/2019_50_Replicate_Rap_text_original.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_50/2019_50_Replicate_Rap_text_original.png)
+
+***
+
+### [Week 2018/33](https://github.com/Z3tt/TidyTuesday/blob/master/R/2018_33_Malaria.Rmd) 🏥 Malaria by [OurWorldInData.org](ourworldindata.org)
+![./plots/2018_33/2018_33_MalariaDeaths.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2018_33/2018_33_MalariaDeaths.png)
+
+***
+
+### [Week 2018/03](https://github.com/Z3tt/TidyTuesday/blob/master/R/2018_03_GlobalMortality.Rmd) ⚱️ Global Mortality by [OurWorldInData.org](https://ourworldindata.org/what-does-the-world-die-from)
+![./plots/2018_03/2018_03_GlobalMortality.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2018_03/2018_03_Global_Mortality.png)
+<br>
+![./plots/2018_03/2018_03_Alcohol_Drugs.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2018_03/2018_03_Alcohol_Drugs.png)
+
 ***
 
 ### [Week 2019/44](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_44)️ 🐿️ NYC Squirrels by [Squirrel Census](https://data.cityofnewyork.us/Environment/2018-Central-Park-Squirrel-Census-Squirrel-Data/vfnx-vebw)

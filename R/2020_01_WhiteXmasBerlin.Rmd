@@ -1,0 +1,231 @@
+---
+title: "TidyTuesday 2020/01 - White Christmas in Berlin by DWD"
+author: "Cedric Scherer"
+date: "23rd of December 2019"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+```
+
+
+```{r libraries}
+library(tidyverse)
+library(lubridate)
+library(showtext)
+library(emojifont)
+library(ggtext)
+
+font_add_google("Roboto", "Roboto")
+font_add_google("Merriweather", "Merriweather")
+```
+
+
+```{r data, message = F}
+filelist <- list.files(path = ".", pattern = "produkt_klima*", recursive = T)
+
+datalist <- filelist %>% 
+   purrr::map(~ readr::read_delim(., delim = ";"))
+
+data <- purrr::map2_dfr(
+  datalist, filelist, function(x, y) 
+    dplyr::select(
+      x,
+      station_id = STATIONS_ID,
+      date = MESS_DATUM, 
+      snow_cm = "SHK_TAG"
+    ) %>% 
+    mutate_all(as.numeric)
+  )
+
+df_dahlem <- data %>% 
+  mutate(
+    date = lubridate::ymd(date),
+    year = lubridate::year(date),
+    month = lubridate::month(date),
+    season = case_when(
+      month %in% 3:5 ~ "Spring",
+      month %in% 6:8 ~ "Summer",
+      month %in% 9:11 ~ "Autumn",
+      month %in% c(12, 1:2) ~ "Winter"
+    ),
+    t_avg = if_else(t_avg < -50, NA_real_, t_avg)
+  ) %>% 
+  group_by(date) %>% 
+  summarize_all(first)
+```
+
+```{r}
+df_snow <-
+  df_dahlem %>% 
+  dplyr::select(date, snow_cm, year, month) %>% 
+  mutate(
+    day = lubridate::day(date), 
+    winter_year = if_else(month < 7, year - 1, year),
+    winter_month = if_else(month < 7, month + 6, month - 6)
+  ) %>% 
+  filter(!(day == 29 & month == 2)) %>% 
+  group_by(winter_year) %>% 
+  mutate(
+    winter_day = row_number(),
+    snow_cm = if_else(snow_cm < 0, 0, snow_cm),
+    snow_add = snow_cm - lag(snow_cm),
+    snow_add = if_else(snow_add < 0, 0, snow_add),
+    snow_day = if_else(snow_add < 1, 0, 1),
+    snow_day = if_else(is.na(snow_day), 0, snow_day)
+  ) 
+
+df_first_snow <-
+  df_snow %>%
+  filter(
+    winter_year > 1890, 
+    winter_year < 2019,
+    winter_year != 1945
+  ) %>% 
+  group_by(winter_year) %>% 
+  summarize(
+    first_snow = min(winter_day[snow_day > 0]),
+    last_snow = max(winter_day[snow_day > 0]),
+    xmas_snow = max(if_else(winter_day == 177 & snow_cm > 0, 1, 0)),
+    days_snow = sum(snow_day),
+    snow_sum = sum(snow_add, na.rm = T)
+  )
+
+df_all_snow <-
+  df_snow %>% 
+  filter(
+    winter_year > 1890, 
+    winter_year < 2019,
+    winter_year != 1945,
+    snow_cm > 0
+  ) %>% 
+  mutate(xmas_snow = max(if_else(winter_day == 177 & snow_cm > 0, 1, 0))) %>% 
+  group_by(winter_year) %>% 
+  slice(-1)  ## rm first day of snow -> snow flake not |
+
+labs <-
+  tibble(
+    winter_year = c(1910.6, 1901.7, 1975.6, 1975.6, 1945.6, 1911.6, 2013),
+    first_snow = c(293, 117, 294, 133, 271, 161.5, 127),
+    label = c(
+      "<b style='color:#f9f9f9'>Each **line** marks a day with snow cover</b><br> with the **color** indicating if Berlin<br>had a <b style='color:white'>white christmas</b> or <b style='color:#84b1bf'>not</b>",
+      "<b style='color:#f9f9f9'>Each snowflake marks the day of first snow in Berlin</b><br>with the **size** showing **total snowfall per winter** and<br>the **color** indicating if Berlin had a <b style='color:white'>white christmas</b> or <b style='color:#84b1bf'>not</b>",
+      "The **winter 1969/70** had the<br><b style='color:#f9f9f9'>longest period of snow cover<br>incl. Christmas & New Year's Eve</b><br>(**101 days with snow in total**)",
+      "The **winter 1969/70** also<br>had the <b style='color:#f9f9f9'>most snowfall</b><br>(**130 cm in total**)",
+      "In **1948/49** the first day<br>snow fell was the <b style='color:#84b1bf'>1st of March</b>!",
+      "<b style='color:#1a1a1a'>LOESS fit<br><br>day of first snow ~ year</b>",
+      "As in previous years, there<br>will be <b style='color:#84b1bf'>no white Christmas</b><br>in Berlin this year either..."
+    ),
+    angle = c(0, 0, 0, 0, 0, 3, 0)
+  )
+
+arrows <-
+  tibble(
+    xend = c(1970.8, 1974, 1947.5, 2019),
+    yend = c(134, 286, 245, 173),
+    x = c(1968.8, 1969.3, 1945.4, 2014),
+    y = c(147.4, 264, 268, 133)
+  )
+
+df_first_snow %>% 
+  ggplot(aes(winter_year, first_snow)) +
+    geom_smooth(color = "grey10", 
+                alpha = 0.1, 
+                size = 0.8) +
+    geom_hline(yintercept = 177, 
+               size = 1.3, 
+               color = "#0e390e") +
+    geom_point(data = df_all_snow, 
+               aes(winter_year, winter_day, 
+                   color = as.factor(xmas_snow)), 
+               size = 0.68, 
+               shape = "|") + 
+    geom_text(aes(color = as.factor(xmas_snow), 
+                  size = snow_sum),
+             family = "EmojiOne", 
+             label = emoji('snowflake'), 
+             vjust = 0.25) + 
+    geom_text(aes(2019, 176),
+              label = "?",
+              family = "Merriweather",
+              fontface = "bold",
+              size = 4.5,
+              color = "grey65") +
+    geom_richtext(data = labs,
+                  aes(label = label,
+                      angle = angle),
+                  fill = NA,
+                  color = "grey50",
+                  size = 2.3,
+                  family = "Merriweather",
+                  label.color = NA) +
+    geom_curve(data = arrows,
+               aes(x, y, xend = xend, yend = yend),
+               color = "grey35",
+               curvature = 0.35,
+               size = 0.35) +
+    scale_x_continuous(limits = c(NA, 2019),
+                       breaks = c(1891, seq(1900, 2010, by = 10), 2019),
+                       labels = c("1891/92", "1900/01", "1910/11", "1920/21", "1930/31",
+                                  "1940/41", "1950/51", "1960/61", "1970/71", "1980/81", 
+                                  "1990/91", "2000/01", "2010/11", "2019/20"),
+                       expand = c(0.014, 0.014)) +
+    scale_y_continuous(limits = c(105, 305),
+                       breaks = c(124, 154, 177, 185, 216, 244, 275, 305), 
+                       labels = c("1st of November", "1st of December", "Christmas", 
+                                  "New Year's Day", "1st of February", "1st of March", 
+                                  "1st of April", "1st of May"),
+                       expand = c(0.001, 0.001),
+                       sec.axis = dup_axis()) +
+    scale_color_manual(values = c("#84b1bf", "white"),
+                       guide = F) +
+    scale_size(range = c(1, 7),
+                       guide = F) +
+    labs(x = NULL, y = NULL,
+         title = "Merry White Christmas? The History of Snow in Berlin (1891–2019)",
+         subtitle = "Snowflakes mark the first day of snow with the size being mapped to the overall amount of snow; the lines visualize days with snow cover in Berlin. The colors indicate if Berlin had a <span style='color:white'>white christmas</span> or <span style='color:#84b1bf'>not</span>",
+         caption = "Visualization by Cédric Scherer  •  Data: Weather Station in Berlin-Dahlem (FU) provided by Deutscher Wetterdienst (DWD)") +
+    theme_classic(base_family = "Roboto") +
+    theme(axis.text = element_text(color = "grey35"),
+          axis.text.x = element_text(size = 10),
+          axis.title = element_text(color = "grey35"),
+          axis.line = element_line(color = "grey35"),
+          axis.ticks = element_line(color = "grey35"),
+          axis.ticks.length.x = unit(6, "pt"),
+          plot.title = element_text(family = "Merriweather",
+                                    color = "white",
+                                    size = 22,
+                                    face = "bold",
+                                    hjust = 0.5,
+                                    margin = margin(t = 10, b = 7)),
+          plot.subtitle = element_markdown(family = "Merriweather",
+                                           color = "grey50",
+                                           hjust = 0.5,
+                                    margin = margin(t = 0, b = 20)),
+          plot.caption = element_text(family = "Merriweather",
+                                      size = 9,
+                                      color = "grey50",
+                                      hjust = 0.5,
+                                      margin = margin(t = 20, b = 10)),
+          plot.background = element_rect(fill = "grey10", 
+                                         color = "grey10"),
+          panel.background = element_rect(fill = "grey10", 
+                                          color = "grey10"),
+          panel.grid.major.y = element_line(color = "grey15", 
+                                            size = 0.15))
+
+ggsave(here::here("plots", "2020_01", "2020_01_WhiteXmasBerlin.pdf"), 
+       width = 18, height = 9.5, device = cairo_pdf)
+```
+
+***
+
+```{r session}
+sessionInfo()
+```
