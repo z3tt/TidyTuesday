@@ -110,7 +110,7 @@ map <- ggplot(sf_europe) +
   theme(plot.margin = margin(0, 0, 0, 0))
 
 ggsave(here::here("plots", "2020_02", "2020_02_AustralianFires.pdf"), 
-       plot = map, width = 14, height = 11.9, device = cairo_pdf)
+       plot = map, width = 14, height = 11.83, device = cairo_pdf)
 ```
 
 ## Global Comparison Burnt Land
@@ -168,6 +168,7 @@ map_global <-
     theme(plot.caption = element_text(family = "Oswald", 
                                       size = 10, 
                                       color = "grey70",
+                                      face = "bold",
                                       hjust = 0.5,
                                       margin = margin(t = -15, b = 10)),
           panel.grid.major = element_line(color = "grey88", 
@@ -181,10 +182,10 @@ map_global <-
           legend.title = element_text(family = "Oswald", 
                                       face = "bold", 
                                       color = "grey20", 
-                                      size = 15))
+                                      size = 15), plot.background = element_rect(color = "grey85", size = 1.5))
 
 ggsave(here::here("plots", "2020_02", "2020_02_AustralianFires_global.pdf"),
-       plot = map_global, width = 14, height = 8.4, device = cairo_pdf)
+       plot = map_global, width = 14, height = 8.2, device = cairo_pdf)
 ```
 
 ***
