@@ -3,7 +3,14 @@ My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascie
 Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
 ### [Week 2020/02](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_02) 🔥 Australian Fires by [NASA FIRMS](https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms)
+
+**European Comparison:**
+<br>
 ![./plots/2020_02/2020_02_AustralianFires.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_02/2020_02_AustralianFires.png)
+
+**Global comparison:**
+<br>
+![./plots/2020_02/2020_02_AustralianFires_global.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_02/2020_02_AustralianFires_global.png)
 
 ***
 
