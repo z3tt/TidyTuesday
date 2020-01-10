@@ -110,7 +110,7 @@ map <- ggplot(sf_europe) +
   theme(plot.margin = margin(0, 0, 0, 0))
 
 ggsave(here::here("plots", "2020_02", "2020_02_AustralianFires.pdf"), 
-       plot = map, width = 14, height = 11.83, device = cairo_pdf)
+       plot = map, width = 14, height = 11.9, device = cairo_pdf)
 ```
 
 ## Global Comparison Burnt Land
@@ -152,7 +152,7 @@ map_global <-
                       label = "As of 8<sup>th</sup> of January 2020,<br>the bushfires have burnt<br>41,300 mi<sup>2</sup> (106,966 km<sup>2</sup>),<br>1.4% of Australia's area."), 
                   family = "Oswald",
                   size = 3.7,
-                  color = "grey70",
+                  color = "grey55",
                   label.padding = unit(c(0.5, 0.5, 0.5, 0.5), "lines")) +
     scale_x_continuous(expand = c(0.02, 0.02)) +
     scale_y_continuous(limits = c(NA, 10500000)) +
@@ -182,10 +182,10 @@ map_global <-
           legend.title = element_text(family = "Oswald", 
                                       face = "bold", 
                                       color = "grey20", 
-                                      size = 15), plot.background = element_rect(color = "grey85", size = 1.5))
+                                      size = 15))
 
 ggsave(here::here("plots", "2020_02", "2020_02_AustralianFires_global.pdf"),
-       plot = map_global, width = 14, height = 8.2, device = cairo_pdf)
+       plot = map_global, width = 14, height = 8.3, device = cairo_pdf)
 ```
 
 ***
