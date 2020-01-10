@@ -17,36 +17,72 @@ Quick Link
 [GitHub]:https://github.com/Z3tt
 [Website]:https://cedricscherer.netlify.com/
 
-My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday) (ordered by date of contribution).  
-Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
+<div align="center">
 
+Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 All contributions and full versions can be found [here](https://github.com/Z3tt/TidyTuesday/tree/master/plots/_all).
 
+</div>
+
 <details>
-  <summary><strong>Table of Contents</strong> (click to expand)</summary>
+  <summary><strong>Contributions in chronical order</strong> (click to expand)</summary>
 
 <!-- toc -->
-- [Week 2020/02 🔥 Australian Fires by NASA FIRMS](https://github.com/Z3tt/TidyTuesday#2020_02)
-- [Week 2020/01 ❄️️ White Christmas in Berlin by Deutscher Wetterdienst](https://github.com/Z3tt/TidyTuesday#2020_01)
+* Challenges 2018
+  - [Week 2018/03 ⚱️ Global Mortality](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2018_03)
+  - [Week 2018/33 🏥 Malaria](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2018_33)
+* Challenges 2019
+  - [Week 2019/14 🚴 Seattle Bike Traffic](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_14)️
+  - [Week 2019/16 📊 The Economists' Data Viz Mistakes](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_16)️
+  - [Week 2019/17 🐉 Anime Data](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_17️)
+  - [Week 2019/18 🏨🐦 Chicago Bird Collisions](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_18)️
+  - [Week 2019/19 👨‍🏫 Global Student to Teachers Ratios](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_19)️
+  - [Week 2019/20 🎖️ Nobel Prize Winners](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_20️)
+  - [Week 2019/21 🚮 Global Plastic Waste](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_21)️
+  - [Week 2019/22 🍷️ Wine Ratings](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_22️)
+  - [Week 2019/24 🌠 Meteorites](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_24️)
+  - [Week 2019/25 🎅🏽🐦 Christmas Bird Counts](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_25️)
+  - [Week 2019/27 💰 Media Franchise Revenues](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_27)️
+  - [Week 2019/28 ⚽ FIFA Women's World Cup](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_28)️
+  - [Week 2019/33 🌿 Roman Emperors](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_33)️
+  - [Week 2019/34 ☢️ Nuclear Explosions](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_34)️
+  - [Week 2019/35 💛 Simpsons Guest Stars](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_35)️
+  - [Week 2019/36 🖥️ Moore's Law](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_36)️
+  - [Week 2019/38 🏞️ US National Park Visits](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_38)
+  - [Week 2019/39 🏫️ US School Diversity](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_39)️
+  - [Week 2019/40 🍕 NYC Pizza Ratings](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_40)️
+  - [Week 2019/42 🚘 Big Cars](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_42)️
+  - [Week 2019/44 🐿️ NYC Squirrels](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_44)️
+  - [Week 2019/50 🎤 Replicating Plots (Rap Edition)](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_50)
+  - [Week 2019/51 🐩 Adoptable Dogs](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_51)
+  - [Week 2019/52 🎄 Christmas Songs](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_52)
+* Challenges 2020
+  - [Week 2020/01 ❄️️ White Christmas in Berlin](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_01)
+  - [Week 2020/02 🔥 Australian Fires](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_02)
 <!-- tocstop -->
 
 </details>
 
+***
+
+<div align="center">
+My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday) (ordered by date of contribution):  
+</div>
 
 ***
 
-### [Week 2020/02](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_02) 🔥 Australian Fires by [NASA FIRMS](https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms) {#2020_02}
+### [Week 2020/02](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_02) 🔥 Australian Fires by [NASA FIRMS](https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms)
 ![./plots/2020_02/2020_02_AustralianFires.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_02/2020_02_AustralianFires.png)
 ![./plots/2020_02/2020_02_AustralianFires_global.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_02/2020_02_AustralianFires_global.png)
 
 ***
 
-### [Week 2020/01](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_01) ❄️️ White Christmas in Berlin by [Deutscher Wetterdienst](https://www.dwd.de/DE/leistungen/klimadatendeutschland/klarchivtagmonat.html) {#2020_01}
+### [Week 2020/01](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_01) ❄️️ White Christmas in Berlin by [Deutscher Wetterdienst](https://www.dwd.de/DE/leistungen/klimadatendeutschland/klarchivtagmonat.html)
 ![./plots/2020_01/2020_01_WhiteXmasBerlin.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_01/2020_01_WhiteXmasBerlin.png)
 
 ***
 
-### [Week 2019/38](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_38) 🏞️ National Park Visits by [data.world](https://data.world/inform8n/us-national-parks-visitation-1904-2016-with-boundaries)
+### [Week 2019/38](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_38) 🏞️ US National Park Visits by [data.world](https://data.world/inform8n/us-national-parks-visitation-1904-2016-with-boundaries)
 ![./plots/2019_38/2019_38_NationalParks.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_38/2019_38_NationalParks.png)
 
 ***
@@ -117,7 +153,7 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ***
 
-### [Week 2019/28](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_28)️ ⚽ FIFA Women's World Cup by [data.world](https://data.world/sportsvizsunday/womens-world-cup-data)
+### [Week 2019/28](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_28)️ ⚽ FIFA Women's World Cups by [data.world](https://data.world/sportsvizsunday/womens-world-cup-data)
 ![./plots/2019_28/2019_28_FIFA_WWCs.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_28/2019_28_FIFA_WWCs.png)
 ![./plots/2019_28/2019_28_FIFA_WWCs_stellar_teaser.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_28/2019_28_FIFA_WWCs_stellar_teaser.png)
 
