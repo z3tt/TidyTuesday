@@ -19,13 +19,11 @@ Quick Link
 
 <div align="center">
 
-Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).  
+My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).    
+Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail](mailto:cedricphilippscherer@gmail.com).  
 All contributions and full versions can be found [here](https://github.com/Z3tt/TidyTuesday/tree/master/plots/_all).
 
 </div>
-
-My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday) (ordered by date of contribution):  
-
 
 <details>
   <summary><strong>Contributions in chronical order</strong> (click to expand)</summary>
