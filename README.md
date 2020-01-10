@@ -12,6 +12,11 @@
 Quick Link
 -->
 
+[Twitter]:https://twitter.com/CedScherer
+[LinkedIn]:https://www.linkedin.com/in/cedricpscherer/
+[GitHub]:https://github.com/Z3tt
+[Website]:https://cedricscherer.netlify.com/
+
 My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday) (ordered by date of contribution).  
 Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
@@ -21,22 +26,12 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
   <summary><strong>Table of Contents</strong> (click to expand)</summary>
 
 <!-- toc -->
-- [Week 2020/02 🔥 Australian Fires by NASA FIRMS](#2020_02)
-- [Week 2020/01 ❄️️ White Christmas in Berlin by Deutscher Wetterdienst](#2020_01)
-- [How to make a map using `geofacet`](https://github.com/zhiiiyang/tidytuesday#how-to-make-a-map-using-geofacet)
-- [How to make an animated picture using `gganimate`](https://github.com/zhiiiyang/tidytuesday/blob/master/README.md#how-to-make-an-animated-picture-using-gganimate)
-- [How to make a heatmap of your Twitter activity using `ggplot2`](https://github.com/zhiiiyang/tidytuesday/blob/master/README.md#how-to-make-a-heatmap-of-your-twitter-activity-using-ggplot2)
-- [How to make a radar/spider plot of your tweet frequency using `ggplot2`](https://github.com/zhiiiyang/tidytuesday#how-to-make-a-radarspider-plot-of-your-tweet-frequency-using-ggplot2)
-- [How to make a heatmap using `ggplot2` and `reticulate`](https://github.com/zhiiiyang/tidytuesday#how-to-make-a-heatmap-using-ggplot2-and-reticulate)
-- [How to make a Sankey diagram and a Word Cloud using `networkD3` and `wordcloud2`](https://github.com/zhiiiyang/tidytuesday#how-to-make-a-sankey-diagram-and-a-word-cloud-using-networkd3-and-wordcloud2)
+- [Week 2020/02 🔥 Australian Fires by NASA FIRMS](https://github.com/Z3tt/TidyTuesday#2020_02)
+- [Week 2020/01 ❄️️ White Christmas in Berlin by Deutscher Wetterdienst](https://github.com/Z3tt/TidyTuesday#2020_01)
 <!-- tocstop -->
 
 </details>
 
-My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday) (ordered by date of contribution).  
-Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
-
-All contributions and full versions can be found [here](https://github.com/Z3tt/TidyTuesday/tree/master/plots/_all).
 
 ***
 
