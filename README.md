@@ -19,9 +19,8 @@ Quick Link
 
 <div align="center">
 
-My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).    
-Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail](mailto:cedricphilippscherer@gmail.com).  
-All contributions and full versions can be found [here](https://github.com/Z3tt/TidyTuesday/tree/master/plots/_all).
+My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).
+Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail](mailto:cedricphilippscherer@gmail.com).
 
 </div>
 
