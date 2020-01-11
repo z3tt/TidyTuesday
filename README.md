@@ -28,10 +28,10 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   <summary><strong>Contributions in chronological order</strong> (click to expand)</summary>
 
 <!-- toc -->
-* Challenges 2018
+* **Challenges 2018**
   - 2018/03 [⚱️ Global Mortality](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2018_03)
   - 2018/33 [🏥 Malaria](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2018_33)
-* Challenges 2019
+* **Challenges 2019**
   - 2019/14 [🚴 Seattle Bike Traffic](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_14)️
   - 2019/16 [📊 The Economists' Data Viz Mistakes](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_16)️
   - 2019/17 [🐉 Anime Data](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_17️)
@@ -56,7 +56,7 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2019/50 [🎤 Replicating Plots (Rap Edition)](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_50)
   - 2019/51 [🐩 Adoptable Dogs](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_51)
   - 2019/52 [🎄 Christmas Songs](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_52)
-* Challenges 2020
+* **Challenges 2020**
   - 2020/01 [❄️️ White Christmas in Berlin](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_01)
   - 2020/02 [🔥 Australian Fires](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_02)
 <!-- tocstop -->
@@ -67,7 +67,6 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
 
 ### [Week 2020/02](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_02) 🔥 Australian Fires by [NASA FIRMS](https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms)
 ![./plots/2020_02/2020_02_AustralianFires.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_02/2020_02_AustralianFires.png)
-![./plots/2020_02/2020_02_AustralianFires_global.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_02/2020_02_AustralianFires_global.png)
 
 ***
 
