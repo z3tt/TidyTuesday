@@ -25,7 +25,7 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
 </div>
 
 <details>
-  <summary><strong>Contributions in chronological order</strong> (click to expand)</summary>
+  <summary>Contributions in chronological order (click to expand)</summary>
 
 <!-- toc -->
 * **Challenges 2018**
