@@ -35,13 +35,13 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2019/14 [🚴 Seattle Bike Traffic](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_14)️
   - 2019/16 [📊 The Economists' Data Viz Mistakes](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_16)️
   - 2019/17 [🐉 Anime Data](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_17️)
-  - 2019/18 [🏨🐦 Chicago Bird Collisions](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_18)️
+  - 2019/18 [🐥 Chicago Bird Collisions](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_18)️
   - 2019/19 [👨‍🏫 Global Student to Teachers Ratios](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_19)️
   - 2019/20 [🎖️ Nobel Prize Winners](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_20️)
   - 2019/21 [🚮 Global Plastic Waste](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_21)️
   - 2019/22 [🍷️ Wine Ratings](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_22️)
   - 2019/24 [🌠 Meteorites](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_24️)
-  - 2019/25 [🎅🏽🐦 Christmas Bird Counts](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_25️)
+  - 2019/25 [🐦 Christmas Bird Counts](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_25️)
   - 2019/27 [💰 Media Franchise Revenues](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_27)️
   - 2019/28 [⚽ FIFA Women's World Cup](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_28)️
   - 2019/33 [🌿 Roman Emperors](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_33)️
@@ -157,7 +157,7 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
 
 ***
 
-### [Week 2019/25](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_25️) 🎅🏽🐦 Christmas Bird Counts	by [Bird Studies Canada](https://www.birdscanada.org/index.jsp)
+### [Week 2019/25](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_25️) 🐦 Christmas Bird Counts	by [Bird Studies Canada](https://www.birdscanada.org/index.jsp)
 ![./plots/2019_25/2019_25_BirdsXmas.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_25/2019_25_BirdsXmas.png)
 
 ***
@@ -187,7 +187,7 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
 
 ***
 
-### [Week 2019/18](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_18)️ 🏨🐦 Chicago Bird Collisions by [Winger et al, 2019](https://doi.org/10.1098/rspb.2019.0364)
+### [Week 2019/18](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_18)️ 🐥 Chicago Bird Collisions by [Winger et al, 2019](https://doi.org/10.1098/rspb.2019.0364)
 ![./plots/2019_18/2019_18_BirdCollisions.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_18/2019_18_BirdCollisions.png)
 
 ***
