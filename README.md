@@ -17,12 +17,9 @@ Quick Link
 [Email]:mailto:cedricphilippscherer@gmail.com
 [Website]:https://cedricscherer.netlify.com/
 
-<div align="center">
-
-My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).
+My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascience/tidytuesday).  
+The #TidyTuesday challenge is a weekly social data project that focusses on understanding how to summarize and arrange data to make meaningful charts with `{ggplot2}`, `{tidyr}`, `{dplyr}` and other tools that are part of the [`{tidyverse}`](https://www.tidyverse.org/) ecosystem founded by [Thomas Mock](https://thomasmock.netlify.com/) and organized by the [R4DS ("`R` for Data Science") online learning community](https://twitter.com/r4dscommunity). The intent is to provide a safe and supportive forum to practice their wrangling and data visualization skills.  
 Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail](mailto:cedricphilippscherer@gmail.com).
-
-</div>
 
 <details>
   <summary>Contributions in chronological order (click to expand)</summary>
