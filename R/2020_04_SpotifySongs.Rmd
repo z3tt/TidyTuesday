@@ -1,0 +1,500 @@
+---
+title: "TidyTuesday 2020/04 - Spotify Songs by {spotifyr}"
+author: "Cedric Scherer"
+date: "22nd of January 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(gglogspline)
+library(ggtext)
+library(extrafont)
+library(cowplot)
+
+## theme
+source(here::here("theme", "tidy_grey.R"))
+
+theme_set(theme_custom(base_family = "Fjalla One"))
+
+theme_update(
+  plot.background = element_rect(fill = "black", color = "black"),
+  panel.background = element_rect(fill = "black", color = "black"),
+  panel.border = element_rect(fill = NA, color = NA),
+  axis.line.x = element_line(color = "grey55", size = 1),
+  axis.ticks = element_line(color = "grey55"),
+  axis.title = element_text(color = "grey55", size = 12),
+  axis.text = element_text(color = "grey55"),
+  strip.background = element_rect(fill = NA, color = NA),
+  legend.background = element_rect(fill = NA, color = NA),
+  legend.key = element_rect(fill = NA, color = NA)
+)
+
+## color palette for eras
+pals <- c("#4e8863", "#cecece", "#ffc205")#, "grey60"
+```
+
+## Data
+
+```{r data}
+## Spotify data via {spotifyr}
+df_songs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-21/spotify_songs.csv')
+
+## Vocabulary data by Matt Daniels
+## https://docs.google.com/spreadsheets/d/1HIIfgDpNMM-j0hoQHN-yP5P1lNOfJuvym0u0sdWwD9g/edit#gid=737896402
+df_vocabulary <- readr::read_csv(here::here("data", "HipHop_VocabChart_full.csv")) %>% 
+  mutate(notes = if_else(is.na(notes), "none", notes)) %>% 
+  filter(
+    !is.na(recalc), 
+    notes != "remove"
+  )
+
+## Spotify rap songs by era
+df_songs_rap <- 
+  df_songs %>% 
+  filter(playlist_genre == "rap") %>% 
+  mutate(
+    year = as.numeric(str_sub(track_album_release_date, 0, 4)),
+    duration_m = duration_ms / 60000,
+    era = case_when(
+      #year >= 1973 & year < 1988 ~ "Old-school DJ Era",
+      year >= 1985 & year < 1997 ~ "Golden Age",
+      year >= 1997 & year < 2009 ~ "Bling-Bling Era",
+      year >= 2009 ~ "Internet Era",
+      TRUE ~ "other"
+    ),
+    era = factor(era, levels = c("Internet Era", "Bling-Bling Era", "Golden Age")) #, "Old-school DJ Era"
+  ) %>% 
+  filter(era != "other")
+
+## Vocabulary joined wiht Spotify data by era
+df_songs_words <- 
+  df_songs %>% 
+  inner_join(df_vocabulary, by = c("track_artist" = "rapper_clean")) %>% 
+  mutate(
+    year = as.numeric(str_sub(track_album_release_date, 0, 4)),
+    duration_m = duration_ms / 60000,
+    era = case_when(
+      #year >= 1973 & year < 1988 ~ "Old-school DJ Era",
+      year >= 1985 & year < 1997 ~ "Golden Age",
+      year >= 1997 & year < 2009 ~ "Bling-Bling Era",
+      year >= 2009 ~ "Internet Era",
+      TRUE ~ "other"
+    )
+  ) %>% 
+  filter(era != "other") %>% 
+  mutate(era = factor(era, levels = c("Internet Era", "Bling-Bling Era", "Golden Age"))) #, "Old-school DJ Era"
+```
+
+## Distributions of Measures per Era
+
+```{r distributuions-spotify-measures}
+dist <- 
+  df_songs_rap %>% 
+  dplyr::select(
+    track_id, playlist_subgenre, year, era, track_artist,
+    Danceability = "danceability", 
+    Energy = "energy", 
+    Loudness = "loudness", 
+    Speechiness = "speechiness", 
+    Acousticness = "acousticness", 
+    Tempo = "tempo", 
+    `Song Duration` = "duration_m", 
+    Popularity = "track_popularity"
+  ) %>% 
+  pivot_longer(
+    cols = Danceability:Popularity, 
+    names_to = "measure", 
+    values_to = "value"
+  ) %>% 
+  filter(!is.na(value)) %>% 
+  group_by(measure) %>% 
+  mutate(value = abs(value) / max(abs(value))) %>% 
+  ungroup() %>% 
+  filter(era != "Old-school DJ Era") %>% 
+  mutate(era = fct_rev(era)) %>% 
+  ggplot(aes(value, color = era)) + 
+    geom_density(aes(fill = era), 
+                 alpha = .3,
+                 key_glyph = draw_key_timeseries) +
+    geom_density(aes(size = era), 
+                 alpha = 0,
+                 key_glyph = draw_key_timeseries) +
+    facet_wrap(~ measure, 
+               scales = "free", 
+               nrow = 2, 
+               strip.position = "bottom") +
+    coord_cartesian(clip = "off") +
+    scale_x_continuous(expand = c(.001, .001), 
+                       limits = c(0, 1),
+                       breaks = c(0.05, 0.5, 0.94), 
+                       labels = c("low", "medium", "high")) +
+    scale_y_continuous(expand = c(0, 0)) +
+    scale_color_manual(values = rev(pals), 
+                       name = "Eras of Hip Hop") +
+    scale_fill_manual(values = c("gold", "transparent", "transparent"), 
+                      guide = F) +
+    scale_size_manual(values = c(1, 0.6, 0.5), 
+                      guide = F) +
+    guides(color = guide_legend(override.aes = list(alpha = 1, size = 1))) +
+    labs(x = NULL, y = NULL) +
+    theme(axis.text.x = element_text(size = 10),
+          strip.text.x = element_text(color = "grey55"),
+          axis.text.y = element_blank(),
+          axis.ticks = element_blank(),
+          panel.spacing.x = unit(2, "lines"),
+          panel.spacing.y = unit(3, "lines"),
+          legend.position = c(.25, .82),
+          legend.title = element_text(face = "bold", color = "grey80"),
+          legend.text = element_text(color = "grey55"),
+          plot.margin = margin(20, 100, 20, 100))
+```
+
+## Most Popular Rappers
+
+```{r lollipops-popular-rapper}
+## by words
+pop_words <-
+  df_songs_words %>% 
+  group_by(track_artist) %>% 
+  mutate(
+    year_artist = min(year),
+    era_artist = case_when(
+      #year_artist >= 1973 & year_artist < 1988 ~ "Old-school DJ Era",
+      year_artist >= 1985 & year_artist < 1997 ~ "Golden Age",
+      year_artist >= 1997 & year_artist < 2009 ~ "Bling-Bling Era",
+      year_artist >= 2009 ~ "Internet Era",
+      TRUE ~ "other"
+    )
+  ) %>% 
+  mutate(era_artist = factor(era_artist, levels = c("Golden Age", "Bling-Bling Era", "Internet Era"))) %>% 
+  group_by(track_artist, era_artist, year_artist, recalc) %>% 
+  summarize(
+    n = n(),
+    pop = round(mean(track_popularity), 1)
+  ) %>% 
+  group_by(era_artist) %>% 
+  arrange(-pop) %>% 
+  mutate(rank = row_number()) %>% 
+  slice(1:10) %>% 
+  ungroup() %>% 
+  arrange(era_artist, pop) %>%
+  mutate(
+    order = row_number(),
+    label_artist = glue::glue("{rank}. {track_artist}"),
+    label_words = glue::glue("{format(recalc, big.mark = ',')} unique words"),
+    label_pop = if_else(order == 10, glue::glue("{round(pop, 1)}% (Popularity)"), glue::glue("{round(pop, 1)}%"))
+  ) %>% 
+  ggplot(aes(recalc, order, color = era_artist)) +
+    geom_segment(aes(x = 0, xend = recalc,
+                     y = order, yend = order),
+                 size = 1) +
+    geom_segment(aes(x = 0, xend = 0, 
+                     y = order - .22, yend = order + .22),
+                 size = 1.7) +
+    geom_point(aes(size = pop)) +
+    geom_text(aes(x = 0, y = order, 
+                  label = label_artist), 
+              nudge_y = .4, 
+              family = "Montserrat",
+              size = 4.4,
+              fontface = "bold",
+              hjust = 0) +
+    geom_text(aes(x = 150, y = order, 
+                  label = label_words), 
+              nudge_y = .17, 
+              family = "Montserrat",
+              color = "grey65",
+              size = 2.6,
+              hjust = 0) +
+    geom_text(aes(x = recalc, y = order, 
+                  label = label_pop),
+              nudge_x = 250,
+              family = "Montserrat",
+              color = "grey55",
+              size = 3.4,
+              fontface = "bold", 
+              hjust = 0) +
+    facet_wrap(~ era_artist, scales = "free_y", ncol = 3) +
+    scale_x_continuous(expand = c(0, 0), 
+                       limits = c(0, 7500), 
+                       breaks = seq(1000, 7000, by = 1000)) +
+    scale_y_continuous(expand = c(.01, .01)) +
+    scale_color_manual(values = rev(pals), 
+                       guide = F) +
+    scale_size(guide = F) +
+    labs(x = NULL, y = NULL) +
+    theme(axis.ticks = element_blank(), 
+          axis.text.x = element_text(size = 9, 
+                                     lineheight = .95),
+          axis.text.y = element_blank(),
+          axis.line.x = element_blank(),
+          panel.spacing = unit(3, "lines"),
+          panel.grid.major.x = element_line(color = "grey25", 
+                                            linetype = "dotted", 
+                                            size = .4),
+          strip.text = element_text(size = 1, 
+                                    color = NA, 
+                                    hjust = 0),
+          plot.margin = margin(-20, 100, 20, 100))
+```
+
+## Words + Popularity
+
+```{r scatter-words-popularity}
+words_pop <-
+  df_songs_words %>% 
+  filter(era != "other") %>%
+  ggplot(aes(recalc, track_popularity, 
+             color = era)) +
+    geom_jitter(position = position_jitter(seed = 1),
+                size = .6,
+                alpha = .2) +
+    geom_jitter(position = position_jitter(seed = 1),
+                size = .6,
+                shape = 21,
+                fill = NA,
+                alpha = .5,
+                stroke = .1) +
+    geom_smooth(method = "lm", se = F, 
+                size = .8, 
+                show.legend = F) +
+    scale_y_continuous(expand = c(.01, .01),
+                       breaks = seq(0, 80, by = 20),
+                       labels = glue::glue("{seq(0, 80, by = 20)}%")) +
+    scale_color_manual(values = pals, 
+                       name = "") +
+    guides(color = guide_legend(override.aes = list(alpha = 1, size = 1.3))) +
+    labs(x = "Unique Words Used within Artist's Lyrics", 
+         y = NULL) +
+    theme(axis.ticks = element_blank(),
+          #axis.title.x = element_text(size = 12),
+          axis.text.x = element_text(size = 10),
+          axis.text.y = element_blank(),
+          axis.line.x = element_blank(),
+          legend.position = c(.76, .95),
+          legend.title = element_text(face = "bold", color = "grey80"),
+          legend.text = element_text(color = "grey55"),
+          panel.grid.major.x = element_line(color = "grey25", 
+                                            linetype = "dotted", 
+                                            size = .4),
+          plot.margin = margin(20, 5, 20, 100))
+```
+
+## Danceability + Popularity
+
+```{r scatter-danceability-popularity}
+words_dance <-
+  df_songs_words %>% 
+  filter(era != "other") %>%
+  ggplot(aes(danceability, track_popularity, 
+             color = era)) +
+    geom_jitter(position = position_jitter(seed = 1),
+                size = .6,
+                alpha = .2) +
+    geom_jitter(position = position_jitter(seed = 1),
+                size = .8,
+                shape = 21,
+                fill = NA,
+                alpha = .5,
+                stroke = .1) +
+    geom_smooth(method = "lm", se = F, size = .8) +
+    scale_x_continuous(expand = c(0, 0), 
+                       limits = c(.3, 1)) +
+    scale_y_continuous(expand = c(.01, .01),
+                       breaks = seq(0, 80, by = 20),
+                       labels = glue::glue("{seq(0, 80, by = 20)}%"),
+                       position = "right") +
+    scale_color_manual(values = pals, 
+                       guide = F) +
+    labs(x = "Danceability of the Track", 
+         y = "Popularity on Spotify") +
+    theme(axis.ticks.x = element_blank(),
+          axis.ticks.length.y = unit(5, "pt"),
+          #axis.title.x = element_text(size = 12),
+          #axis.title.y = element_text(size = 12),
+          axis.text = element_text(size = 10),
+          axis.line.x = element_blank(),
+          axis.line.y = element_line(color = "grey55"),
+          legend.position = c(.8, .9),
+          legend.title = element_text(face = "bold", color = "grey80"),
+          legend.text = element_text(color = "grey55"),
+          panel.grid.major.x = element_line(color = "grey25", 
+                                            linetype = "dotted", 
+                                            size = .4),
+          plot.margin = margin(20, 0, 20, 5))
+```
+
+## Spotify Effect on Track Duration
+
+```{r spotify-effect-rap}
+periods <-
+  tibble(
+    label = c("<span style='color:#9c9c9c'>Pre-Spotify Era</span>", 
+              "<span style='color:#1DB954'>Spotify-Era</span>"),
+    x = c(1999, 2016),
+    y = rep(5.5, 2)
+  )
+
+spot <-
+  df_songs_rap %>%
+  mutate(
+    spotified = case_when(
+      year > 2008 ~ "Spotify",
+      TRUE ~ "Pre-Spotify"
+    ),
+    playlist_subgenre = tools::toTitleCase(playlist_subgenre)
+  ) %>% 
+  filter(year > 1980) %>% 
+  ggplot(aes(year, duration_m)) +
+    geom_vline(xintercept = 2008.5, 
+               color = "#4e8863", 
+               size = 1, 
+               linetype = "dashed") + 
+    geom_smooth(aes(group = spotified),
+                method = "loess",
+                color = NA,
+                alpha = .2) +
+    stat_summary(aes(fill = playlist_subgenre, 
+                     group = playlist_subgenre),
+                 fun.y = "median", 
+                 geom = "point", 
+                 shape = 21,
+                 size = 2,
+                 color = "transparent") +
+    geom_smooth(aes(color = spotified, 
+                    group = spotified),
+                method = "loess",
+                se = F) +
+    geom_richtext(data = periods, 
+                  aes(x, y, label = label),
+                  family = "Montserrat",
+                  fontface = "bold",
+                  size = 5,
+                  hjust = .5,
+                  fill = NA, 
+                  label.color = NA) +
+    scale_x_continuous(expand = c(0, 0), 
+                       limits = c(1980, 2021)) +
+    scale_y_continuous(expand = c(.03, .03), 
+                       breaks = 3:6, 
+                       labels = glue::glue("{3:6} minutes")) +
+    scale_color_manual(values = c("#9c9c9c", "#1DB954"), 
+                       guide = F) +
+    scale_fill_manual(values = c("#283627", "#274637", "#2C715F", "#44A57C"),
+                      name = "Subgenre:") +
+    labs(x = NULL, y = NULL) +
+    theme(axis.line.x = element_blank(),
+          axis.ticks.x = element_blank(),
+          axis.ticks.length.y = unit(5, "pt"),
+          axis.line.y = element_line(color = "grey55"),
+          panel.grid.major.x = element_line(color = "grey25", 
+                                            linetype = "dotted", 
+                                            size = .4),
+          legend.position = c(.17, .25),
+          legend.title = element_text(face = "bold", color = "grey80"),
+          legend.text = element_text(color = "grey55"),
+          plot.margin = margin(20, 100, 10, 0))
+```
+
+## Title and Caption
+
+```{r title+caption}
+title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "The <span style='color:#ffc205'>Golden Age of Hip Hop</span> in the <span style='color:#1DB954'>Era of Spotify</span>",
+       subtitle = "It is generally accepted that the <b style='color:#ffc205'>Golden Age of Hip Hop</b> occurred from the mid 1980s to the mid 1990s. It was then<br>that all the elements of the culture–breaking, graffiti art, DJing, and rap–broke cover to enter the mainstream.<br><b>N.W.A.</b>, <b>Eric B. & Rakim</b>, <b>Run DMC</b>, and the <b>Beastie Boys</b> allowed rap music to become the culture's crowning<br>glory. With the likes of DMX, Dr. Dre, Eminem, Nelly, and 2Pac all selling albums in their tens of millions, Hip Hop<br>became a game changer, one of the most popular styles in modern music and revolutionized youth culture.") +
+  theme(line = element_blank(),
+        axis.text = element_blank(),
+        axis.line.x = element_blank(),
+        plot.title = element_markdown(family = "Montserrat ExtraBold", size = 36, 
+                                      lineheight = 1.1, hjust = .5, 
+                                      margin = margin(t = 50, b = 35)),
+        plot.subtitle = element_markdown(size = 16, color = "grey85", hjust = .5, lineheight = 1.4),
+        plot.margin = margin(20, 100, 20, 100))
+
+caption <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "Visualization by <span style='color:#ffc205'>Cédric Scherer</span>  ∙  Song Data by <span style='color:#1DB954'>Spotify</span> via <span style='color:#1DB954'>{spotifyr}</span>  ∙  Data on Rap Vocabularies by <span style='color:#cecece'>Matt Daniels</span>") +
+  theme(line = element_blank(),
+        axis.text = element_blank(),
+        axis.line.x = element_blank(),
+        plot.title= element_markdown(family = "Montserrat ExtraBold", size = 11, 
+                                     color = "grey65", lineheight = 1.5, hjust = .5, 
+                                     margin = margin(t = 35, b = 50)),
+        plot.margin = margin(10, 100, 50, 140))
+```
+
+## Text
+
+```{r text-boxes}
+text_dist <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       subtitle = "Rap music during the <b style='color:#ffc205'>Golden Age (1985-1996)</b> was music you would like to shake your booty to! Tracks are often more danceable and louder but a bit slower<br>than rap songs from the <b style='color:#cecece'>Bling-Bling Era (1997-2008)</b> and the <b style='color:#4e8863'>Internet Era (2009-today)</b> according to the audio features provided by <b style='color:#1DB954'>Spotify</b>. Even though<br>the <b style='color:#ffc205'>Golden Age</b> was way before <b style='color:#1DB954'>Spotify</b> or even the internet became a mainstream phenomenon, many artists and tracks from back then are popular on Spotify. ") +
+  theme(line = element_blank(),
+        axis.text = element_blank(),
+        axis.line.x = element_blank(),
+        plot.subtitle = element_markdown(size = 12, color = "grey65", hjust = 0.5, lineheight = 1.4),
+        plot.margin = margin(20, 100, 10, 100))
+
+text_words <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "Popular rappers from nowadays, however, use way less unique words. Is that the reason for the higher popularity?") +
+  theme(line = element_blank(),
+        axis.text = element_blank(),
+        axis.line.x = element_blank(),
+        plot.title = element_text(size = 18, color = "grey85", hjust = .6),
+        plot.margin = margin(20, 100, 0, 100))
+
+text_scatter <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       subtitle = "Two variables exhibit distinct patterns<br>for the different eras of hip hop:<br>Indeed, a smaller rap vocabulary<br>is correlated with higher popularity<br>for tracks from the <b style='color:#4e8863'>Internet Era</b><br>while popularity of tracks from<br>artists of the <b style='color:#ffc205'>Golden Age</b> and<br><b style='color:#cecece'>Bling-Bling Era</b> increases with more<br>unique words. Also, popularity<br>increases with danceability for more<br>recent tracks, while the trend is re-<br>versed for tracks from the <b style='color:#ffc205'>Golden Age</b>.") +
+  theme(line = element_blank(),
+        axis.text = element_blank(),
+        axis.line.x = element_blank(),
+        plot.subtitle = element_markdown(size = 12, color = "grey65", hjust = 0, lineheight = 1.4),
+        plot.margin = margin(60, 100, 20, 40))
+
+text_spot <- ggplot(data.frame(x = 1:2, y = 1:10)) +
+  labs(x = NULL, y = NULL,
+       title = "The <span style='color:#1DB954'>Spotify Effect</span> on Track Length?",
+       subtitle = "Track duration dropped from around 4.5 minutes to close and even below<br>3 minutes. Several blame <b style='color:#1DB954'>Spotify</b> (and other streaming platforms) for this<br>trend since shorter songs bring a higher net revenue. But also a decrease in<br>the human attention span in an ever-faster world in combination with end-<br>less amounts of music provided by the streaming platforms are discussed<br>as causes for this <b style='color:#1DB954'>Spotify Effect</b>. The effect can not be only found for rap and<br>its subgenres but all major music genres with slight variation in the duration<br>of recently released tracks among genres.") +
+  theme(line = element_blank(),
+        axis.text = element_blank(),
+        axis.line.x = element_blank(),
+        plot.title = element_markdown(size = 24, color = "grey85", hjust = 1, margin = margin(b = 30)),
+        plot.subtitle = element_markdown(size = 12, color = "grey65", hjust = 1, lineheight = 1.4),
+        plot.margin = margin(80, 40, 30, 100))
+```
+
+## Full Panel
+
+```{r panel, fig.width = 16, fig.height = 29}
+upper_row <- plot_grid(words_pop, words_dance, text_scatter, nrow = 1, rel_widths = c(.4, .3, .3))
+#ggsave("upper.pdf", width = 14, height = 5.5, device = cairo_pdf)
+
+bottom_row <- plot_grid(text_spot, spot, rel_widths = c(.45, .55))
+#ggsave("bottom.pdf", width = 14, height = 6, device = cairo_pdf)
+
+panel <- plot_grid(title, dist, text_dist, pop_words, text_words, upper_row, bottom_row, caption,
+                   ncol = 1, rel_heights = c(0.2, 0.4, 0.1, 0.4, 0.05, 0.3, 0.35, 0.05))
+
+ggsave(here::here("plots", "2020_04", "2020_04_SpotifySongs.pdf"), 
+       width = 16, height = 29, device = cairo_pdf)
+```
+
+***
+  
+```{r}
+sessionInfo()
+```
