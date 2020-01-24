@@ -233,11 +233,12 @@ pop_words <-
     scale_color_manual(values = rev(pals), 
                        guide = F) +
     scale_size(guide = F) +
-    labs(x = NULL, y = NULL) +
+    labs(x = "Unique Words Used within Artist's Lyrics", y = NULL) +
     theme(axis.ticks = element_blank(), 
           axis.text.x = element_text(size = 9, 
                                      lineheight = .95),
           axis.text.y = element_blank(),
+          axis.title.x = element_text(size = 11),
           axis.line.x = element_blank(),
           panel.spacing = unit(3, "lines"),
           panel.grid.major.x = element_line(color = "grey25", 
