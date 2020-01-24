@@ -71,63 +71,63 @@ labs1 <- c("**3,000** words", "**4,000**", "**5,000**", "**6,000** words")
 
 df_rap_1  %>% 
   ggplot(aes(height, words_lmd)) + 
-  geom_path(data = df_line, aes(height, words_lmd), size = 1.6) +
-   geom_mark_circle(data = df_rap_1 %>% filter(recalc > 6500 | recalc < 2500),
-                   aes(group = rapper_clean, 
-                       label = glue::glue("{rapper_clean}:"),
-                       description = glue::glue("{recalc} unique words")),
-                   color = NA, 
-                   label.colour = "#333333", 
-                   label.fill = "grey93", 
-                   con.colour = "#333333",
-                   con.cap = -3) +
-  ggbeeswarm::geom_beeswarm(aes(fill = era),
-                            groupOnX = T,
-                            size = 9.2,
-                            shape = 21,
-                            color = "#333333",
-                            priority = "random",
-                            cex = 3.7) +
-  annotate("text", x = 1.008, y = 6900, 
-           label = "7,300\nwords", 
-           family = "Ebrima",
-           lineheight = 0.8, 
-           size = 4.7,
-           hjust = 0.5) +
-  coord_flip() + 
-  scale_x_continuous(limits = c(0.94, 1.06), 
-                     expand = c(0, 0)) + 
-  scale_y_continuous(position = "right",
-                     labels = labs1, 
-                     breaks = seq(3000, 6000, by = 1000)) + 
-  scale_fill_manual(values = c("grey75", "grey60", "grey45", "grey30"),
-                    na.value = "white") +
-  guides(fill = guide_legend(nrow = 1,
-                             label.position = "right",
-                             override.aes = list(size = 6.5))) +
-  labs(title = "# of Unique Words Used Within Artist's First 35,000 Lyrics",
-       caption = "        Notes/sources:\n\n        All lyrics are via Genius.\n\n        Original visualization by Matt Daniels\n        Replicated in R by Cédric Scherer") +
-  theme(panel.grid.major.x = element_line(color = "black", 
-                                          size = 0.2,
-                                          linetype = "dotted"),
-        axis.text.x.top = element_markdown(color = "black", 
-                                           size = 18), 
-        plot.title = element_text(color = "#333333", 
-                                  size = 35, 
-                                  face = "plain", 
-                                  hjust = 0.5,
-                                  margin = margin(t = 40, b = 40)),
-        plot.caption = element_text(color = "#333333", 
-                                    size = 11,
-                                    lineheight = 1.3,
-                                    hjust = 0,
-                                    margin = margin(t = 15, b = 15)),
-        legend.position = c(0.82, 0.05),
-        legend.key = element_rect(color = NA, 
-                                  fill = NA),
-        legend.title = element_blank(),
-        legend.text = element_text(color = "#333333", 
-                                   size = 15))
+    geom_path(data = df_line, aes(height, words_lmd), size = 1.6) +
+    geom_mark_circle(data = df_rap_1 %>% filter(recalc > 6500 | recalc < 2500),
+                     aes(group = rapper_clean, 
+                         label = glue::glue("{rapper_clean}:"),
+                         description = glue::glue("{recalc} unique words")),
+                     color = NA, 
+                     label.colour = "#333333", 
+                     label.fill = "grey93", 
+                     con.colour = "#333333",
+                     con.cap = -3) +
+    ggbeeswarm::geom_beeswarm(aes(fill = era),
+                              groupOnX = T,
+                              size = 9.2,
+                              shape = 21,
+                              color = "#333333",
+                              priority = "random",
+                              cex = 3.7) +
+    annotate("text", x = 1.008, y = 6900, 
+             label = "7,300\nwords", 
+             family = "Ebrima",
+             lineheight = 0.8, 
+             size = 4.7,
+             hjust = 0.5) +
+    coord_flip() + 
+    scale_x_continuous(limits = c(0.94, 1.06), 
+                       expand = c(0, 0)) + 
+    scale_y_continuous(position = "right",
+                       labels = labs1, 
+                       breaks = seq(3000, 6000, by = 1000)) + 
+    scale_fill_manual(values = c("grey75", "grey60", "grey45", "grey30"),
+                      na.value = "white") +
+    guides(fill = guide_legend(nrow = 1,
+                               label.position = "right",
+                               override.aes = list(size = 6.5))) +
+    labs(title = "# of Unique Words Used Within Artist's First 35,000 Lyrics",
+         caption = "        Notes/sources:\n\n        All lyrics are via Genius.\n\n        Original visualization by Matt Daniels\n        Replicated in R by Cédric Scherer") +
+    theme(panel.grid.major.x = element_line(color = "black", 
+                                            size = 0.2,
+                                            linetype = "dotted"),
+          axis.text.x.top = element_markdown(color = "black", 
+                                             size = 18), 
+          plot.title = element_text(color = "#333333", 
+                                    size = 35, 
+                                    face = "plain", 
+                                    hjust = 0.5,
+                                    margin = margin(t = 40, b = 40)),
+          plot.caption = element_text(color = "#333333", 
+                                      size = 11,
+                                      lineheight = 1.3,
+                                      hjust = 0,
+                                      margin = margin(t = 15, b = 15)),
+          legend.position = c(0.82, 0.05),
+          legend.key = element_rect(color = NA, 
+                                    fill = NA),
+          legend.title = element_blank(),
+          legend.text = element_text(color = "#333333", 
+                                     size = 15))
 
 ggsave(here::here("plots", "2019_50", "2019_50_Replicate_Rap_bee.pdf"), 
        width = 20, height = 11.3, device = cairo_pdf)
