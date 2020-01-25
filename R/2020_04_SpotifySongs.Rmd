@@ -267,7 +267,7 @@ words_pop <-
                 fill = NA,
                 alpha = .5,
                 stroke = .1) +
-    geom_smooth(method = "lm", se = F, 
+    geom_smooth(method = "loess", se = F, 
                 size = .8, 
                 show.legend = F) +
     scale_y_continuous(expand = c(.01, .01),
@@ -360,7 +360,7 @@ spot <-
                size = 1, 
                linetype = "dashed") + 
     geom_smooth(aes(group = spotified),
-                method = "loess",
+                method = "lm",
                 color = NA,
                 alpha = .2) +
     stat_summary(aes(fill = playlist_subgenre, 
@@ -452,7 +452,7 @@ text_dist <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 
 text_words <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
-       title = "Popular rappers from nowadays, however, use way less unique words. Is that the reason for the higher popularity?") +
+       title = "Popular rappers from nowadays, however, use way fewer unique words. Is that the reason for the higher popularity?") +
   theme(line = element_blank(),
         axis.text = element_blank(),
         axis.line.x = element_blank(),
