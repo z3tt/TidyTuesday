@@ -29,7 +29,7 @@ theme_set(theme_custom(base_family = "Fjalla One"))
 
 theme_update(
   plot.background = element_rect(fill = "black", color = "black"),
-  panel.background = element_rect(fill = NA, color = NA),
+  panel.background = element_rect(fill = "black", color = "black"),
   panel.border = element_rect(fill = NA, color = NA),
   axis.line.x = element_line(color = "grey55", size = 1),
   axis.ticks = element_line(color = "grey55"),
