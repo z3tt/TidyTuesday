@@ -67,7 +67,7 @@ df_songs_rap <-
     year = as.numeric(str_sub(track_album_release_date, 0, 4)),
     duration_m = duration_ms / 60000,
     era = case_when(
-      #year >= 1973 & year < 1988 ~ "Old-school DJ Era",
+      #year >= 1973 & year < 1985 ~ "Old-school DJ Era",
       year >= 1985 & year < 1997 ~ "Golden Age",
       year >= 1997 & year < 2009 ~ "Bling-Bling Era",
       year >= 2009 ~ "Internet Era",
@@ -77,7 +77,7 @@ df_songs_rap <-
   ) %>% 
   filter(era != "other")
 
-## Vocabulary joined wiht Spotify data by era
+## Vocabulary joined with Spotify data by era
 df_songs_words <- 
   df_songs %>% 
   inner_join(df_vocabulary, by = c("track_artist" = "rapper_clean")) %>% 
@@ -85,7 +85,7 @@ df_songs_words <-
     year = as.numeric(str_sub(track_album_release_date, 0, 4)),
     duration_m = duration_ms / 60000,
     era = case_when(
-      #year >= 1973 & year < 1988 ~ "Old-school DJ Era",
+      #year >= 1973 & year < 1985 ~ "Old-school DJ Era",
       year >= 1985 & year < 1997 ~ "Golden Age",
       year >= 1997 & year < 2009 ~ "Bling-Bling Era",
       year >= 2009 ~ "Internet Era",
@@ -170,14 +170,14 @@ pop_words <-
   mutate(
     year_artist = min(year),
     era_artist = case_when(
-      #year_artist >= 1973 & year_artist < 1988 ~ "Old-school DJ Era",
+      #year_artist >= 1973 & year_artist < 1985 ~ "Old-school DJ Era",
       year_artist >= 1985 & year_artist < 1997 ~ "Golden Age",
       year_artist >= 1997 & year_artist < 2009 ~ "Bling-Bling Era",
       year_artist >= 2009 ~ "Internet Era",
       TRUE ~ "other"
     )
   ) %>% 
-  mutate(era_artist = factor(era_artist, levels = c("Golden Age", "Bling-Bling Era", "Internet Era"))) %>% 
+  mutate(era_artist = factor(era_artist, levels = c("Golden Age", "Bling-Bling Era", "Internet Era"))) %>%  #, "Old-school DJ Era"
   group_by(track_artist, era_artist, year_artist, recalc) %>% 
   summarize(
     n = n(),
