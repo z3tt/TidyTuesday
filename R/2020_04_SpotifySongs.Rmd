@@ -29,7 +29,7 @@ theme_set(theme_custom(base_family = "Fjalla One"))
 
 theme_update(
   plot.background = element_rect(fill = "black", color = "black"),
-  panel.background = element_rect(fill = "black", color = "black"),
+  panel.background = element_rect(fill = NA, color = NA),
   panel.border = element_rect(fill = NA, color = NA),
   axis.line.x = element_line(color = "grey55", size = 1),
   axis.ticks = element_line(color = "grey55"),
@@ -279,7 +279,6 @@ words_pop <-
     labs(x = "Unique Words Used within Artist's Lyrics", 
          y = NULL) +
     theme(axis.ticks = element_blank(),
-          #axis.title.x = element_text(size = 12),
           axis.text.x = element_text(size = 10),
           axis.text.y = element_blank(),
           axis.line.x = element_blank(),
@@ -322,8 +321,6 @@ words_dance <-
          y = "Popularity on Spotify") +
     theme(axis.ticks.x = element_blank(),
           axis.ticks.length.y = unit(5, "pt"),
-          #axis.title.x = element_text(size = 12),
-          #axis.title.y = element_text(size = 12),
           axis.text = element_text(size = 10),
           axis.line.x = element_blank(),
           axis.line.y = element_line(color = "grey55"),
@@ -386,8 +383,10 @@ spot <-
                   fill = NA, 
                   label.color = NA) +
     scale_x_continuous(expand = c(0, 0), 
-                       limits = c(1980, 2021)) +
+                       limits = c(1980, 2021),
+                       position = "top") +
     scale_y_continuous(expand = c(.03, .03), 
+                       limits = c(NA, 6.1),
                        breaks = 3:6, 
                        labels = glue::glue("{3:6} minutes")) +
     scale_color_manual(values = c("#9c9c9c", "#1DB954"), 
@@ -402,10 +401,10 @@ spot <-
           panel.grid.major.x = element_line(color = "grey25", 
                                             linetype = "dotted", 
                                             size = .4),
-          legend.position = c(.17, .25),
+          legend.position = c(.15, .25),
           legend.title = element_text(face = "bold", color = "grey80"),
           legend.text = element_text(color = "grey55"),
-          plot.margin = margin(20, 100, 10, 0))
+          plot.margin = margin(20, 100, 10, 10))
 ```
 
 ## Title and Caption
