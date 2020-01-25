@@ -340,7 +340,7 @@ periods <-
   tibble(
     label = c("<span style='color:#9c9c9c'>Pre-Spotify Era</span>", 
               "<span style='color:#1DB954'>Spotify-Era</span>"),
-    x = c(1999, 2016),
+    x = c(1999, 2015),
     y = rep(5.5, 2)
   )
 
@@ -410,14 +410,19 @@ spot <-
 ## Title and Caption
 
 ```{r title+caption}
+theme_text <- 
+  theme(
+    line = element_blank(),
+    axis.text = element_blank(),
+    axis.line.x = element_blank()
+  )
+
 title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
        title = "The <span style='color:#ffc205'>Golden Age of Hip Hop</span> in the <span style='color:#1DB954'>Era of Spotify</span>",
        subtitle = "It is generally accepted that the <b style='color:#ffc205'>Golden Age of Hip Hop</b> occurred from the mid 1980s to the mid 1990s. It was then<br>that all the elements of the culture–breaking, graffiti art, DJing, and rap–broke cover to enter the mainstream.<br><b>N.W.A.</b>, <b>Eric B. & Rakim</b>, <b>Run DMC</b>, and the <b>Beastie Boys</b> allowed rap music to become the culture's crowning<br>glory. With the likes of DMX, Dr. Dre, Eminem, Nelly, and 2Pac all selling albums in their tens of millions, Hip Hop<br>became a game changer, one of the most popular styles in modern music and revolutionized youth culture.") +
-  theme(line = element_blank(),
-        axis.text = element_blank(),
-        axis.line.x = element_blank(),
-        plot.title = element_markdown(family = "Montserrat ExtraBold", size = 36, 
+  theme_text + 
+  theme(plot.title = element_markdown(family = "Montserrat ExtraBold", size = 36, 
                                       lineheight = 1.1, hjust = .5, 
                                       margin = margin(t = 50, b = 35)),
         plot.subtitle = element_markdown(size = 16, color = "grey85", hjust = .5, lineheight = 1.4),
@@ -426,10 +431,8 @@ title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 caption <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
        title = "Visualization by <span style='color:#ffc205'>Cédric Scherer</span>  ∙  Song Data by <span style='color:#1DB954'>Spotify</span> via <span style='color:#1DB954'>{spotifyr}</span>  ∙  Data on Rap Vocabularies by <span style='color:#cecece'>Matt Daniels</span>") +
-  theme(line = element_blank(),
-        axis.text = element_blank(),
-        axis.line.x = element_blank(),
-        plot.title= element_markdown(family = "Montserrat ExtraBold", size = 11, 
+  theme_text + 
+  theme(plot.title= element_markdown(family = "Montserrat ExtraBold", size = 11, 
                                      color = "grey65", lineheight = 1.5, hjust = .5, 
                                      margin = margin(t = 35, b = 50)),
         plot.margin = margin(10, 100, 50, 140))
@@ -468,7 +471,7 @@ text_scatter <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 text_spot <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
        title = "The <span style='color:#1DB954'>Spotify Effect</span> on Track Length?",
-       subtitle = "Track duration dropped from around 4.5 minutes to close and even below<br>3 minutes. Several blame <b style='color:#1DB954'>Spotify</b> (and other streaming platforms) for this<br>trend since shorter songs bring a higher net revenue. But also a decrease in<br>the human attention span in an ever-faster world in combination with end-<br>less amounts of music provided by the streaming platforms are discussed<br>as causes for this <b style='color:#1DB954'>Spotify Effect</b>. The effect can not be only found for rap and<br>its subgenres but all major music genres with slight variation in the duration<br>of recently released tracks among genres.") +
+       subtitle = "Track duration dropped from around 4.5 minutes to close to and even below<br>3 minutes. Several blame <b style='color:#1DB954'>Spotify</b> (and other streaming platforms) for this<br>trend since shorter songs bring a higher net revenue. But also a decrease in<br>the human attention span in an ever-faster world in combination with end-<br>less amounts of music provided by the streaming platforms are discussed<br>as causes for this <b style='color:#1DB954'>Spotify Effect</b>. The effect can not be only found for rap and<br>its subgenres but all major music genres with slight variation in the duration<br>of recently released tracks among genres.") +
   theme(line = element_blank(),
         axis.text = element_blank(),
         axis.line.x = element_blank(),
