@@ -184,11 +184,11 @@ pop_words <-
     pop = round(mean(track_popularity), 1)
   ) %>% 
   group_by(era_artist) %>% 
-  arrange(-pop) %>% 
+  arrange(-pop, desc(track_artist)) %>% 
   mutate(rank = row_number()) %>% 
   slice(1:10) %>% 
   ungroup() %>% 
-  arrange(era_artist, pop) %>%
+  arrange(era_artist, pop, track_artist) %>%
   mutate(
     order = row_number(),
     label_artist = glue::glue("{rank}. {track_artist}"),
