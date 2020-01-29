@@ -1,7 +1,7 @@
 ---
 title: "TidyTuesday 2019/34 - Nuclear Explosions by SIPRI"
 author: "Cedric Scherer"
-date: "21th of July 2019"
+date: "21th of August 2019"
 output:
   html_document:
   theme: paper
@@ -206,6 +206,51 @@ title + goode + caption + plot_layout(widths = c(0, 1, 0), nrow = 1)
 
 ggsave(here::here("plots", "2019_34", "2019_34_NuclearExplosions.pdf"), 
        width = 14, height = 6.4, device = cairo_pdf)
+```
+
+
+## stripes
+
+```{r stripe-plot, fig.width = 14, fig.height = 7.5}
+df_nuclear_yrs <- df_nuclear %>% 
+  group_by(year) %>% 
+  count() %>% 
+  union(
+    tibble(
+      year = 1945:1998,
+      n = 0
+    )
+  ) %>%
+  summarize(n = max(n))
+  
+ggplot(df_nuclear_yrs , aes(year, 1)) +
+  geom_tile(aes(fill = n), width = 0.6) +
+  geom_tile(data = filter(df_nuclear_yrs, n == 0), 
+            aes(year, 1), width = 0.6, 
+            fill = "mediumorchid4") +
+  scale_x_continuous(name = NULL, expand = c(0, 0),
+                     limits = c(1944.5, 1998.5),
+                     breaks = c(1945, 1962, 1998)) +
+  scale_y_continuous(name = NULL, expand = c(0, 0)) +
+  rcartocolor::scale_fill_carto_c(palette = "BluYl", 
+                                  direction = -1, guide = F) +
+  theme(panel.border = element_rect(color = "transparent"),
+        axis.ticks = element_blank(),
+        axis.text.x = element_text(angle = 90, size = 7, 
+                                   color = "grey40", vjust = 0.5),
+        axis.text.y = element_blank(),
+        plot.margin = margin(100, 150, 25, 150),
+        plot.title = element_text(family = "Rockwell Extra Bold", 
+                                  size = 20, color = "grey55", hjust = 0.5),
+        plot.subtitle = element_text(size = 8, color = "grey40", hjust = 0.5),
+        plot.caption = element_text(size = 7, color = "grey40", hjust = 0.5)) +
+  labs(title = "Nuclear Explosions from 1945 to 1998",
+       subtitle = "The brighter the color, the higher the number of deployed nuclear devices with a maximum of 178 explosions in 1962.\nYears without any nuclear explosions reported are colored in purple.\n\n\n\n\n\n\n\n",
+       caption = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nVisualization by Cédric Scherer  |  Data: SIPRI Report 2000 (FOA-R--00-01572-180--SE)")
+
+## save
+ggsave(here::here("plots", "2019_34", "2019_34_NuclearStripes.pdf"), 
+       width = 14, height = 7.5, device = cairo_pdf)
 ```
 
 ***
