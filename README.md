@@ -54,7 +54,7 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2019/51 [🐩 Adoptable Dogs](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_51)
   - 2019/52 [🎄 Christmas Songs](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_52)
 * **Challenges 2020**
-  - 2020/01 [❄️️ White Christmas in Berlin](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_01)
+  - 2020/01 [❄️️ Bring Your Own Data: White Christmas in Berlin](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_01)
   - 2020/02 [🔥 Australian Fires](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_02)
   - 2020/03 [🔑 Passwords](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_03)
   - 2020/04 [🎶 Spotify Songs: The Golden Age of Hip Hop](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_04)
