@@ -7,6 +7,11 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ***
 
+### [Week 2020/05](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_05) 🌳 San Francisco Trees by [data.sfgov.org](https://data.sfgov.org/City-Infrastructure/Street-Tree-List/tkzw-k3nq)
+![./plots/2020_05/2020_05_TreesSF.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_05/2020_05_TreesSF.png)
+
+***
+
 ### [Week 2020/04](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_04) 🎶 Spotify Songs by [Spotify via {spotifyr}](https://www.rcharlie.com/spotifyr/)
 ![./plots/2020_04/2020_04SpotifySongs.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_04/2020_04_SpotifySongs.png)
 

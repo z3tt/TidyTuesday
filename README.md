@@ -58,9 +58,15 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/02 [🔥 Australian Fires](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_02)
   - 2020/03 [🔑 Passwords](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_03)
   - 2020/04 [🎶 Spotify Songs: The Golden Age of Hip Hop](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_04)
+  - 2020/05 [🌳 San Francisco Trees](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_05)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [Week 2020/05](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_05) 🌳 San Francisco Trees by [data.sfgov.org](https://data.sfgov.org/City-Infrastructure/Street-Tree-List/tkzw-k3nq)
+![./plots/2020_05/2020_05_TreesSF.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_05/2020_05_TreesSF.png)
 
 ***
 
