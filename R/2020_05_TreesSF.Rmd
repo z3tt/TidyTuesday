@@ -1,0 +1,215 @@
+---
+title: "TidyTuesday 2020/05 - San Francisco Trees by DataSF"
+author: "Cedric Scherer"
+date: "30th of January 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(sf)
+library(osmdata)
+library(ggtext)
+library(showtext)
+library(patchwork)
+
+font_add_google("Staatliches", "Staatliches")
+
+## ggplot theme
+theme_set(theme_minimal(base_family = "Staatliches"))
+
+theme_update(plot.background = element_rect(fill = "white", 
+                                            color = "grey50", 
+                                            size = 5),
+             panel.background = element_rect(fill = "#cbe6f0", color = "#cbe6f0"),
+             axis.text = element_blank(),
+             axis.title = element_blank(),
+             axis.ticks = element_blank())
+```
+
+```{r data}
+## SF shape in arc degrees
+sf_shapefile <- curl::curl_download(
+  "https://data.sfgov.org/api/geospatial/pty2-tcw4?method=export&format=Shapefile",
+  destfile = tempfile(fileext = ".zip")
+)
+
+td <- tempdir()
+sf_shapefile <- unzip(sf_shapefile, exdir = td)
+
+sf_shape_raw <- 
+  st_read(td) %>%
+  mutate(name = as.character(name))
+
+## SF roads
+sf_roads_raw <- 
+  st_bbox(sf_shape_raw) %>%
+  opq() %>%
+  add_osm_feature("highway") %>%
+  osmdata_sf()
+
+## SF trees
+df_trees <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-28/sf_trees.csv')
+
+```
+
+```{r data-prep}
+sf_shape <-
+  sf_shape_raw %>% 
+  st_transform(3488) ## transform to meters
+
+sf_outline <- 
+  sf_shape_raw %>%
+  st_simplify() %>%
+  st_union() %>%
+  st_buffer(dist = 0.001)
+
+sf_roads <- 
+  sf_roads_raw$osm_lines %>%
+  st_transform(st_crs(sf_shape_raw)) %>%
+  st_crop(st_bbox(sf_shape_raw)) %>% 
+  st_transform(3488) ## transform to meters
+
+sf_roads_buffer <-
+  sf_roads %>% 
+  st_buffer(dist = 20, endCapStyle = "FLAT") 
+
+sf_trees <- 
+  df_trees %>% 
+  filter(
+    !is.na(longitude), 
+    longitude >= -125
+  ) %>% 
+  #sample_n(1e4) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%  ## set original projection
+  st_transform(st_crs(sf_shape)) %>%  ## transform to meters
+  mutate(species = str_extract(species, ".+?(?= ::)"))
+
+species_count <- function(s){
+  c <- sf_trees %>% filter(species == s)
+  t <- lengths(st_intersects(sf_roads_buffer, c))  
+  return(t)
+}
+
+sf_roads_trees <-
+  sf_roads %>% 
+  dplyr::select(osm_id, name) %>% 
+  mutate(
+    length = as.numeric(st_length(.)),
+    tree_count = lengths(st_intersects(sf_roads_buffer, sf_trees)),
+    count_a = species_count("Platanus x hispanica"),
+    count_b = species_count("Metrosideros excelsa"),
+    count_c = species_count("Lophostemon confertus"),
+    count_d = species_count("Tristaniopsis laurina"),
+    count_e = species_count("Pittosporum undulatum"),
+    count_f = species_count("Prunus cerasifera")
+  )
+
+sf_var <-
+  sf_roads_trees %>% 
+  pivot_longer(cols = count_a:count_f, names_to = "spec", values_to = "count") %>% 
+  st_as_sf() %>% 
+  group_by(osm_id, name, length, tree_count) %>% 
+  arrange(-count) %>% 
+  slice(1) %>% 
+  mutate(
+    spec = if_else(count == 0, "Other", spec),
+    spec = if_else(tree_count == 0, "None Listed", spec),
+    spec = factor(
+             spec, 
+             levels = c("None Listed",
+                        "count_f",
+                        "Other",
+                        "count_e",
+                        "count_d",
+                        "count_c",
+                        "count_b",
+                        "count_a"))
+  )
+```
+
+```{r map, fig.width = 19, fig.height = }
+
+cols <- 
+  c("grey90",
+    "#D7BA9F",
+    "#800080",
+    "#1C3181", 
+    "#1BB6AF", 
+    "#FFAD0A", 
+    "#EE6100", 
+    "#D72000")
+
+labs <-
+  c("No Planted Trees Listed",
+    "Other Tree Species",
+    "*Prunus cerasifera*<br>(Cherry Plum)",
+    "*Pittosporum undulatum*<br>(Victorian Box)",
+    "*Tristaniopsis laurina*<br>(Swamp Myrtle)",
+    "*Lophostemon confertus*<br>(Brisbane Box)",
+    "*Metrosideros excelsa*<br>(New Zealand Christmas Tree)",
+    "*Platanus x hispanica*<br>(Sycamore London Plane)")
+
+sf_var_crs <-
+  sf_var %>% 
+  st_transform(st_crs(sf_shape_raw))
+  
+map_trees <-
+  sf_shape_raw %>% 
+  ggplot() + 
+    geom_sf(fill = "white", 
+            color = NA) +
+    geom_sf(data = sf_var, 
+            aes(color = spec),
+            size = 1.05,
+            show.legend = "line") +
+    scale_x_continuous(expand = c(0, 0), limits = c(-122.519, -122.3567)) +
+    scale_y_continuous(expand = c(0, 0), limits = c(37.711, 37.821)) +
+    scale_color_manual(values = cols,
+                       name = NULL,
+                       labels = labs) +
+    guides(color = guide_legend(title.position = "top", 
+                                title.hjust = 0.5, nrow = 1,
+                                label.position = "bottom",
+                                override.aes = list(size = 5),
+                                reverse = T)) +
+    labs(x = NULL, y = NULL,
+         title = "The Dominant Tree Species' Planted Along San Francisco's Roads",
+         caption = "Visualization by Cédric Scherer • Data: DataSF • Map: DataSF & OpenStreetMap Contributors") +
+    theme(legend.text = element_markdown(size = 13, 
+                                    color = "grey50"),
+          legend.position = "bottom",
+          legend.key.height = unit(0.9, "lines"), 
+          legend.key.width = unit(11.2, "lines"),
+          plot.title = element_text(size = 52, 
+                                    color = "grey50",
+                                    face = "bold",
+                                    hjust = 0.5,
+                                    margin = margin(0, 0, 30, 0)),
+          plot.caption = element_text(size = 18, 
+                                      color = "grey50",
+                                      hjust = 0.5,
+                                      margin = margin(30, 0, 0, 0)),
+          plot.margin = margin(30, 30, 30, 30),
+          panel.grid = element_line(color = "grey95"))
+
+ggsave(here::here("plots", "2020_05", "2020_05_TreesSF.pdf"), 
+       width = 19, height = 18.94, device = cairo_pdf)  
+```
+
+***
+
+```{r session-info}
+sessionInfo()
+```
+
