@@ -267,7 +267,7 @@ words_pop <-
                 fill = NA,
                 alpha = .5,
                 stroke = .1) +
-    geom_smooth(method = "loess", se = F, 
+    geom_smooth(method = "lm", se = F, 
                 size = .8, 
                 show.legend = F) +
     scale_y_continuous(expand = c(.01, .01),
@@ -360,7 +360,7 @@ spot <-
                size = 1, 
                linetype = "dashed") + 
     geom_smooth(aes(group = spotified),
-                method = "lm",
+                method = "loess",
                 color = NA,
                 alpha = .2) +
     stat_summary(aes(fill = playlist_subgenre, 
