@@ -102,8 +102,8 @@ df_hotels %>%
     ymin = c(0, head(ymax, n = -1)),
     fil = glue::glue("{group}.{variable}"),
     col = glue::glue("{group}.{variable}"), 
-    #col = if_else(parents_detailed == "young_parents" & group == "yes", unclass(col), "z"),  
-    ## -> uncomment for grey text in the two lower rows and change scale_color below
+    ## -> comment the following line and change scale_color below for colored text in the two lower rows
+    col = if_else(parents_detailed == "young_parents" & group == "yes", unclass(col), "z"),  
     text = case_when(
       variable == "not_canceled" ~ "did not cancel the\nhotel booking",
       variable == "stays_in_weekend_nights" ~ "stayed over\nthe weekend",
@@ -164,7 +164,7 @@ df_hotels %>%
     facet_grid(parents_detailed ~ variable, switch = "y") +
     coord_polar(theta = "y") +
     scale_x_continuous(limits = c(0, 3)) +
-    scale_color_manual(values = col8, guide = F) +  ## -> set to "col5" for grey text in the two lower rows
+    scale_color_manual(values = col5, guide = F) +  ## -> set to "col8" for colored text in the two lower rows
     scale_fill_manual(values = col8, guide = F) +
     scale_alpha_manual(values = c(1, .6, .35), guide = F) +
     labs(title = "Are new parents the most lucrative hotel guests?",
