@@ -5,6 +5,25 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
+### [Week 2020/07](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_07) 🛏️ Hotel Bookings by [Antonio, Almeida & Nunes 2019](https://www.sciencedirect.com/science/article/pii/S2352340918315191#bib5)
+![./plots/2020_07/2020_07_HotelBookings.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_07/2020_07_HotelBookings.png)
+
+**Version with grey text for lower rows:**
+<br>
+![./plots/2020_07/2020_07_HotelBookings_grey.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_07/2020_07_HotelBookings_grey.png)
+
+***
+
+### [Week 2020/05](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_05) 🌳 San Francisco Trees by [data.sfgov.org](https://data.sfgov.org/City-Infrastructure/Street-Tree-List/tkzw-k3nq)
+![./plots/2020_05/2020_05_TreesSF.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_05/2020_05_TreesSF.png)
+
+***
+
+### [Week 2020/04](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_04) 🎶 Spotify Songs by [Spotify via {spotifyr}](https://www.rcharlie.com/spotifyr/)
+![./plots/2020_04/2020_04SpotifySongs.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_04/2020_04_SpotifySongs.png)
+
+***
+
 ### [Week 2020/03](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_03) 🔑 Passwords by [Knowledge Is Beautiful](https://docs.google.com/spreadsheets/d/1cz7TDhm0ebVpySqbTvrHrD3WpxeyE4hLZtifWSnoNTQ/edit#gid=21)
 ![./plots/2020_03/2020_03_Passwords.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_03/2020_03_Passwords.png)
 

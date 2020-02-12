@@ -7,6 +7,11 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ***
 
+### [Week 2020/07](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_07) 🛏️ Hotel Bookings by [Antonio, Almeida & Nunes 2019](https://www.sciencedirect.com/science/article/pii/S2352340918315191#bib5)
+![./plots/2020_07/2020_07_HotelBookings.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_07/2020_07_HotelBookings.png)
+
+***
+
 ### [Week 2020/05](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_05) 🌳 San Francisco Trees by [data.sfgov.org](https://data.sfgov.org/City-Infrastructure/Street-Tree-List/tkzw-k3nq)
 ![./plots/2020_05/2020_05_TreesSF.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_05/2020_05_TreesSF.png)
 

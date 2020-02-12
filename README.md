@@ -59,9 +59,15 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/03 [🔑 Passwords](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_03)
   - 2020/04 [🎶 Spotify Songs: The Golden Age of Hip Hop](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_04)
   - 2020/05 [🌳 San Francisco Trees](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_05)
+  - 2020/07 [🛏️ Hotel Bookings](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_07)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [Week 2020/07](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_07) 🛏️ Hotel Bookings by [Antonio, Almeida & Nunes 2019](https://www.sciencedirect.com/science/article/pii/S2352340918315191#bib5)
+![./plots/2020_07/2020_07_HotelBookings.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_07/2020_07_HotelBookings.png)
 
 ***
 
