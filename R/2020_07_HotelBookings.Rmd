@@ -132,6 +132,8 @@ df_hotels %>%
                                    )) %>% 
   ggplot(aes(xmax = 3, xmin = 2.4, 
              ymax = ymax, ymin = ymin)) +
+    geom_rect(color = "grey52", 
+              fill = "grey52") +
     geom_rect(aes(fill = fil,
                   alpha = parents_detailed),
              color = "#6d7069", 
