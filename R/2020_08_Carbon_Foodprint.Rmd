@@ -144,11 +144,6 @@ df_consumption <-
 plot_c <-
   df_consumption %>% 
   ggplot(aes(1, count_consumption)) +
-    geom_rect(
-      xmin = -Inf, xmax = 1.45, 
-      ymin = -Inf, ymax = Inf, 
-      fill = "white"
-    ) +
     geom_col(
       aes(
         fill = continent, 
@@ -264,11 +259,6 @@ df_emmission <-
 plot_e <-
   df_emmission %>% 
   ggplot(aes(1, count_emmission)) +
-    geom_rect(
-      xmin = -Inf, xmax = 1.45, 
-      ymin = -Inf, ymax = Inf, 
-      fill = "white"
-    ) +
     geom_col(
       aes(
         fill = continent, 
