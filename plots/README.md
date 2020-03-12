@@ -7,6 +7,11 @@ All contributions and full versions can be found [here](https://github.com/Z3tt/
 
 ***
 
+### [Week 2020/08](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_08) 🍖 Foot Carbon Footprints by [FAO via nu3](https://www.nu3.de/blogs/nutrition/food-carbon-footprint-index-2018)
+![./plots/2020_08/2020_08_Carbon_Foodprint_alt.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_08/2020_08_Carbon_Foodprint_alt.png)
+
+***
+
 ### [Week 2020/07](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_07) 🛏️ Hotel Bookings by [Antonio, Almeida & Nunes 2019](https://www.sciencedirect.com/science/article/pii/S2352340918315191#bib5)
 ![./plots/2020_07/2020_07_HotelBookings.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_07/2020_07_HotelBookings.png)
 
