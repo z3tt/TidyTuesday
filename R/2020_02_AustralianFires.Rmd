@@ -115,7 +115,7 @@ ggsave(here::here("plots", "2020_02", "2020_02_AustralianFires.pdf"),
 
 ## Global Comparison Burnt Land
 
-```{r fires-global, fig.width = 14, fig.height = 8.4}}
+```{r fires-global, fig.width = 14, fig.height = 8.4}
 sf_earth_burnt <- st_as_sf(rworldmap::getMap(resolution = "high")) %>% 
   st_transform(crs = "+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs") %>% 
   mutate(
@@ -131,14 +131,14 @@ sf_earth_burnt <- st_as_sf(rworldmap::getMap(resolution = "high")) %>%
       prop_burnt < 0.25 ~ "low [0-25%)",
       prop_burnt >= 0.25 & prop_burnt < 0.5 ~ "moderate-low [25-50%)",
       prop_burnt >= 0.5 & prop_burnt < 0.75 ~ "moderate-high [50-75%)",
-      prop_burnt >= 0.75 & prop_burnt < 1 ~ "high [80-100%)",
+      prop_burnt >= 0.75 & prop_burnt < 1 ~ "high [75-100%)",
       prop_burnt >= 1 ~ "all (\u2265 100%)"
     ),
     cat_burnt = factor(cat_burnt, 
                        levels = c("low [0-25%)", 
                                   "moderate-low [25-50%)", 
                                   "moderate-high [50-75%)", 
-                                  "high [80-100%)", 
+                                  "high [75-100%)", 
                                   "all (\u2265 100%)"))
   )
 
