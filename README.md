@@ -61,14 +61,20 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/05 [🌳 San Francisco Trees](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_05)
   - 2020/07 [🛏️ Hotel Bookings](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_07)
   - 2020/08 [🍖 Foot Carbon Footprint](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_08)
+  - 2020/12 [🏢 The Office on IMDb](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_12)
 <!-- tocstop -->
 
 </details>
 
 ***
 
+### [Week 2020/12](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_12_TheOffice.Rmd) 🏢 The Office by [IMDb via data.world](https://data.world/anujjain7/the-office-imdb-ratings-dataset)
+![./plots/2020_08/2020_12_TheOffice.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_12/2020_12_TheOffice.png)
+
+***
+
 ### [Week 2020/08](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_08) 🍖 Foot Carbon Footprints by [FAO via nu3](https://www.nu3.de/blogs/nutrition/food-carbon-footprint-index-2018)
-![./plots/2020_08/2020_08_Carbon_Foodprint_alt.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_08/2020_08_Carbon_Foodprint_alt.png)
+![./plots/2020_08/2020_08_Carbon_Foodprint_alt.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_08/2020_08_CarbonFoodprint_alt.png)
 
 ***
 
