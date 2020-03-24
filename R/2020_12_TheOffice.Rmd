@@ -81,8 +81,8 @@ df_lines <-
   ) %>% 
   mutate(
     x_group = if_else(type == "start_x", x + .1, x - .1),
-    x_group = if_else(type == "start_x" & x == min(x), x - .1, x),
-    x_group = if_else(type == "start_x" & x == max(x), x + .1, x),
+    x_group = if_else(type == "start_x" & x == min(x), x_group - .1, x_group),
+    x_group = if_else(type == "end_x" & x == max(x), x_group + .1, x_group)
   )
 ```
 
