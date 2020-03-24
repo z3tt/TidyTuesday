@@ -30,7 +30,7 @@ font_add_google("Special Elite", "Special Elite")
 ## ggplot theme
 theme_set(theme_minimal(base_family = "Roboto Mono"))
 
-theme_update(plot.background = element_rect(fill = "#fafaf5"),
+theme_update(plot.background = element_rect(fill = "#fafaf5", color = "#fafaf5"),
              panel.background = element_rect(fill = NA, color = NA),
              panel.border = element_rect(fill = NA, color = NA),
              panel.grid.major.x = element_blank(),
