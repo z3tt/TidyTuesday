@@ -1,0 +1,208 @@
+---
+title: "TidyTuesday 2020/14 - The Office Ratings by IMDb & data.world"
+author: "Cedric Scherer"
+date: "3rd of April 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(showtext)
+
+font_add_google("Roboto Mono", "Roboto Mono")
+font_add_google("Open Sans", "Open Sans")
+font_add_google("Bangers", "Bangers")
+
+## ggplot theme
+theme_set(theme_minimal(base_family = "Bangers"))
+
+theme_update(plot.background = element_rect(fill = "#3c2554", color = "#3c2554"),
+             panel.background = element_rect(fill = NA, color = NA),
+             panel.border = element_rect(fill = NA, color = NA),
+             panel.grid.major = element_blank(),
+             panel.grid.minor = element_blank(),
+             axis.text.x = element_text(size = 28, color = "#e0d796", margin = margin(t = 10)),
+             axis.text.y = element_blank(),
+             axis.ticks = element_blank(),
+             plot.margin = margin(0, 30, 30, 30))
+```
+
+```{r data}
+df_brewers <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-31/brewer_size.csv')
+```
+
+```{r data-prep}
+df_brew <- 
+  df_brewers %>% 
+  filter(
+    #!brewer_size %in% c("Total", "Zero Barrels", "6,000,001 Barrels and Over")
+    brewer_size %in% c("Under 1 Barrel", "1 to 1,000 Barrels")
+  ) %>% 
+  mutate(year_mod = year + (year %% min(year, na.rm = T) + 1)) %>% 
+  group_by(year, year_mod) %>% 
+  summarize(
+    n_of_brewers = sum(n_of_brewers, na.rm = T),
+    total = sum(total_barrels, na.rm = T)
+  ) %>% 
+  mutate(label = glue::glue("{format(round(total / 10^6, 2), nsmall = 2)}M"))
+
+df_ticks <-
+  df_brew %>% 
+  slice(rep(1, each = 5)) %>% 
+  mutate(
+    tick = seq(0.25*10^6, 1.25*10^6, by = 2.5*10^5),
+    label = c("0.25", "0.50", "0.75", "1.00", "1.25")
+  ) %>% 
+  filter(tick < total - 50000)
+  
+set.seed(2)
+
+df_brewers <-
+  df_brew %>% 
+  slice(rep(1, each = floor(n_of_brewers / 100))) %>% 
+  mutate(
+    dots_brewer = runif(n_of_brewers, 20000, total - 20000),
+    dot_size = runif(n_of_brewers, 0, 1)
+  )
+```
+
+
+```{r plot, fig.width = 24, fig.height = 11}
+df_brew %>% 
+  ggplot(aes(year_mod, total)) +
+    geom_segment(data = df_brew %>% slice(1),
+                 aes(x = year_mod - .6, 
+                      xend = year_mod + .6,
+                      yend = total),
+                 color = "white",
+                 size = 35) +
+    geom_col(fill = "#f9e556", width = 1.2) +
+    ## bubbles
+    geom_jitter(data = df_brewers,
+                aes(year_mod, dots_brewer,
+                    size = dot_size),
+                position = position_jitter(width = .38, seed = 1),
+                shape = 21,
+                color = colorspace::darken("#f9e556", .17),
+                stroke = .5) +
+    ## scale bar
+    geom_segment(data = df_brew,
+                 aes(x = year_mod + .676, 
+                     xend = year_mod + .676,
+                     y = 0,
+                     yend = total),
+                 color = "white",
+                 size = 1.5) +
+    ## total label
+    geom_segment(data = df_brew,
+                 aes(x = year_mod + .655,
+                     xend = year_mod + .77,
+                     y = total - 3500,
+                     yend = total - 3500),
+                 color = "white",
+                 size = 1.5) +
+    geom_text(aes(year_mod + .83, 
+                  total - 3500,
+                  label = label),
+              family = "Roboto Mono",
+              fontface = "bold",
+              color = "white",
+              size = 4,
+              hjust = 0) +
+    ## null label
+    geom_segment(data = df_brew,
+                 aes(x = year_mod + .655,
+                     xend = year_mod + .77,
+                     y = 3500,
+                     yend = 3500),
+                 color = "white",
+                 size = 1.5) +
+    geom_text(aes(year_mod + .83, 
+                  3500,
+                  label = "0.00"),
+              family = "Roboto Mono",
+              fontface = "bold",
+              color = "white",
+              size = 4,
+              hjust = 0) +
+    ## other ticks
+    geom_segment(data = df_ticks,
+                 aes(x = year_mod + .675,
+                     xend = year_mod + .78,
+                     y = tick,
+                     yend = tick),
+                 color = "white",
+                 size = .8) +
+    # geom_text(data = df_ticks,
+    #           aes(year_mod + .86,
+    #               tick,
+    #               label = label),
+    #           family = "Roboto Mono",
+    #           fontface = "bold",
+    #           color = "grey80",
+    #           size = 4,
+    #           hjust = 0) +
+    ## title
+    annotate("text", x = 2017, y = 1.5*10^6, 
+             label = "The Rise of Craft Beer !",
+             family = "Bangers",
+             color = "#f9e556",
+             size = 40,
+             hjust = .5) +
+    ## subtitle
+    annotate("text", x = 2017, y = 1.27*10^6, 
+             label = "Beer production of small US breweries with brewer sizes below 1,000 barrels increased by more 225%\nover the last ten years. In the same time also the number of brewers increased by around 290%.",
+             family = "Open Sans",
+             fontface = "bold",
+             lineheight = .99,
+             color = "#e0d796",
+             size = 6,
+             hjust = .5) +
+    annotate("text", x = 2017, y = 1.18*10^6, 
+             label = "The bars show the number of total barrels of beer produced by year and each bubble represents 100 brewers.",
+             family = "Open Sans",
+             color = "#e0d796",
+             size = 5.2,
+             hjust = .5) +
+    ## caption
+    annotate("text", x = 2017, y = 1.05*10^6, 
+             label = "Visualization by Cédric Scherer  •  Data from the Alcohol and Tobacco Tax and Trade Bureau (TTB)",
+             family = "Bangers",
+             #fontface = "bold",
+             color = "#703da4",
+             size = 6.7,
+             hjust = .5) +
+    scale_x_continuous(expand = c(.005, .005),
+                       limits = c(NA, max(df_brew$year_mod) + 1.2),
+                       breaks = seq(min(df_brew$year_mod), max(df_brew$year_mod), by = 2),
+                       labels = c(min(df_brew$year):max(df_brew$year))) +
+    scale_y_continuous(expand = c(.005, .005),
+                       limits = c(0, 1750000)) +
+                       #labels = scales::comma_format(big.mark = ",")) +
+    scale_size(range = c(2, 5), guide = F) +
+    labs(x = NULL, y = NULL)
+
+
+ggsave(here::here("plots", "2020_14", "2020_14_BeerProduction.pdf"),
+       width = 24, height = 11, device = cairo_pdf)
+
+pdftools::pdf_convert(here::here("plots", "2020_14", "2020_14_BeerProduction.pdf"),
+                      format = "png", dpi = 350)
+```
+
+***
+
+```{r session-info}
+sessionInfo()
+```
+
