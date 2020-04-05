@@ -96,23 +96,23 @@ df_brew %>%
                 color = colorspace::darken("#f9e556", .17),
                 stroke = .5) +
     ## scale bar
-    geom_segment(data = df_brew,
-                 aes(x = year_mod + .676, 
-                     xend = year_mod + .676,
-                     y = 0,
-                     yend = total),
-                 color = "white",
-                 size = 1.5) +
+    # geom_segment(data = df_brew,
+    #              aes(x = year_mod + .676, 
+    #                  xend = year_mod + .676,
+    #                  y = 0,
+    #                  yend = total),
+    #              color = "white",
+    #              size = 1.5) +
     ## total label
     geom_segment(data = df_brew,
                  aes(x = year_mod + .655,
                      xend = year_mod + .77,
-                     y = total - 3500,
-                     yend = total - 3500),
+                     y = total - 3500,  ## total only: - 2500
+                     yend = total - 3500),  ## total only: - 2500
                  color = "white",
-                 size = 1.5) +
+                 size = 1.5) +  ## total only: .7
     geom_text(aes(year_mod + .83, 
-                  total - 3500,
+                  total - 3500,  ## total only: - 2500
                   label = label),
               family = "Roboto Mono",
               fontface = "bold",
