@@ -161,7 +161,7 @@ df_brew %>%
              hjust = .5) +
     ## subtitle
     annotate("text", x = 2017, y = 1.27*10^6, 
-             label = "Beer production of small US breweries with brewer sizes below 1,000 barrels increased by more 225%\nover the last ten years. In the same time also the number of brewers increased by around 290%.",
+             label = "Beer production of small US breweries with brewer sizes below 1,000 barrels increased by 225%\nover the last ten years. In the same time also the number of brewers increased by around 290%.",
              family = "Open Sans",
              fontface = "bold",
              lineheight = .99,
