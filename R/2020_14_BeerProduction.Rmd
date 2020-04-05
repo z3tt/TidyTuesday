@@ -96,14 +96,14 @@ df_brew %>%
                 color = colorspace::darken("#f9e556", .17),
                 stroke = .5) +
     ## scale bar
-    # geom_segment(data = df_brew,
-    #              aes(x = year_mod + .676, 
-    #                  xend = year_mod + .676,
-    #                  y = 0,
-    #                  yend = total),
-    #              color = "white",
-    #              size = 1.5) +
-    ## total label
+    geom_segment(data = df_brew,
+                 aes(x = year_mod + .676,
+                     xend = year_mod + .676,
+                     y = 0,
+                     yend = total),
+                 color = "white",
+                 size = 1.5) +
+    # total label
     geom_segment(data = df_brew,
                  aes(x = year_mod + .655,
                      xend = year_mod + .77,
@@ -169,10 +169,10 @@ df_brew %>%
              size = 6,
              hjust = .5) +
     annotate("text", x = 2017, y = 1.18*10^6, 
-             label = "The bars show the number of total barrels of beer produced by year and each bubble represents 100 brewers.",
+             label = "The yellow bars show the number of total barrels of beer produced by year and each bubble represents 100 brewers.",
              family = "Open Sans",
              color = "#e0d796",
-             size = 5.2,
+             size = 5,
              hjust = .5) +
     ## caption
     annotate("text", x = 2017, y = 1.05*10^6, 
