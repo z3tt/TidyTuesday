@@ -64,9 +64,15 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/08 [🍖 Foot Carbon Footprint](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_08)
   - 2020/12 [🏢 The Office on IMDb](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_12)
   - 2020/14 [🍺 Beer Production](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_14)
+  - 2020/15 [🚵 Tour de France History](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_15)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [Week 2020/15](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_14_BeerProduction.Rmd) 🚵 Tour de France via the [{tdf} data package](https://github.com/alastairrushworth/tdf)
+![./plots/2020_15/2020_15_TourDeFrance.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_15/2020_15_TourDeFrance.png)
 
 ***
 

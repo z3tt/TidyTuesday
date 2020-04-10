@@ -1,0 +1,170 @@
+---
+title: "TidyTuesday 2020/15 - Tour de France by {tdf} package"
+author: "Cedric Scherer"
+date: "38th of April 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(extrafont)
+
+font_add_google("Roboto Mono", "Roboto Mono")
+font_add_google("Aileron", "Aileron")
+
+## ggplot theme
+theme_set(theme_minimal(base_family = "Bahnschrift"))
+
+theme_update(axis.text.x = element_text(size = 12, color = "grey30", 
+                                        face = "bold", margin = margin(t = 8)),
+             axis.text.y = element_text(size = 10, color = "grey30", 
+                                        margin = margin(r = -5)),
+             axis.title.y = element_text(size = 12, color = "grey30", face = "bold", 
+                                         hjust = .2, margin = margin(r = 18)),
+             axis.title.y.right = element_blank(), 
+             axis.ticks.x = element_line(color = "grey45", size = 1),
+             axis.ticks.y = element_blank(),
+             axis.ticks.length.x = unit(.5, "lines"),
+             legend.position = c(.21, -.085),
+             legend.text = element_text(size = 12, color = "grey30", face = "bold"),
+             panel.grid.major = element_blank(),
+             panel.background = element_rect(fill = NA, color = NA),
+             panel.border = element_rect(fill = NA, color = NA),
+             panel.grid.minor = element_blank(),
+             plot.title = element_text(size = 28, color = "grey85",
+                                       face = "bold", margin = margin(b = 12)),
+             plot.title.position = "plot",
+             plot.caption = element_text(size = 12, color = "grey72", face = "bold", 
+                                         hjust = 1, margin = margin(t = 35, b = 15)),
+             plot.background = element_rect(fill = "grey55", color = "grey55"),
+             plot.margin = margin(30, 90, 10, 30))
+```
+
+```{r data}
+df_tdf <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-04-07/tdf_winners.csv')
+```
+
+```{r plot, fig.width = 24, fig.height = 12}
+df_annotate <-
+  tribble(
+    ~year, ~distance, ~label, ~hjust, ~x, ~x_end, ~size,
+    1916.5, 2500, '**1915-1918**<br><br>Suspension due<br>to World War I', .5, NA, NA, "a",
+    1943, 2500, '**1940-1946**<br><br>Suspension due<br>to World War II', .5, NA, NA, "a",
+    1903, 8000, 'The <b>"Tour de France"</b><br>starts with a series<br>of six wins by racers<br>from <b style="color:#7F3C8D;">France</b>', 0, 0, 7500, "b",
+    1909, 7200, '"The Giant of Colombes"<br>from <b style="color:#ce550e;">Luxembourg</b> ends<br>France´s first winning<br>streak in 1909', 0, 0, 7500, "b",
+    1919, 8000, 'After the first World War,<br><b style="color:#0f8e68;">Belgium</b> continues its first<br>series winning four more<br>editions in a row', 0, 0, 7500, "b",
+    1924, 7200, 'For the first time, a racer<br>from <b style="color:#F2B701;">Italy</b> wins the Tour<br>de France in 1924', 0, 0, 7500, "b",
+    1930, 6400, '<b style="color:#7F3C8D;">France</b> celebrates five<br>victories in a row', 0, 0, 7500, "b",
+    1939, 8000, 'The 33<sup>rd</sup> tour takes place<br>on the eve of World War II—<br>Italy, Germany and Spain de-<br>cline to send teams so the 1938<br>Italian champion Gino Bartali<br>is not able to defend his title', 0, 0, 7500, "b",
+    1940, 6400, 'The Tour de France was<br>not held from 1940 on<br>because the organisers<br>refused German requests', 0, 0, 7500, "b",
+    1953, 8000, '"Louison" (3x), "Walko"<br>and "Monsieur Chrono"—<br><b style="color:#7F3C8D;">France</b> dominates the<br>tour once again', 0, 0, 7500, "b",
+    1959, 7100, '"The Eagle of Toledo"<br>takes the first victory<br>for <b style="color:#395fac;">Spain</b> in 1959', 0, 0, 7500, "b",
+    1961, 6400, '"Monsieur Chrono"<br>has a comeback and<br>wins four more<br>editions (1961–1964)', 0, 0, 7500, "b",
+    1969, 8000, 'Eddy "The Cannibal" Merckx<br>from <b style="color:#0f8e68;">Belgium</b> wins five times,<br>four of them in a row (1969–1972)', 0, 0, 7500, "b",
+    1975, 7200, 'Nanard (2x), "Le Blaireau" (5x)<br>and "Le Professor" (2x) earn<br><b style="color:#7F3C8D;">France</b> nine titles in eleven<br>editions between 1975 and 1985', 0, 0, 7500, "b",
+    1986, 8000, 'Greg "The Monster" LeMond<br>is the first racer from the <b style="color:#c118a2;">USA</b><br>to win the Tour in 1986—and he<br>wins again in 1989 and 1990', 0, 0, 7500, "b",
+    1991, 7200, 'Miguelón wins five<br>editions in a row which<br>marks the longest winning<br>streak for <b style="color:#395fac;">Spain</b> until today', 0, 0, 7500, "b",
+    1999, 6400, 'Lance Armstrong<br>from the <b style="color:#c118a2;">USA</b> wins<br>the Tour seven times<br>before being disqualified<br>over the biggest doping<br>scandal in cycling history', 0, 0, 7500, "b",
+    2012, 8000, '<b style="color:#7ccc48;">Great Britain</b> celebrates<br>its first victory in 2012<br>thanks to Bradley Wiggins', 0, 0, 7500, "b",
+    2015, 7200, 'Chris Froome from<br><b style="color:#7ccc48;">Great Britain</b> wins<br>three races in a row<br>(2015–2017) after<br>winning his first<br>title  in 2013', 0, 0, 7500, "b",
+    2019, 6000, 'Egan Gómez from<br>Colombia wins the<br>latest edition in 2019', 0, 0, 7500, "b",
+  )	
+	
+df_tdf %>% 
+  mutate(
+    year = lubridate::year(start_date),
+    name = if_else(is.na(nickname), full_name, nickname),
+    name = if_else(is.na(name), "Unknown", name),
+    speed = distance / time_overall,
+  ) %>% 
+  dplyr::select(year, edition, distance, time_overall, speed, name, nationality) %>% 
+  group_by(nationality) %>%
+  mutate(n = n()) %>% 
+  ungroup() %>% 
+  mutate(
+    gap = year - lag(year),
+    gap = if_else(is.na(gap), 0, gap),
+    group = if_else(gap == 1, 0, 1),
+    group = cumsum(group),
+    nationality = fct_reorder(nationality, -n),
+    nationality = fct_lump_min(nationality, min = 5)
+  ) %>% 
+  ggplot(aes(year, distance)) +
+    geom_segment(data = df_annotate,
+                 aes(y = distance - 40,
+                     xend = year,
+                     yend = 0),
+                 color = "grey35",
+                 size = .5) +
+    geom_segment(aes(xend = year,
+                     yend = 0),
+                 color = "grey85",
+                 size = 1.9) +
+    geom_point(color = "white",
+               size = 4.8) +
+    geom_line(color = "white",
+              size = 1,
+              linetype = "dotted") +
+    geom_area(fill = "grey72") +
+    geom_area(aes(group = group),
+              fill = "grey85") +
+    geom_line(aes(group = group),
+              color = "white",
+              size = 1) +
+    geom_segment(aes(xend = year,
+                     yend = 0,
+                     color = nationality,
+                     color = after_scale(colorspace::lighten(color, .33))),
+                 size = .9) +
+    geom_point(aes(color = nationality),
+               size = 3) +
+    geom_richtext(data = df_annotate,
+              aes(label = label,
+                  hjust = hjust,
+                  size = size),
+              family = "Bahnschrift",
+              angle = 0,
+              vjust = 1,
+              fill = NA, 
+              label.color = NA) +
+    coord_cartesian(clip = "off") +
+    scale_x_continuous(expand = c(.005, .005),
+                       breaks = c(1903, seq(1910, 2010, by = 10), 2019)) +
+    scale_y_continuous(expand = c(0, 0),
+                       limits = c(0, 8400),
+                       breaks = seq(0, 5000, by = 1000),
+                       labels = scales::unit_format(big.mark = ",", unit = "km"),
+                       sec.axis = dup_axis()) +
+    scale_color_manual(values = c("#7F3C8D", "#0f8e68", "#395fac", "#F2B701", 
+                                  "#c118a2", "#7ccc48", "#ce550e", "#737864")) +
+    scale_size_manual(values = c(2.7, 3.35), guide = F) +
+    guides(color = guide_legend(nrow = 1, 
+                                title = "", 
+                                title.position = "top")) +
+    labs(x = NULL, y = "Distance traveled across the entire race",
+         title = "L'histoire du Tour de France de 1903 à 2019",
+         caption = "Visualization by Cédric Scherer  •  Data via Alastair Rushworth's R package {tdf}")
+    
+ggsave(here::here("plots", "2020_15", "2020_15_TourDeFrance.pdf"),
+       width = 24, height = 12,  device = cairo_pdf)
+
+pdftools::pdf_convert(here::here("plots", "2020_15", "2020_15_TourDeFrance.pdf"),
+                      format = "png", dpi = 350)
+```
+
+***
+
+```{r session-info}
+sessionInfo()
+```
+
