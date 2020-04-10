@@ -17,6 +17,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = F)
 ```{r prep, message=FALSE, warning=FALSE}
 ## packages
 library(tidyverse)
+library(ggtext)
 library(extrafont)
 
 font_add_google("Roboto Mono", "Roboto Mono")
@@ -108,8 +109,8 @@ df_tdf %>%
                  size = .5) +
     geom_segment(aes(xend = year,
                      yend = 0),
-                 color = "grey85",
-                 size = 1.9) +
+                 color = "white",
+                 size = 2.3) +
     geom_point(color = "white",
                size = 4.8) +
     geom_line(color = "white",
