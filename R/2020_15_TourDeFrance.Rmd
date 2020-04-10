@@ -1,7 +1,7 @@
 ---
-title: "TidyTuesday 2020/15 - Tour de France by {tdf} package"
+title: "TidyTuesday 2020/15 - Tour de France via the {tdf} package"
 author: "Cedric Scherer"
-date: "38th of April 2020"
+date: "10th of April 2020"
 output:
   html_document:
   theme: paper
@@ -19,9 +19,6 @@ knitr::opts_chunk$set(echo = TRUE, warning = F)
 library(tidyverse)
 library(ggtext)
 library(extrafont)
-
-font_add_google("Roboto Mono", "Roboto Mono")
-font_add_google("Aileron", "Aileron")
 
 ## ggplot theme
 theme_set(theme_minimal(base_family = "Bahnschrift"))
