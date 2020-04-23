@@ -1,0 +1,238 @@
+---
+title: "TidyTuesday 2020/16 - Best Rap Artists by BBC Music"
+author: "Cedric Scherer"
+date: "22nd of April 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(patchwork)
+library(ggtext)
+library(showtext)
+
+font_add_google("Chivo", "Chivo")
+font_add_google("Passion One", "Passion One")
+
+## ggplot theme
+theme_set(theme_minimal(base_family = "Chivo"))
+
+theme_update(axis.text.x = element_text(size = 11, color = "grey20"),
+             axis.text.y = element_text(size = 13, color = "black", face = "bold"),
+             axis.ticks.x = element_line(color = "grey45"),
+             axis.ticks.y = element_blank(),
+             axis.ticks.length.x = unit(.4, "lines"),
+             panel.grid = element_blank(),
+             plot.background = element_rect(fill = "grey55", color = "grey55"))
+```
+
+```{r data}
+df_ranks <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-04-14/rankings.csv')
+
+df_ranks_era <-
+  df_ranks %>% 
+  mutate(
+    artists = str_split(artist, " & | ft. | feat. | feat | and ")
+  ) %>% 
+  unnest(artists) %>% 
+  mutate(
+    era = case_when(
+      year >= 1973 & year < 1985 ~ "Old-school DJ Era",
+      year >= 1985 & year < 1997 ~ "Golden Age",
+      year >= 1997 & year < 2009 ~ "Bling-Bling Era",
+      year >= 2009 ~ "Internet Era",
+      TRUE ~ "other"
+    ),
+    artists = if_else(artists == "Snoop Doggy Dogg", "Snoop Dogg", artists),
+    artists = if_else(artists == "JAY-Z", "Jay-Z", artists)
+  ) %>% 
+  group_by(artists) %>% 
+  mutate(
+    n_songs = n_distinct(ID),
+    sum_points = sum(points),
+    ID = as.numeric(ID),
+    best = min(ID)
+  ) %>% 
+  filter(
+    best <= 75, 
+    !artists %in% c("Dido", "Rihanna")
+  ) %>% 
+  ungroup() %>% 
+  arrange(ID) %>% 
+  mutate(
+    artists = fct_relevel(factor(artists, levels = unique(artists[order(sum_points, -best)]))),
+    ID = as.numeric(as.factor(ID))
+  ) %>% 
+  arrange(artists)
+
+cols <- c("grey60", "#ffc205", "#cecece", "#4e8863")
+```
+
+```{r plot, fig.width = 18, fig.height = 14}
+bars <- 
+  df_ranks_era %>% 
+  ggplot(aes(artists, -points)) +
+    geom_col(aes(fill = ID),
+             color = "white",
+             size = .5,
+             width = 1.02) +
+    geom_curve(aes(x = 52.2, xend = 48, 
+                   y = -148, yend = -166),
+               curvature = -.4) +
+    annotate("text", x = 48, y = -185, 
+             label = "Each rectangle represents\none song included in the\nBBC ranking, its length\n the total points and the\ncolor indicates the rank",
+             family = "Chivo",
+             size = 3.8,
+             lineheight = .9) +
+    annotate("text", x = 22.5, y = -120, 
+             label = 'The Top Artists featured in the BBC´s\n"Greatest Hip-Hop Songs of All Time"',
+             family = "Chivo",
+             fontface = "bold",
+             size = 12,
+             lineheight = .9) +
+    annotate("text", x = 18, y = -120,
+             label = 'In Autumn 2019, 108 hip-hop and music experts ranked their 5 favorites out of\n311 nominated songs in an online survey by the BBC. The graphic shows points\nscored in total and per song for the top ranked artists and broken down by era.',
+             family = "Chivo",
+             fontface = "bold",
+             color = "grey30",
+             size = 5.5,
+             lineheight = .9) +
+    coord_flip() +
+    scale_x_discrete(position = "top") +
+    scale_y_continuous(expand = c(.02, .02),
+                       limits = c(-200, 0),
+                       breaks = seq(-175, 0, by = 25),
+                       labels = rev(c(seq(0, 150, by = 25), "175 points")),
+                       position = "right") +
+    nord::scale_fill_nord(palette = "halifax_harbor", 
+                          discrete = F, 
+                          reverse = F, 
+                          guide = F) +
+    theme(axis.text.y.right = element_text(hjust = .5),
+          plot.margin = margin(5, 0, 5, 5)) +
+    labs(x = NULL, y = NULL)
+
+dots <-
+  df_ranks_era %>% 
+  group_by(artists, era) %>% 
+  summarize(
+    n_songs = n_distinct(ID),
+    best = min(ID)
+  ) %>% 
+  ungroup() %>% 
+  mutate(
+    era = factor(era, levels = c("Old-school DJ Era", "Golden Age", "Bling-Bling Era", "Internet Era")),
+    era_num = as.numeric(era)
+  ) %>%
+  ggplot(aes(artists, era_num, group = artists)) +
+    geom_point(aes(artists, 1), color = "grey70", size = 2) +
+    geom_point(aes(artists, 2), color = "grey70", size = 2) +
+    geom_point(aes(artists, 3), color = "grey70", size = 2) +
+    geom_point(aes(artists, 4), color = "grey70", size = 2) +
+    geom_segment(aes(x = artists, xend = artists, 
+                     y = 1, yend = 4), 
+                 color = "grey70",
+                 size = .3) +
+    geom_line(color = "black",
+              size = .9) +
+    geom_point(aes(fill = best, size = n_songs), 
+               shape = 21, 
+               color = "black", 
+               stroke = 1.2) +
+    geom_curve(aes(x = 48, xend = 51, 
+                   y = 6.1, yend = 4.3),
+               curvature = .4) +
+    annotate("text", x = 46.1, y = 6.1, 
+             label = "The dot size indicates\nthe number of songs,\nthe dot color the best\nrank in each era",
+             family = "Chivo",
+             size = 3.8, 
+             lineheight = .9) +
+    coord_flip() +
+    scale_y_continuous(limits = c(.5, 7.3),
+                       breaks = 1:4,
+                       labels = c("Old-School Era ('73-'84)", 
+                                  "Golden Age ('85-'96)", 
+                                  "Bling-Bling Era ('97-'09)", 
+                                  "Internet Era ('09-'19)"), 
+                       position = "right") +
+    scale_size(range = c(2, 5.5), guide = F) +
+    nord::scale_fill_nord(palette = "halifax_harbor", 
+                          discrete = F, 
+                          reverse = F, 
+                          guide = F, 
+                          limits = c(min(df_ranks_era$ID), max(df_ranks_era$ID))) +
+    theme(axis.ticks.x = element_blank(),
+          axis.ticks.y = element_blank(),
+          axis.text.x = element_text(size = 11, face = "bold", 
+                                     hjust = .1, vjust = 0, angle = 20),
+          axis.text.y = element_blank(),
+          plot.margin = margin(5, 5, 5, 0),
+          plot.caption = element_text(face = "bold", color = "grey30", 
+                                      size = 10, margin = margin(t = 15))) +
+    labs(x = NULL, y = NULL,
+         caption = "Visualization by Cédric Scherer  •  Data by BBC Music")
+
+# eras <-
+#   df_ranks_era %>% 
+#   group_by(era) %>% 
+#   summarize(
+#     n_songs = n_distinct(ID),
+#     avg_id = median(ID)
+#   ) %>% 
+#   ungroup() %>% 
+#   mutate(
+#     era = factor(era, levels = c("Old-school DJ Era", "Golden Age", "Bling-Bling Era", "Internet Era")),
+#     era_num = as.numeric(era)
+#   ) %>%
+#   ggplot(aes(era_num, n_songs)) +
+#     geom_col(aes(fill = avg_id,
+#                  color = after_scale(colorspace::darken(fill, .25))), 
+#              width = .5) +
+#     geom_text(aes(label = glue::glue("{n_songs} Songs")),
+#               family = "Chivo",
+#               fontface = "bold",
+#               color = "grey30",
+#               size = 2.5,
+#               nudge_y = 7) +
+#     scale_x_continuous(limits = c(.5, 7.3)) +
+#     scale_y_continuous(expand = c(0, 0), 
+#                        limits = c(0, 88)) +
+#     nord::scale_fill_nord(palette = "halifax_harbor", 
+#                           discrete = F, 
+#                           reverse = F, 
+#                           guide = F, 
+#                           limits = c(min(df_ranks_era$ID), max(df_ranks_era$ID))) +
+#   theme(axis.text.x = element_blank(),
+#         axis.text.y = element_blank(),
+#         axis.ticks.x = element_blank(),
+#         axis.ticks.y = element_blank(),
+#         plot.margin = margin(5, 5, -15, 0)) +
+#     labs(x = NULL, y = NULL)
+
+
+bars + dots + plot_layout(widths = c(1, .35))
+#plot_spacer() + eras + bars + dots + plot_layout(widths = c(1, .35), heights = c(.1, 1))
+
+ggsave(here::here("plots", "2020_16", "2020_16_BestRapArtists.pdf"),
+       width = 18, height = 14,  device = cairo_pdf)
+
+pdftools::pdf_convert(here::here("plots", "2020_16", "2020_16_BestRapArtists.pdf"),
+                      format = "png", dpi = 350)
+```
+
+***
+
+```{r session-info}
+sessionInfo()
+```
+
