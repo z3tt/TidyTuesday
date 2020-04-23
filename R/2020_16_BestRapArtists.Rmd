@@ -33,7 +33,7 @@ theme_update(axis.text.x = element_text(size = 11, color = "grey20"),
              axis.ticks.y = element_blank(),
              axis.ticks.length.x = unit(.4, "lines"),
              panel.grid = element_blank(),
-             plot.background = element_rect(fill = "grey55", color = "grey55"))
+             plot.background = element_rect(fill = "grey60", color = "grey60"))
 ```
 
 ```{r data}
@@ -135,13 +135,13 @@ dots <-
     era_num = as.numeric(era)
   ) %>%
   ggplot(aes(artists, era_num, group = artists)) +
-    geom_point(aes(artists, 1), color = "grey70", size = 2) +
-    geom_point(aes(artists, 2), color = "grey70", size = 2) +
-    geom_point(aes(artists, 3), color = "grey70", size = 2) +
-    geom_point(aes(artists, 4), color = "grey70", size = 2) +
+    geom_point(aes(artists, 1), color = "grey75", size = 2) +
+    geom_point(aes(artists, 2), color = "grey75", size = 2) +
+    geom_point(aes(artists, 3), color = "grey75", size = 2) +
+    geom_point(aes(artists, 4), color = "grey75", size = 2) +
     geom_segment(aes(x = artists, xend = artists, 
                      y = 1, yend = 4), 
-                 color = "grey70",
+                 color = "grey75",
                  size = .3) +
     geom_line(color = "black",
               size = .9) +
