@@ -54,7 +54,8 @@ df_ranks_era <-
       TRUE ~ "other"
     ),
     artists = if_else(artists == "Snoop Doggy Dogg", "Snoop Dogg", artists),
-    artists = if_else(artists == "JAY-Z", "Jay-Z", artists)
+    artists = if_else(artists == "JAY-Z", "Jay-Z", artists),
+    artists = if_else(artists == "Outkast", "OutKast", artists)
   ) %>% 
   group_by(artists) %>% 
   mutate(
@@ -86,21 +87,21 @@ bars <-
              color = "white",
              size = .5,
              width = 1.02) +
-    geom_curve(aes(x = 52.2, xend = 48, 
+    geom_curve(aes(x = 51.2, xend = 47, 
                    y = -148, yend = -166),
                curvature = -.4) +
-    annotate("text", x = 48, y = -185, 
+    annotate("text", x = 47, y = -185, 
              label = "Each rectangle represents\none song included in the\nBBC ranking, its length\n the total points and the\ncolor indicates the rank",
              family = "Chivo",
              size = 3.8,
              lineheight = .9) +
-    annotate("text", x = 22.5, y = -120, 
+    annotate("text", x = 21.5, y = -120, 
              label = 'The Top Artists featured in the BBC´s\n"Greatest Hip-Hop Songs of All Time"',
              family = "Chivo",
              fontface = "bold",
              size = 12,
              lineheight = .9) +
-    annotate("text", x = 18, y = -120,
+    annotate("text", x = 17, y = -120,
              label = 'In Autumn 2019, 108 hip-hop and music experts ranked their 5 favorites out of\n311 nominated songs in an online survey by the BBC. The graphic shows points\nscored in total and per song for the top ranked artists and broken down by era.',
              family = "Chivo",
              fontface = "bold",
@@ -149,10 +150,10 @@ dots <-
                shape = 21, 
                color = "black", 
                stroke = 1.2) +
-    geom_curve(aes(x = 48, xend = 51, 
+    geom_curve(aes(x = 47, xend = 51, 
                    y = 6.1, yend = 4.3),
                curvature = .4) +
-    annotate("text", x = 46.1, y = 6.1, 
+    annotate("text", x = 45.1, y = 6.1, 
              label = "The dot size indicates\nthe number of songs,\nthe dot color the best\nrank in each era",
              family = "Chivo",
              size = 3.8, 
