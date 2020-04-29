@@ -47,3 +47,6 @@ rsconnect/
 
 # files in _all directory
 /plots/_all/*.png
+
+# secret files
+*secret*
