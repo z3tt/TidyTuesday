@@ -5,6 +5,11 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
+### [2020/18](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_18_BroadwayMusicals.Rmd) 🎭️ Broadway Musicals (RTFM Edition) by [Playbill](https://www.playbill.com/grosses)
+![./plots/2020_18/2020_18_BroadwayMusicals.png(https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_18/2020_18_BroadwayMusicals.png)
+
+***
+
 ### [2020/16](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_16_BestRapArtists.Rmd) 🎙️ Best Hip-Hop Songs of All Time by [BBC Music](http://www.bbc.com/culture/story/20191007-the-greatest-hip-hop-songs-of-all-time-who-voted)
 ![./plots/2020_16/2020_16_BestRapArtists.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_16/2020_16_BestRapArtists.png)
 

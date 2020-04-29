@@ -66,9 +66,15 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/14 [🍺 Beer Production](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_14)
   - 2020/15 [🚵 Tour de France History](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_15)
   - 2020/16 [🎙️ Best Hip-Hop Songs of All Time](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_16)
+  - 2020/18 [🎭️ Broadway Musicals (RTFM Edition)](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_18)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/18](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_18_BroadwayMusicals.Rmd) 🎭️ Broadway Musicals (RTFM Edition) by [Playbill](https://www.playbill.com/grosses)
+![./plots/2020_18/2020_18_BroadwayMusicals.png(https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_18/2020_18_BroadwayMusicals.png)
 
 ***
 
