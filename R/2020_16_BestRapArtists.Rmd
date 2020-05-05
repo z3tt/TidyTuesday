@@ -150,10 +150,10 @@ dots <-
                shape = 21, 
                color = "black", 
                stroke = 1.2) +
-    geom_curve(aes(x = 47, xend = 51, 
+    geom_curve(aes(x = 45, xend = 49, 
                    y = 6.1, yend = 4.3),
                curvature = .4) +
-    annotate("text", x = 45.1, y = 6.1, 
+    annotate("text", x = 43.1, y = 6.1, 
              label = "The dot size indicates\nthe number of songs,\nthe dot color the best\nrank in each era",
              family = "Chivo",
              size = 3.8, 
