@@ -5,6 +5,11 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
+### [2020/19](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_19_AnimalCrossing.Rmd) 🐻 Animal Crossing by [Metacritic](https://www.metacritic.com/game/switch/animal-crossing-new-horizons/critic-reviews)
+![./plots/2020_19/2020_19_AnimalCrossing.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_19/2020_19_AnimalCrossing.png)
+
+***
+
 ### [2020/18](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_18_BroadwayMusicals.Rmd) 🎭️ Broadway Musicals (RTFM Edition) by [Playbill](https://www.playbill.com/grosses)
 ![./plots/2020_18/2020_18_BroadwayMusicals.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_18/2020_18_BroadwayMusicals.png)
 

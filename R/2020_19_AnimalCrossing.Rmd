@@ -1,0 +1,148 @@
+---
+title: "TidyTuesday 2020/19 - Animal Crossing by Metacritic"
+author: "Cedric Scherer"
+date: "10th of May 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(tidytext)
+library(ggwordcloud)
+library(cowplot)
+library(showtext)
+
+font_add_google("Carter One", "Carter One")
+font_add("Brandon",
+        regular = "C:\\Users\\DataVizard\\AppData\\Local\\Microsoft\\Windows\\Fonts\\Brandon_reg.otf",
+        italic = "C:\\Users\\DataVizard\\AppData\\Local\\Microsoft\\Windows\\Fonts\\Brandon_reg_it.otf",
+        bold = "C:\\Users\\DataVizard\\AppData\\Local\\Microsoft\\Windows\\Fonts\\Brandon_med.otf")
+
+showtext_auto()
+
+## ggplot theme
+theme_set(theme_minimal(base_family = "Brandon"))
+
+theme_update(axis.text = element_blank(),
+             axis.title = element_blank(),
+             axis.ticks = element_blank(),
+             panel.grid = element_blank(),
+             strip.text = element_text(color = "grey60"),
+             plot.background = element_rect(fill = "grey7", color = "grey7"),
+             plot.margin = margin(30, 80, 10, 50),
+             plot.title = element_text(size = 36, family = "Carter One", color = "grey75", 
+                                       face = "bold", hjust = .5, margin = margin(25, 0, 15, 0)),
+             plot.title.position = "plot",
+             plot.subtitle = element_text(color = "grey55", size = 20, face = "bold",
+                                          hjust = .5, margin = margin(t = 0, b = 15)),
+             plot.caption = element_text(color = "grey55", size = 16, face = "bold",
+                                         hjust = .5, margin = margin(5, 0, 15, 0)),
+             plot.caption.position = "plot")
+```
+
+```{r data}
+df_critic <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/critic.tsv')
+df_reviews <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/user_reviews.tsv')
+
+```
+
+```{r data-prep}
+df_rev_affin <-
+  df_reviews %>%
+  unnest_tokens(word, text, token = "words") %>% 
+  anti_join(stop_words) %>% 
+  inner_join(get_sentiments("afinn"), by = "word") %>% 
+  mutate(
+    level = case_when(
+      grade %in% 0:3 ~ 0,
+      grade %in% 4:7 ~ 1,
+      grade %in% 8:10 ~ 2
+    )
+  ) %>% 
+  group_by(word, grade) %>% 
+  summarize(
+    occurences = n(),
+    contribution = sum(value)
+  ) %>% 
+  mutate(group = if_else(contribution > 0, "A", "B")) %>%
+  mutate(group = if_else(word == "fun", "C", group)) %>% 
+  arrange(grade, -abs(contribution)) %>% 
+  group_by(grade) %>% 
+  slice(1:50) %>% 
+  ungroup() %>% 
+  mutate(word = str_to_upper(word))
+```
+
+```{r plot, fig.width = 22, fig.height = 8.5}
+## function
+wordcloud_level <- function(l) {
+  p <-
+    df_rev_affin %>% 
+    filter(level == g) %>%
+    arrange(-contribution) %>% 
+    ggplot(aes(label = word, 
+               size = contribution, 
+               color = group)) +
+      geom_text_wordcloud(family = "Carter One",
+                          eccentricity = 1,
+                          seed = 1) +
+      scale_x_continuous(expand = c(0, 0)) +
+      scale_y_continuous(expand = c(0, 0)) +
+      scale_color_manual(values = c("#7db69f", "#c3573f", "white"),
+                         guide = F) +
+      scale_size_area(max_size = 15) +
+      ggtitle(title) +
+      theme(plot.background = element_rect(color = NA, fill = NA),
+            panel.background = element_rect(color = NA, fill = NA))
+  
+  print(p)
+}
+
+base <-
+  tibble(
+    x = c(.2, .53, .85), 
+    y = rep(.05, 3),
+    label = c("Low Grades (0–2)", "Medium Grades (3–7)", "High Grades (8–10)")
+  ) %>% 
+  ggplot(aes(x, y, label = label)) +
+    geom_text(color = "grey75",
+              family = "Brandon",
+              fontface = "bold",
+              size = 8) +
+    scale_x_continuous(expand = c(0, 0),
+                       limits = c(0, 1)) +
+    scale_y_continuous(limits = c(0, 1)) +
+    labs(
+      title = str_to_upper('"Animal  Crossing"  seems  to  be  FUN,  no  matter  if  you  like  it  or  not'),
+      subtitle = 'Or, more likely, users rating it low wrote things like "not much fun", "no fun at all" or "A fun game that I really wanted to play but what a **** multiplayer mode."',
+      caption = 'Based on a sentiment analysis of "Animal Crossing" user reviews, each wordcloud shows the 50 words that contributed the most to each grade category, either in a positive or in a negative way.\n\n\nVisualization by Cédric Scherer  •  Data by Metacritic'
+    )
+    
+p <- ggdraw(base) +
+  draw_plot(wordcloud_level(0), .23, .52, .55, .85, hjust = .5, vjust = .5) +
+  draw_plot(wordcloud_level(1), .54, .52, .43, .85, hjust = .5, vjust = .5) +
+  draw_plot(wordcloud_level(2), .82, .52, .5, .85, hjust = .5, vjust = .5)
+
+ggsave(here::here("plots", "2020_19", "2020_19_AnimalCrossing.pdf"), 
+       width = 22, height = 8.5, device = cairo_pdf)
+
+pdftools::pdf_convert(here::here("plots", "2020_19", "2020_19_AnimalCrossing.pdf"),
+                      format = "png", dpi = 300)
+```
+
+***
+
+```{r session-info}
+sessionInfo()
+```
+
