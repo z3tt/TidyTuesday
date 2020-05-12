@@ -267,7 +267,7 @@ words_pop <-
                 fill = NA,
                 alpha = .5,
                 stroke = .1) +
-    geom_smooth(method = "lm", se = F, 
+    geom_smooth(method = "loess", se = F, 
                 size = .8, 
                 show.legend = F) +
     scale_y_continuous(expand = c(.01, .01),
@@ -308,7 +308,7 @@ words_dance <-
                 fill = NA,
                 alpha = .5,
                 stroke = .1) +
-    geom_smooth(method = "lm", se = F, size = .8) +
+    geom_smooth(method = "loess", se = F, size = .8) +
     scale_x_continuous(expand = c(0, 0), 
                        limits = c(.3, 1)) +
     scale_y_continuous(expand = c(.01, .01),
@@ -461,7 +461,7 @@ text_words <- ggplot(data.frame(x = 1:2, y = 1:10)) +
 
 text_scatter <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
-       subtitle = "Two variables exhibit distinct patterns<br>for the different eras of hip hop:<br>Indeed, a smaller rap vocabulary<br>is correlated with higher popularity<br>for tracks from the <b style='color:#4e8863'>Internet Era</b><br>while popularity of tracks from<br>artists of the <b style='color:#ffc205'>Golden Age</b> and<br><b style='color:#cecece'>Bling-Bling Era</b> increases with more<br>unique words. Also, popularity<br>increases with danceability for more<br>recent tracks, while the trend is re-<br>versed for tracks from the <b style='color:#ffc205'>Golden Age</b>.") +
+       subtitle = "Two variables exhibit distinct patterns<br>for the different eras of hip hop:<br>Indeed, a smaller rap vocabulary<br>is correlated with higher popularity<br>for tracks from the <b style='color:#4e8863'>Internet Era</b><br>while popularity of tracks from<br>artists of the <b style='color:#ffc205'>Golden Age</b> and<br><b style='color:#cecece'>Bling-Bling Era</b> increases with more<br>unique words. Also, popularity<br>increases with danceability for more<br>recent tracks, while the trend is re-<br>versed for tracks from the <b style='color:#ffc205'>Golden Age</b>.<br>(And yes, it is not statistically<br>supported but a fun viz.)") +
   theme(line = element_blank(),
         axis.text = element_blank(),
         axis.line.x = element_blank(),
