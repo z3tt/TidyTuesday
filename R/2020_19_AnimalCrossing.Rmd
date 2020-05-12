@@ -19,6 +19,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = F)
 library(tidyverse)
 library(tidytext)
 library(ggwordcloud)
+library(ggtext)
 library(cowplot)
 library(showtext)
 
@@ -52,15 +53,19 @@ theme_update(axis.text = element_blank(),
 
 ```{r data}
 df_critic <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/critic.tsv')
-df_reviews <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/user_reviews.tsv')
 
+df_reviews <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/user_reviews.tsv')
 ```
+
+
+## Wordclouds
 
 ```{r data-prep}
 df_rev_affin <-
   df_reviews %>%
   unnest_tokens(word, text, token = "words") %>% 
   anti_join(stop_words) %>% 
+  filter(!str_detect(word, "expand$|Expand$")) %>% 
   inner_join(get_sentiments("afinn"), by = "word") %>% 
   mutate(
     level = case_when(
@@ -69,15 +74,15 @@ df_rev_affin <-
       grade %in% 8:10 ~ 2
     )
   ) %>% 
-  group_by(word, grade) %>% 
+  group_by(word, level) %>% 
   summarize(
     occurences = n(),
     contribution = sum(value)
   ) %>% 
   mutate(group = if_else(contribution > 0, "A", "B")) %>%
   mutate(group = if_else(word == "fun", "C", group)) %>% 
-  arrange(grade, -abs(contribution)) %>% 
-  group_by(grade) %>% 
+  arrange(level, -abs(contribution)) %>% 
+  group_by(level) %>% 
   slice(1:50) %>% 
   ungroup() %>% 
   mutate(word = str_to_upper(word))
@@ -88,20 +93,19 @@ df_rev_affin <-
 wordcloud_level <- function(l) {
   p <-
     df_rev_affin %>% 
-    filter(level == g) %>%
+    filter(level == l) %>%
     arrange(-contribution) %>% 
     ggplot(aes(label = word, 
                size = contribution, 
                color = group)) +
       geom_text_wordcloud(family = "Carter One",
                           eccentricity = 1,
-                          seed = 1) +
+                          seed = 2020) +
       scale_x_continuous(expand = c(0, 0)) +
       scale_y_continuous(expand = c(0, 0)) +
       scale_color_manual(values = c("#7db69f", "#c3573f", "white"),
                          guide = F) +
       scale_size_area(max_size = 15) +
-      ggtitle(title) +
       theme(plot.background = element_rect(color = NA, fill = NA),
             panel.background = element_rect(color = NA, fill = NA))
   
@@ -110,7 +114,7 @@ wordcloud_level <- function(l) {
 
 base <-
   tibble(
-    x = c(.2, .53, .85), 
+    x = c(.2, .54, .85), 
     y = rep(.05, 3),
     label = c("Low Grades (0–2)", "Medium Grades (3–7)", "High Grades (8–10)")
   ) %>% 
@@ -129,15 +133,100 @@ base <-
     )
     
 p <- ggdraw(base) +
-  draw_plot(wordcloud_level(0), .23, .52, .55, .85, hjust = .5, vjust = .5) +
-  draw_plot(wordcloud_level(1), .54, .52, .43, .85, hjust = .5, vjust = .5) +
-  draw_plot(wordcloud_level(2), .82, .52, .5, .85, hjust = .5, vjust = .5)
+  draw_plot(wordcloud_level(0), .23, .54, .55, .85, hjust = .5, vjust = .5) +
+  draw_plot(wordcloud_level(1), .54, .54, .43, .85, hjust = .5, vjust = .5) +
+  draw_plot(wordcloud_level(2), .82, .54, .5, .85, hjust = .5, vjust = .5)
 
 ggsave(here::here("plots", "2020_19", "2020_19_AnimalCrossing.pdf"), 
        width = 22, height = 8.5, device = cairo_pdf)
 
 pdftools::pdf_convert(here::here("plots", "2020_19", "2020_19_AnimalCrossing.pdf"),
                       format = "png", dpi = 300)
+```
+
+
+## "Wordstripes"
+
+```{r data-prep}
+df_rev_affin_alt <-
+  df_reviews %>%
+  group_by(grade) %>% 
+  unnest_tokens(word, text, token = "words") %>% 
+  anti_join(stop_words) %>% 
+  filter(!str_detect(word, "expand$|Expand$")) %>% 
+  inner_join(get_sentiments("afinn"), by = "word") %>% 
+  group_by(grade, word) %>% 
+  summarize(
+    n = n(),
+    contribution = sum(value),
+    value = unique(value)
+  ) %>% 
+  group_by(grade) %>% 
+  mutate(contr_rel = value * n / sum(n)) %>% 
+  arrange(grade, -abs(contribution)) %>% 
+  group_by(grade) %>% 
+  slice(1:50) %>%  # n = 50 or 100 
+  mutate(contribution_fun = if_else(word == "fun", 0, contr_rel)) %>% 
+  arrange(-contribution_fun) %>% 
+  mutate(rank = row_number()) %>% 
+  mutate(line = if_else(word == "fun", rank, NA_integer_)) %>% 
+  ungroup() %>% 
+  mutate(
+    word = str_to_upper(word),
+    group = case_when(
+      contribution_fun == 0 ~ "fun",
+      contribution_fun > 0 ~ "positive", 
+      contribution_fun < 0 ~ "negative"
+    ),
+    grade_lab = glue::glue("Grade {grade}"),
+    grade_lab = fct_reorder(grade_lab, grade)
+  )
+```
+
+```{r plot, fig.width = 22, fig.height = 8.5}
+df_rev_affin_alt %>% 
+  ggplot(aes(grade, rank,
+             label = word, 
+             color = group,
+             size = abs(contr_rel))) +
+    geom_line(data = df_rev_affin_alt %>% filter(word == "FUN"),
+              aes(grade, rank),
+              inherit.aes = F,
+              color = "white") +
+    geom_richtext(family = "Carter One",
+                  fontface = "bold",
+                  fill = "grey7",
+                  label.color = NA,
+                  label.padding = unit(c(.1, .15, -.1, .05), "lines"),
+                  label.r = unit(0.05, "lines")) +
+    scale_x_continuous(expand = c(.06, .06),
+                       position = "top",
+                       breaks = 0:10,
+                       labels = levels(df_rev_affin_alt$grade_lab)) +
+    scale_y_continuous(expand = c(.01, .01)) +
+    scale_color_manual(values = c("white", "#c3573f", "#7db69f"),
+                       guide = F) +
+    scale_radius(range = c(3, 11),
+                 guide = F) +
+    labs(
+      title = '"ANIMAL CROSSING"  SEEMS  TO  BE  <b style="color:white;">FUN</b>,  NO  MATTER  IF  YOU  LIKE IT  OR  NOT',
+      subtitle = 'Or, more likely, users rating it low wrote things like "not much fun", "no fun at all" or "A fun game that I really wanted to play but what a **** multiplayer mode.<span style="font-size:15pt;"><br><br>Based on a sentiment analysis of user reviews, each "word stripe" shows the 50 words that contributed the most to each grade category, either in a <b style="color:#7db69f;">positive</b> or in a <b style="color:#c3573f;">negative</b> way. The size of each word indicates<br>its contribution per grade. The amount of words associated with positive sentiment increase, as we would expect, with higher grades. Fun, even though categorized as positive, is often used in both contexts.</span>',
+      caption = 'Visualization by Cédric Scherer  •  Data by Metacritic'
+    ) +
+    theme(axis.text.x.top = element_text(color = "grey55", 
+                                         size = 16, 
+                                         face = "bold",
+                                         margin = margin(b = 9)),
+          plot.title = element_markdown(),
+          plot.subtitle = element_markdown(lineheight = .9,
+                                           margin = margin(b = 30)),
+          plot.caption = element_text(size = 14, margin = margin(t = 20, b = 10)))
+
+ggsave(here::here("plots", "2020_19", "2020_19_AnimalCrossing_alt.pdf"), 
+       width = 20, height = 18, device = cairo_pdf) # height = 18/32 for n = 50/100
+
+pdftools::pdf_convert(here::here("plots", "2020_19", "2020_19_AnimalCrossing_alt.pdf"),
+                      format = "png", dpi = 200)
 ```
 
 ***
