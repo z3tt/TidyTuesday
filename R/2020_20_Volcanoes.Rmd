@@ -1,0 +1,202 @@
+---
+title: "TidyTuesday 2020/20 - Volcano Eruptions by The Smithsonian Institution"
+author: "Cedric Scherer"
+date: "14th of May 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(sf)
+library(cowplot)
+library(showtext)
+
+font_add_google("Arvo", "Arvo")
+
+showtext_auto()
+
+## ggplot theme
+theme_set(theme_void(base_family = "Arvo"))
+
+theme_update(plot.margin = margin(5, 5, 5, 5),
+             plot.background = element_rect(fill= "#E4DCD5", color = "#E4DCD5"),
+             panel.background = element_rect(fill= "white", color = "transparent"),
+             plot.caption = element_text(color = "#866D56", size = 7, hjust = .5,
+                                         lineheight = 1.8, margin = margin(7, 0, 7, 0)))
+```
+
+```{r data}
+df_volcano <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-12/volcano.csv')
+df_eruptions <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-12/eruptions.csv')
+
+map <- 
+  rnaturalearth::ne_countries(
+    scale = 110,
+    returnclass = "sf"
+  ) %>% 
+  sf::st_transform(crs = "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs")
+
+
+sf_volcano <-
+  df_volcano %>% 
+  st_as_sf(
+    coords = c("longitude", "latitude"),
+    crs = 4326
+  ) %>% 
+  st_transform(crs = st_crs(map))
+  
+plates <- sf::read_sf(here::here("data", "tectonicplates-master", "PB2002_plates.shp")) %>% 
+  st_transform(crs = st_crs(map))
+```
+
+```{r distributions}
+v <- 
+  df_volcano %>% 
+  ggplot(aes(longitude)) +
+    geom_density(
+      color = colorspace::darken("#ffc922", .2, space ="HLS"), 
+      fill = "#ffc922", 
+      alpha = .6,
+      size = .3,
+      bw = .3
+    ) +
+    ggforce::geom_mark_circle(
+      aes(
+        x = 140.5, 
+        y = .022, 
+        label = "Highest number of volcanos   "
+      ),
+      color = "transparent",
+      label.fill = "transparent",
+      label.colour = colorspace::darken("#ffc922", .15, space ="HLS"),
+      label.family = "Arvo",
+      label.fontsize = 9,
+      label.buffer = unit(9, "mm"),
+      con.colour = colorspace::darken("#ffc922", .15, space ="HLS"),
+      con.size = .4,
+      con.cap = unit(.1, "mm"),
+      expand = unit(1, "mm")
+    ) +
+    scale_x_continuous(
+      expand = c(.01,.01),
+      limits = c(-180, 180)
+    ) +
+    scale_y_continuous(
+      expand = c(0, 0),
+      limits = c(NA, 0.036)
+    ) +
+    theme(
+      panel.background = element_rect(
+        color = "transparent", 
+        fill = "transparent"
+      ),
+      plot.background = element_rect(
+        color = "transparent", 
+        fill = "transparent"
+      ),
+      plot.margin = margin(b = -1.4)
+    )
+
+e <- 
+  df_eruptions %>% 
+  ggplot(aes(longitude)) +
+    geom_density(
+      color = colorspace::darken("#cf1020", .2, space ="HLS"), 
+      fill = "#cf1020", 
+      alpha = .6,
+      size = .3,
+      bw = .3
+    ) +
+    ggforce::geom_mark_circle(
+      aes(
+        x = 130.8, 
+        y = .029, 
+        label = "Highest number of eruptions   "
+      ),
+      color = "transparent",
+      label.fill = "transparent",
+      label.colour = colorspace::darken("#cf1020", .15, space ="HLS"),
+      label.family = "Arvo",
+      label.fontsize = 9,
+      label.margin = margin(50, 2, 2, 2, "mm"),
+      con.colour = colorspace::darken("#cf1020", .15, space ="HLS"),
+      con.size = .4,
+      con.cap = unit(.3, "mm"),
+      expand = unit(1, "mm")
+    ) +
+    scale_x_continuous(
+      expand = c(.01,.01),
+      limits = c(-180, 180)
+    ) +
+    scale_y_reverse(
+      expand = c(0, 0),
+      limits = c(.037, NA)
+    ) +
+    theme(
+      panel.background = element_rect(
+        color = "transparent", 
+        fill = "transparent"
+      ),
+      plot.background = element_rect(
+        color = "transparent", 
+        fill = "transparent"
+      ),
+      plot.margin = margin(t = -1.4)
+    )
+```
+
+```{r map}
+m <- 
+  ggplot(map) + 
+    geom_sf(
+      color = "transparent", 
+      fill = "#F3F0ED"
+    ) +
+    geom_sf(
+      data = plates,
+      fill = "transparent",
+      color = "#E4DCD5",
+      size = .3
+    ) + 
+    geom_sf(
+      data = sf_volcano,
+      shape = 21,
+      color = "grey74",
+      fill = "transparent",
+      size = .5,
+      stroke = .3
+    ) +
+    coord_sf(clip = "off") +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    labs(
+      caption = "The visualization shows the distribution of volcanos in yellow and the cumulative number of eruptions in red along a longitudinal gradient. Dots represent the location of 958 volcanos and the lines indicate plate boundaries.\nVisualization by Cédric Scherer  •  Data by The Smithsonian Institution"
+    )
+
+ggdraw(m) +
+  draw_plot(v, .5, .653, 1.007, .357, hjust = .5, vjust = 0) +
+  draw_plot(e, .5, .6472, 1.007, .555, hjust = .5, vjust = 1) 
+
+ggsave(here::here("plots", "2020_20", "2020_20_Volcanoes.pdf"), 
+       width = 12, height = 6.55, device = cairo_pdf)
+
+pdftools::pdf_convert(here::here("plots", "2020_20", "2020_20_Volcanoes.pdf"),
+                      format = "png", dpi = 300)
+```
+
+***
+
+```{r session-info}
+sessionInfo()
+```
+
