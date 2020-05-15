@@ -68,39 +68,45 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/16 [🎙️ Best Hip-Hop Songs of All Time](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_16)
   - 2020/18 [🎭️ Broadway Musicals (RTFM Edition)](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_18)
   - 2020/19 [🐻 Animal Crossing](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_19)
+  - 2020/20 [🌋 Volcano Eruptions](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_20)
 <!-- tocstop -->
 
 </details>
 
 ***
 
-### [2020/19](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_19_AnimalCrossing.Rmd) 🐻 Animal Crossing by [Metacritic](https://www.metacritic.com/game/switch/animal-crossing-new-horizons/critic-reviews)
+### [2020/20](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_20) 🌋 Volcano Eruptions by [Smithsonian](https://www.himalayandatabase.com/)
+![./plots/2020_20/2020_20_Volcanoes.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_20/2020_20_Volcanoes.png)
+
+***
+
+### [2020/19](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_19) 🐻 Animal Crossing by [Metacritic](https://www.metacritic.com/game/switch/animal-crossing-new-horizons/critic-reviews)
 ![./plots/2020_19/2020_19_AnimalCrossing_alt_50.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_19/2020_19_AnimalCrossing_alt_50.png)
 ![./plots/2020_19/2020_19_AnimalCrossing.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_19/2020_19_AnimalCrossing.png)
 
 ***
 
-### [2020/18](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_18_BroadwayMusicals.Rmd) 🎭️ Broadway Musicals (RTFM Edition) by [Playbill](https://www.playbill.com/grosses)
+### [2020/18](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_18) 🎭️ Broadway Musicals (RTFM Edition) by [Playbill](https://www.playbill.com/grosses)
 ![./plots/2020_18/2020_18_BroadwayMusicals.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_18/2020_18_BroadwayMusicals.png)
 
 ***
 
-### [2020/16](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_16_BestRapArtists.Rmd) 🎙️ Best Hip-Hop Songs of All Time by [BBC Music](http://www.bbc.com/culture/story/20191007-the-greatest-hip-hop-songs-of-all-time-who-voted)
+### [2020/16](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_16) 🎙️ Best Hip-Hop Songs of All Time by [BBC Music](http://www.bbc.com/culture/story/20191007-the-greatest-hip-hop-songs-of-all-time-who-voted)
 ![./plots/2020_16/2020_16_BestRapArtists.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_16/2020_16_BestRapArtists.png)
 
 ***
 
-### [Week 2020/15](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_14_BeerProduction.Rmd) 🚵 Tour de France via the [{tdf} data package](https://github.com/alastairrushworth/tdf)
+### [Week 2020/15](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_15) 🚵 Tour de France via the [{tdf} data package](https://github.com/alastairrushworth/tdf)
 ![./plots/2020_15/2020_15_TourDeFrance.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_15/2020_15_TourDeFrance.png)
 
 ***
 
-### [Week 2020/14](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_14_BeerProduction.Rmd) 🍺 Beer Production by [TTB](https://www.ttb.gov/beer/statistics)
+### [Week 2020/14](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_14) 🍺 Beer Production by [TTB](https://www.ttb.gov/beer/statistics)
 ![./plots/2020_14/2020_14_BeerProduction_red.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_14/2020_14_BeerProduction_red.png)
 
 ***
 
-### [Week 2020/12](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_12_TheOffice.Rmd) 🏢 The Office by [IMDb via data.world](https://data.world/anujjain7/the-office-imdb-ratings-dataset)
+### [Week 2020/12](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_12) 🏢 The Office by [IMDb via data.world](https://data.world/anujjain7/the-office-imdb-ratings-dataset)
 ![./plots/2020_08/2020_12_TheOffice.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_12/2020_12_TheOffice.png)
 
 ***
