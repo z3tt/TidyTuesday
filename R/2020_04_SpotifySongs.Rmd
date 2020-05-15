@@ -17,7 +17,6 @@ knitr::opts_chunk$set(echo = TRUE, warning = F)
 ```{r prep, message=FALSE, warning=FALSE}
 ## packages
 library(tidyverse)
-library(gglogspline)
 library(ggtext)
 library(extrafont)
 library(cowplot)
