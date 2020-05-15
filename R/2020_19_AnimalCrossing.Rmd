@@ -11,7 +11,7 @@ editor_options:
 ---
   
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = F)
+knitr::opts_chunk$set(echo = TRUE, warning = F, fig.showtext = T)
 ```
 
 ```{r prep, message=FALSE, warning=FALSE}
