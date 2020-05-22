@@ -1,0 +1,216 @@
+---
+title: "TidyTuesday 2020/21 - Beach VOlleyball by BigTimeStats"
+author: "Cedric Scherer"
+date: "21st of May 2020"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+```
+
+```{r prep, message=FALSE}
+## packages
+library(tidyverse)
+library(geofacet)
+library(ggtext)
+library(showtext)
+
+font_add(
+  "Alcubierre",
+  regular = "C:\\Users\\DataVizard\\AppData\\Local\\Microsoft\\Windows\\Fonts\\Alcubierre.otf"
+)
+
+showtext_auto()
+
+## ggplot theme
+theme_set(theme_void())
+
+theme_update(
+  plot.margin = margin(15, 15, -80, 5),
+  plot.background = element_rect(fill = "#FEF9EA", color = "#FEF9EA"),
+  strip.background = element_blank(),
+  strip.text = element_blank(),
+  panel.spacing = unit(0, "mm"),
+  axis.title = element_markdown(
+    family = "Alcubierre",
+    color = "grey20",
+    size = 20,
+    hjust = 0,
+    vjust = 2,
+    margin = margin(0, 0, 0, 20)
+  )
+)
+```
+
+```{r data}
+df_volley <- 
+  readr::read_csv(
+    'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-19/vb_matches.csv', 
+    guess_max = 76000
+  )
+```
+
+```{r data-prep}
+df_volley_sum <- 
+  df_volley %>% 
+  filter(circuit == "FIVB") %>%
+  pivot_longer(
+    cols = c(w_p1_country, w_p2_country, l_p1_country, l_p2_country),
+    names_to = "team_p",
+    values_to = "country_p"
+  ) %>% 
+  mutate(outcome = if_else(str_detect(team_p, "^w_"), "winning", "losing")) %>% 
+  dplyr::select(tournament, year, match_num, outcome, country = country_p) %>%
+  mutate(
+    country = case_when(
+      country == "United States" ~ "United States of America",
+      country == "Russia" ~ "Russian Federation",
+      country %in% c("England", "Scotland") ~ "Great Britain and Northern Ireland",
+      country == "Slovak Republic" ~ "Slovakia",
+      country == "Iran" ~ "Iran (Islamic Republic of)",
+      country %in% c("Chinese Taipei", "Hong Kong") ~ "China",
+      country == "Korea" ~ "South Korea",
+      country == "Vietnam" ~ "Viet Nam",
+      TRUE ~ country
+    )
+  ) %>% 
+  distinct() %>% 
+  group_by(country) %>% 
+  mutate(matches = n_distinct(match_num)) %>% 
+  group_by(country, outcome, matches) %>% 
+  count(sort = T) %>% 
+  pivot_wider(
+    names_from = outcome,
+    values_from = n
+  ) %>%
+  mutate(
+    wins = winning / (losing + winning)
+  ) %>% 
+  arrange(-wins) %>% 
+  ungroup()
+
+df_volley_geo <-
+  df_volley_sum %>% 
+  full_join(world_countries_grid1, by = c("country" = "name")) %>% 
+  filter(!is.na(code_alpha3)) %>% 
+  mutate(col = if_else(wins > .5, "A", "B")) %>% 
+  replace_na(list(matches = 0, winning = 0, losing = 0, wins = 0)) %>% 
+  mutate(
+    label_size = floor(matches / 10) + 5,
+    label = glue::glue("<span style='font-size:{label_size}pt;'>{code_alpha3}</span>"),
+    min = min(label_size, na.rm = T),
+    max = max(label_size, na.rm = T),
+    vjust = (label_size - min) / (max * 10 - min * 10) + .45,
+    title = "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><span style='color:#ECBF0D;font-size:27pt'>NOT MANY COUNTRIES HAVE MANAGED<br>TO WIN MORE OFTEN THAN THEY LOST<br>MATCHES OF THE FIVB WORLD TOUR —</span><br><span style='color:#808080;font-size:16pt'>MOST AFRICAN COUNTRIES NEVER PARTICIPATED AT ALL</span><span style='color:#808080;font-size:10pt'> (represented by O)</span><span style='font-size:12pt'><br><br>The size of each circle shows the number of matches won per country, the color if they have<br>won more matches than lost or not. The data contains all FIVB world tours from 2000 to 2019.</span><br><br><span style='color:#ab8211;font-size:12pt'>Visualization by Cédric Scherer  •  Data by BigTimeStats</span>"
+  ) %>% 
+  filter(code_alpha3 != "ATA")
+```
+
+```{r plot, fig.width = 17, fig.height = 14}
+dots <-
+  df_volley_geo %>% 
+  ggplot(aes(1, 1)) +
+    ## countries that played matches
+    geom_point(
+      aes(
+        color = col,
+        size = matches
+      )
+    ) +
+    ## countries that won more often than they've lost
+    ggtext::geom_richtext(
+      data = df_volley_geo %>% filter(col == "A"),
+      aes(
+        label = label,
+        vjust = vjust
+      ),
+      family = "Alcubierre",
+      fill = NA,
+      label.color = NA
+    ) +
+    ## countries that did not win more often than they've lost
+    ggtext::geom_richtext(
+      data = df_volley_geo %>% filter(col == "B"),
+      aes(
+        label = label,
+        vjust = vjust
+      ),
+      family = "Alcubierre",
+      color = "white",
+      fill = NA,
+      label.color = NA
+    ) +
+    ## countries that did not play any matches
+    geom_point(
+      data = df_volley_geo %>% filter(wins == 0),
+      shape = 21,
+      color = "grey50",
+      fill = "transparent",
+      size = 4,
+      stroke = .2
+    ) +
+    geom_text(
+      data = df_volley_geo %>% filter(wins == 0),
+      aes(label = code_alpha3),
+      family = "Alcubierre",
+      color = "grey35",
+      size = 2.3,
+      nudge_y = -.0045
+    ) +
+    ## title & co
+    ggtext::geom_richtext(
+      data = df_volley_geo %>% filter(code_alpha3 == "SLV"),
+      aes(label = title),
+      family = "Alcubierre",
+      color = "#808080",
+      size = 6,
+      lineheight = .9,
+      fill = NA,
+      label.color = NA,
+      hjust = 0,
+      vjust = 1
+    ) +
+    ## as grid map
+    geofacet::facet_geo(
+      ~country, 
+      grid = "world_countries_grid1", 
+      label = "code_alpha3"
+    ) +
+    scale_x_continuous(
+      expand = c(0, 0), 
+      limits = c(.99, 1.01)
+    ) +
+    scale_y_continuous(
+      expand = c(0, 0), 
+      limits = c(.99, 1.01)
+    ) +
+    scale_color_manual(
+      values = c("#f3c921", "grey20"),
+      guide = F
+    ) +
+    scale_size(
+      range = c(4, 18), 
+      guide = F
+    ) +
+    coord_cartesian(clip = "off")
+   
+dots
+
+ggsave(here::here("plots", "2020_21", "2020_21_BeachVolleyball.pdf"), 
+       width = 17, height = 14, device = cairo_pdf)
+
+pdftools::pdf_convert(here::here("plots", "2020_21", "2020_21_BeachVolleyball.pdf"),
+                      format = "png", dpi = 300)
+```
+
+***
+
+```{r session}
+sessionInfo()
+```
