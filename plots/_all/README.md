@@ -5,7 +5,12 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
-### [2020/20](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_20_Volcanoes.Rmd) 🌋 Volcano Eruptions by [Smithsonian](https://www.himalayandatabase.com/)
+### [2020/21](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_21) 🏐 Beach Volleyball by [BigTimeStats](https://bigtimestats.blog/data/)
+![./plots/2020_21/2020_21_BeachVolleyball.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_21/2020_21_BeachVolleyball.png)
+
+***
+
+### [2020/20](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_20) 🌋 Volcano Eruptions by [Smithsonian](https://www.himalayandatabase.com/)
 
 **Map centered on the "Ring of Fire":**
 <br>
@@ -17,7 +22,7 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
-### [2020/19](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_19_AnimalCrossing.Rmd) 🐻 Animal Crossing by [Metacritic](https://www.metacritic.com/game/switch/animal-crossing-new-horizons/critic-reviews)
+### [2020/19](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_19) 🐻 Animal Crossing by [Metacritic](https://www.metacritic.com/game/switch/animal-crossing-new-horizons/critic-reviews)
 ![./plots/2020_19/2020_19_AnimalCrossing_alt_100.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_19/2020_19_AnimalCrossing_alt_100.png)
 
 **Top 50 Words:**
@@ -28,22 +33,22 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
-### [2020/18](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_18_BroadwayMusicals.Rmd) 🎭️ Broadway Musicals (RTFM Edition) by [Playbill](https://www.playbill.com/grosses)
+### [2020/18](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_18) 🎭️ Broadway Musicals (RTFM Edition) by [Playbill](https://www.playbill.com/grosses)
 ![./plots/2020_18/2020_18_BroadwayMusicals.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_18/2020_18_BroadwayMusicals.png)
 
 ***
 
-### [2020/16](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_16_BestRapArtists.Rmd) 🎙️ Best Hip-Hop Songs of All Time by [BBC Music](http://www.bbc.com/culture/story/20191007-the-greatest-hip-hop-songs-of-all-time-who-voted)
+### [2020/16](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_16) 🎙️ Best Hip-Hop Songs of All Time by [BBC Music](http://www.bbc.com/culture/story/20191007-the-greatest-hip-hop-songs-of-all-time-who-voted)
 ![./plots/2020_16/2020_16_BestRapArtists.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_16/2020_16_BestRapArtists.png)
 
 ***
 
-### [Week 2020/15](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_14_BeerProduction.Rmd) 🚵 Tour de France via the [{tdf} data package](https://github.com/alastairrushworth/tdf)
+### [Week 2020/15](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_15) 🚵 Tour de France via the [{tdf} data package](https://github.com/alastairrushworth/tdf)
 ![./plots/2020_15/2020_15_TourDeFrance.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_15/2020_15_TourDeFrance.png)
 
 ***
 
-### [Week 2020/14](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_14_BeerProduction.Rmd) 🍺 Beer Production by [TTB](https://www.ttb.gov/beer/statistics)
+### [Week 2020/14](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_14) 🍺 Beer Production by [TTB](https://www.ttb.gov/beer/statistics)
 ![./plots/2020_14/2020_14_BeerProduction_red.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_14/2020_14_BeerProduction_red.png)
 
 **Full scale bar:**
@@ -51,12 +56,12 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
-### [Week 2020/12](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_12_TheOffice.Rmd) 🏢 The Office by [IMDb via data.world](https://data.world/anujjain7/the-office-imdb-ratings-dataset)
+### [Week 2020/12](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_12) 🏢 The Office by [IMDb via data.world](https://data.world/anujjain7/the-office-imdb-ratings-dataset)
 ![./plots/2020_08/2020_12_TheOffice.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_12/2020_12_TheOffice.png)
 
 ***
 
-### [Week 2020/08](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_08_CarbonFoodprint.Rmd) 🍖 Foot Carbon Footprints by [FAO via nu3](https://www.nu3.de/blogs/nutrition/food-carbon-footprint-index-2018)
+### [Week 2020/08](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_08) 🍖 Foot Carbon Footprints by [FAO via nu3](https://www.nu3.de/blogs/nutrition/food-carbon-footprint-index-2018)
 ![./plots/2020_08/2020_08_CarbonFoodprint_alt.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_08/2020_08_CarbonFoodprint_alt.png)
 
 **Hiqh Quality Version:**

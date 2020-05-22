@@ -69,9 +69,15 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/18 [🎭️ Broadway Musicals (RTFM Edition)](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_18)
   - 2020/19 [🐻 Animal Crossing](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_19)
   - 2020/20 [🌋 Volcano Eruptions](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_20)
+  - 2020/21 [🏐 Beach Volleyball](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_21)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/21](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_21) 🏐 Beach Volleyball by [BigTimeStats](https://bigtimestats.blog/data/)
+![./plots/2020_21/2020_21_BeachVolleyball.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_21/2020_21_BeachVolleyball.png)
 
 ***
 
