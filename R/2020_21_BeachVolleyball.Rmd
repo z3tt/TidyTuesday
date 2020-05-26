@@ -1,5 +1,5 @@
 ---
-title: "TidyTuesday 2020/21 - Beach VOlleyball by BigTimeStats"
+title: "TidyTuesday 2020/21 - Beach Volleyball by BigTimeStats"
 author: "Cedric Scherer"
 date: "21st of May 2020"
 output:
