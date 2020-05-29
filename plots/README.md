@@ -3,32 +3,37 @@ My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascie
 
 Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [cedricphilippscherer@gmail.com](mailto:cedricphilippscherer@gmail.com).
 
-All contributions and full versions can be found [here](https://github.com/Z3tt/TidyTuesday/tree/master/plots/_all).
+The full versions of all my contributions can be found [here](https://github.com/Z3tt/TidyTuesday/tree/master/plots/_all).
 
 ***
 
-### [2020/21](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_21_BeachVolleyball.png) 🏐 Beach Volleyball by [BigTimeStats](https://bigtimestats.blog/data/)
+### [Week 2020/22](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_22) 🍹 50 Most Popular Cocktails 2020 by [Drinks International](https://drinksint.com/news/fullstory.php/aid/8648/The_World_92s_Best-Selling_Classic_Cocktails_2020.html) & [Kaggle](https://bigtimestats.blog/data/)
+![./plots/2020_22/2020_22_Cocktails.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_22/2020_22_Cocktails.png)
+
+***
+
+### [Week 2020/21](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_21) 🏐 Beach Volleyball by [BigTimeStats](https://bigtimestats.blog/data/)
 ![./plots/2020_21/2020_21_BeachVolleyball.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_21/2020_21_BeachVolleyball.png)
 
 ***
 
-### [2020/20](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_20) 🌋 Volcano Eruptions by [Smithsonian](https://www.himalayandatabase.com/)
+### [Week 2020/20](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_20) 🌋 Volcano Eruptions by [Smithsonian](https://www.himalayandatabase.com/)
 ![./plots/2020_20/2020_20_Volcanoes.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_20/2020_20_Volcanoes.png)
 
 ***
 
-### [2020/19](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_19) 🐻 Animal Crossing by [Metacritic](https://www.metacritic.com/game/switch/animal-crossing-new-horizons/critic-reviews)
+### [Week 2020/19](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_19) 🐻 Animal Crossing by [Metacritic](https://www.metacritic.com/game/switch/animal-crossing-new-horizons/critic-reviews)
 ![./plots/2020_19/2020_19_AnimalCrossing_alt_100.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_19/2020_19_AnimalCrossing_alt_100.png)
 ![./plots/2020_19/2020_19_AnimalCrossing.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_19/2020_19_AnimalCrossing.png)
 
 ***
 
-### [2020/18](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_18) 🎭️ Broadway Musicals (RTFM Edition) by [Playbill](https://www.playbill.com/grosses)
+### [Week 2020/18](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_18) 🎭️ Broadway Musicals (RTFM Edition) by [Playbill](https://www.playbill.com/grosses)
 ![./plots/2020_18/2020_18_BroadwayMusicals.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_18/2020_18_BroadwayMusicals.png)
 
 ***
 
-### [2020/16](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_16) 🎙️ Best Hip-Hop Songs of All Time by [BBC Music](http://www.bbc.com/culture/story/20191007-the-greatest-hip-hop-songs-of-all-time-who-voted)
+### [Week 2020/16](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_16) 🎙️ Best Hip-Hop Songs of All Time by [BBC Music](http://www.bbc.com/culture/story/20191007-the-greatest-hip-hop-songs-of-all-time-who-voted)
 ![./plots/2020_16/2020_16_BestRapArtists.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_16/2020_16_BestRapArtists.png)
 
 ***
