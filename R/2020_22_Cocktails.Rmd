@@ -1,0 +1,239 @@
+---
+title: "TidyTuesday 2020/22 - Cocktails by Kaggle"
+author: "Cedric Scherer"
+date: "29th of May 2020"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE}
+## packages
+library(tidyverse)
+library(rvest)
+library(xml2)
+library(tidytext)
+library(widyr)
+library(igraph)
+library(tidygraph)
+library(ggraph)
+library(cowplot)
+library(showtext)
+
+font_add_google("Lobster", "Lobster")
+font_add_google("Overpass", "Overpass")
+font_add_google("Overpass Mono", "Overpass Mono")
+
+showtext_auto()
+
+## ggplot theme
+theme_set(theme_void(base_family = "Overpass"))
+
+theme_update(
+  plot.margin = margin(15, 15, 15, 15),
+  plot.background = element_rect(fill = "grey20", color = "grey20"),
+  plot.title = element_text(family = "Lobster", color = "#E8DCAD", size = 30),
+  plot.subtitle = element_text(color = "grey50", size = 13, lineheight = 1.1, margin = margin(t = 15)),
+  plot.caption = element_text(color = "#7851C8", size = 10, hjust = .5, margin = margin(b = 0))
+)
+```
+
+```{r data}
+df_cocktails <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/cocktails.csv')
+
+df_boston <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/boston_cocktails.csv')
+```
+
+```{r data-prep}
+## scrape top 50 cocktails from vinepair.com
+df_top <- 
+  read_html("https://vinepair.com/articles/50-most-popular-cocktails-world-2017/") %>% 
+  html_node("body") %>% 
+  xml_find_all("//h3") %>% 
+  html_text() %>% 
+  as_tibble() %>% 
+  separate(value, into = c("rank", "drink"), sep = "\\. ") %>% 
+  filter(!is.na(drink)) %>% 
+  mutate(
+    rank = as.numeric(rank),
+    drink = case_when(
+      drink == "Corpse Reviver No. 1" ~ "Corpse Reviver", 
+      drink == "Old Cuban" ~ "The Old Cuban",
+      drink == "Ramos Gin Fizz" ~ "New Orleans Gin Fizz",
+      drink == "Vieux Carré" ~ "Carre Reprise",
+      TRUE ~ drink)
+  )
+
+## top cocktails with ingredients
+df_cocktails_top <-
+  df_boston %>% 
+  dplyr::select(drink = name, ingredient, ingredient_number) %>% 
+  mutate(
+    drink = case_when(
+      drink == "Blood and Sand" ~ "Blood & Sand", 
+      drink == "Rum Old-Fashioned" ~ "Rum Old Fashioned",
+      TRUE ~ drink
+    ),
+    data = "boston"
+  ) %>% 
+  full_join(
+    df_cocktails %>%
+      dplyr::select(drink, ingredient, ingredient_number) %>%
+      mutate(
+        drink = case_when(
+          drink == "Spritz" ~ "Aperol Spritz",
+          drink == "Dark and Stormy" ~ "Dark ’N’ Stormy",
+          drink == "Pina Colada" ~ "Piña Colada",
+          drink == "Tommy's Margarita" ~ "Tommy’s Margarita",
+          TRUE ~ drink
+        ),
+        data = "cocktails"
+      )
+  ) %>%
+  full_join(df_top) %>% 
+  filter(!is.na(rank), !is.na(ingredient))
+
+## similarity of recipes
+df_cocktails_sim <-
+  df_cocktails_top %>% 
+  pivot_wider(
+    names_from = ingredient_number,
+    values_from = ingredient,
+    names_prefix = "ingredient_no_"
+  ) %>% 
+  group_by(drink) %>% 
+  arrange(desc(data)) %>% 
+  slice(1) %>% 
+  ungroup() %>% 
+  unite(
+    "ingredients", 
+    starts_with("ingredient_no_"),
+    sep = " "
+  ) %>% 
+  mutate(ingredients = str_remove_all(ingredients, "NA\\s|\\sNA")) %>%
+  unnest_tokens(word, ingredients) %>%
+  anti_join(stop_words, by = "word") %>%
+  count(rank, word) %>% 
+  pairwise_similarity(rank, word, n, upper = F, sort = T)
+
+graph_tbl <- 
+  df_cocktails_sim %>%
+  as_tbl_graph() 
+```
+
+```{r plots, fig.width = 17, fig.height = 12}
+set.seed(1) #202022
+layout <- create_layout(graph_tbl, layout = 'igraph', algorithm = 'nicely')
+
+net <-
+  ggraph(layout) +
+    geom_edge_link(
+      color = "grey40",
+      edge_width = .2,
+      show.legend = FALSE
+    ) +
+    geom_node_point(
+      aes(
+        fill = -as.numeric(name),
+        fill = after_scale(colorspace::lighten(fill, .3, space = "HLS")),
+        color = after_scale(colorspace::darken(fill, .1, space = "HLS")), 
+        size = -as.numeric(name)
+      ),
+      shape = 21,
+      stroke = 1.5
+    ) +
+    geom_node_text(
+      aes(
+        color = as.numeric(name) > 29,
+        label = as.numeric(name)
+      ), 
+      family = "Lobster",
+      fontface = "bold",
+      size = 3.5,
+      vjust = .5, 
+      hjust = .5
+    ) +
+    scale_color_manual(
+      values = c("#5834A5", "#E8DCAD"), ## colorspace::lighten(c("#4B2C8C", "#E6D8A4"), .1, space = "HLS")
+      guide = F
+    ) +
+    rcartocolor::scale_fill_carto_c(
+      palette = "ag_Sunset",
+      guide = F
+    ) +
+    scale_size(
+      range = c(8, 18),
+      guide = F
+    ) +
+    labs(caption = "Visualization by Cédric Scherer  •  Annual List of the World’s Best-Selling Classic Cocktails by Drinks International  •  Ingredient Data by Mr. Boston Bartender's Guide & Kaggle")
+
+ranks <-
+  df_top %>% 
+  full_join(df_cocktails_top) %>% 
+  count(drink, rank, data) %>% 
+  mutate(rank_na = if_else(is.na(data), NA_real_, rank)) %>% 
+  ggplot() +
+    geom_text(
+      aes(
+        x = .95, y = rank,
+        label = glue::glue("{rank}."),
+        color = rank_na,
+        color = after_scale(colorspace::lighten(color, .3, space = "HLS"))
+      ),
+      family = "Overpass Mono",
+      fontface = "bold",
+      size = 3.5,
+      hjust = 1
+    ) +
+    geom_text(
+      aes(
+        x = 1, y = rank,
+        label = drink,
+        color = rank_na,
+        color = after_scale(colorspace::lighten(color, .3, space = "HLS"))
+      ),
+      family = "Overpass",
+      fontface = "bold",
+      size = 3.5,
+      hjust = 0
+    ) +
+    scale_x_continuous(limits = c(0, 4)) +
+    scale_y_reverse() +
+    rcartocolor::scale_color_carto_c(
+      palette = "ag_Sunset",
+      na.value = "grey35",
+      direction = -1,
+      guide = F
+    ) +
+    theme_void()
+
+title <-
+  ggplot(tibble(x = 1:10, y = 1:10)) +
+    labs(
+      title = "How Similar are the 50 Most Popular Cocktails in the World in 2020?",
+      subtitle = 'Now that many bars are serving drinks again all around the world after lockdowns due to the COVID-19 pandemic, you might want to take this\nopportunity to finally taste the world´s best classic cocktails of 2020!\n\nThe latest "Annual List of the World’s Best-Selling Classic Cocktails", based on a survey by Drinks International. The trade publication for the\nalcoholic industry surveyed the best bars around the globe, asking them to rank the 10 best-selling classic cocktails at their establishments.\nThe network below shows the similarity of ingredients of 41 cocktails from this list that were also contained in the two data sets from Kaggle.\nIn case you want to try a popular but unusual drink with regards to the recipe: Go order an "Amaretto Sour", a "Paloma" or an "Aperol Spritz"\nas the cocktail of your choice next time you are visiting a bar together with your partner or friends!'
+    )
+
+ggdraw(net) +
+  draw_plot(ranks, .84, .985, .2, .7, hjust = 0, vjust = 1) +
+  draw_plot(title, .03, .985, 0, .7, hjust = 0, vjust = 1)
+
+ggsave(here::here("plots", "2020_22", "2020_22_Cocktails.pdf"), 
+       width = 17, height = 12, device = cairo_pdf)
+
+pdftools::pdf_convert(here::here("plots", "2020_22", "2020_22_Cocktails.pdf"),
+                      format = "png", dpi = 200)
+```
+
+***
+
+```{r session}
+sessionInfo()
+```
