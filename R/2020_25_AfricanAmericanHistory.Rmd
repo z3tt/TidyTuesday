@@ -1,0 +1,312 @@
+---
+title: "TidyTuesday 2020/25 - African-American Hiostory by U.S. Census's Archives,"
+author: "Cedric Scherer"
+date: "21th of June 2020"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE}
+## packages
+library(tidyverse)
+library(gggibbous)
+library(fiftystater)
+library(ggtext)
+library(showtext)
+
+font_add_google("Copse", "Copse")
+font_add_google("Staatliches", "Staatliches")
+showtext_auto()
+
+## ggplot theme
+theme_set(theme_void(base_family = "Copse"))
+```
+
+```{r data}
+df_census <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-16/census.csv")
+df_routes <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-06-16/slave_routes.csv")
+```
+
+```{r data-prep}
+df_census_moon <-
+  df_census %>% 
+  filter(region != "USA Total") %>% 
+  mutate(region = if_else(region == "South", "South", "Rest")) %>% 
+  group_by(region, year) %>% 
+  summarise(
+    black = sum(black, na.rm = T),
+    total = sum(total, na.rm = T),
+    slaves_perc = sum(black_slaves, na.rm = T) / sum(black, na.rm = T),
+    free_perc = 1 - slaves_perc,
+    prop = black / total
+  )  %>% 
+  pivot_longer(
+    cols = ends_with("_perc"),
+    names_to = "group",
+    values_to = "ratio"
+  ) %>% 
+  mutate(right = group == "free_perc") 
+```
+
+```{r moon-chart}
+moon_chart <- 
+  df_census_moon %>% 
+  ggplot(aes(year, black)) + 
+    geom_curve(
+      data = tibble(
+        x = c(1820, 1793),
+        xend = c(1810, 1790),
+        y = c(3285344, 6.8*10^6),
+        yend = c(5.9*10^6, 134848),
+        region = c("South", "Rest")
+      ),
+      aes(
+        x = x, xend = xend,
+        y = y, yend = yend,
+        color = region
+      ),
+      curvature = 0.45,
+      size = .7,
+      linetype = "dotted"
+    ) +
+    geom_line(
+      aes(
+        color = region, 
+        color = after_scale(colorspace::lighten(color, .8, space = "HLS"))
+      ),
+      size = 2
+    ) +
+    geom_point(
+      aes(color = region),
+      size = 18.7
+    ) +
+    geom_moon(
+      aes(
+        ratio = ratio, 
+        right = right, 
+        fill = group
+      ),
+      color = "transparent",
+      size = 17
+    ) +
+    geom_text(
+      data = df_census_moon %>% 
+        filter(group == "free_perc", year < 1870, region == "South"),
+      aes(
+        label = glue::glue("{round(ratio * 100, 0)}%"),
+        color = region
+      ),
+      family = "Copse",
+      fontface = "bold",
+      size = 4,
+      hjust = 0,
+      nudge_x = 2.7,
+      nudge_y = -170000
+    ) +
+    geom_text(
+      data = df_census_moon %>% 
+        filter(group == "free_perc", year < 1870, region != "South"),
+      aes(
+        label = glue::glue("{round(ratio * 100, 0)}%"),
+        color = region
+      ),
+      family = "Copse",
+      fontface = "bold",
+      size = 4,
+      hjust = 0,
+      nudge_x = 2.3,
+      nudge_y = 250000
+    ) +
+    geom_text(
+      data = df_census_moon %>% 
+        filter(group == "free_perc", year == 1870),
+      aes(
+        label = glue::glue("{round(ratio * 100, 0)}%"),
+        color = region,
+        vjust = as.numeric(as.factor(region)) - 1
+      ),
+      family = "Copse",
+      fontface = "bold",
+      size = 5.7,
+      hjust = 0,
+      nudge_x = 2.7
+    ) +
+    annotate(
+      "text",
+      x = 1877,
+      y = 9.3*10^6,
+      label = "        Black\n  Population",
+      family = "Copse",
+      color = "grey40",
+      size = 4.5,
+      lineheight = .8,
+      hjust = 0,
+      vjust = 0
+    ) +
+    coord_cartesian(clip = "off") +
+    scale_x_continuous(
+      expand = c(.03, .03),
+      limits = c(1789.7, 1877),
+      breaks = seq(1790, 1870, by = 10)
+    ) +
+    scale_y_continuous(
+      expand = c(.05, .05),
+      breaks = seq(0, 10^7, by = 10^6),
+      labels = c("  0", glue::glue("  {1:10}M")),
+      position = "right"
+    ) +
+    scale_color_manual(
+      values = c("grey60", "grey20"),
+      guide = F
+    ) +
+    scale_fill_manual(
+      values = c("#FFD54E", "#A80002"),
+      guide = F
+    ) +
+    labs(
+      # text partly from https://www.history.com/news/slavery-profitable-southern-economy
+      title = 'An Economy Built on <b style="color:#A80002">Slavery</b>',
+      subtitle = 'By 1680, property owners in the south of the United States began establishing plantation farms for cash crops like tobacco, cotton, and sugar cane—enterprises that required<br>increasing amounts of labor. To meet the need, wealthy planters became slave traders and imported ever more humans to the colonies, the vast majority from West Africa.<br>While the "Emancipation Proclamation" was made law as of 1863, slave owners in the South, namely Texas, still maintained slavery until <b>June 19<sup>th</sup> 1865</b> when Union soldiers<br>were able to enforce the law abolishing slavery in the region. The graphic below shows the share of <b style="color:#A80002">black humans in slavery</b>, <b style="color:#333333">most of them enslaved in the Southern states</b> and<br><b style="color:#FFC91B">black humans living in freedom</b> per decade from 1790 to 1870—the first U.S. census after the Liberation Day known as "Juneteenth".',
+      caption = '<b style="font-size:20pt;color:#333333;font-family:Staatliches">#JUNETEENTH #BLACKLIVESMATTER</b><br>Graphic: Cédric Scherer  •  Source: U.S. Census Bureau'
+    )  +
+    theme(
+      axis.text.x = element_text(color = "grey40", size = 15, face = "bold"),
+      axis.text.y = element_text(color = "grey40", size = 11, hjust = 0),
+      panel.grid.major.y = element_line(color = "grey92", size = .5),
+      plot.background = element_rect(color = "#333333", size = 2, fill = "white"),
+      plot.margin = margin(20, 50, 20, 60),
+      plot.title = element_markdown(family = "Staatliches", color = "#333333", 
+                                    size = 36, face = "bold",
+                                    margin = margin(t = 15, b = 10)),
+      plot.subtitle = element_markdown(color = "grey60", size = 11, lineheight = 1.5,
+                                       margin = margin(t = 0, b = -3)),
+      plot.caption = element_markdown(color = "grey60", size = 10, 
+                                      hjust = .5, vjust = .5, lineheight = 1.5,
+                                      margin = margin(t = 35, b = 0)),
+      plot.title.position = "plot"
+    )
+```
+
+```{r inset-map}
+map_regions <- 
+  fifty_states %>%
+  as_tibble() %>%
+  mutate(
+    state = str_to_title(id),
+    ## regions according to
+    ## https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf
+    region = if_else(
+      state %in% c(
+        "Delaware", 
+        "District Of Columbia",
+        "Florida",
+        "Georgia",
+        "Maryland", 
+        "North Carolina", 
+        "South Carolina", 
+        "Virginia", 
+        "West Virginia", 
+        "Alabama", 
+        "Kentucky", 
+        "Mississippi", 
+        "Tennessee", 
+        "Arkansas", 
+        "Louisiana", 
+        "Oklahoma",
+        "Texas"
+      ),
+      "South",
+      "Rest"
+    )
+  ) %>% 
+  ggplot(aes(map_id = id)) + 
+    geom_map(
+      fill = "white",
+      color = "white",
+      map = fifty_states,
+      lwd = 2.5
+    ) + 
+    geom_map(
+      aes(
+        color = region,
+        fill = region
+      ), 
+      map = fifty_states,
+      lwd = .03
+    ) + 
+    annotate(
+      "text",
+      x = -91, 
+      y = 33.5, 
+      label = "Southern states",
+      family = "Copse",
+      color = "white",
+      size = 4.8,
+      fontface = "bold"
+    ) +
+    annotate(
+      "text",
+      x = -105, 
+      y = 43, 
+      label = "All other states",
+      family = "Copse",
+      color = "white",
+      size = 4.8,
+      fontface = "bold"
+    ) +
+    annotate(
+      "text",
+      x = -105, 
+      y = 41.3, 
+      label = "(Northeast, Midwest & West)",
+      family = "Copse",
+      color = "white",
+      size = 4
+    ) +
+    expand_limits(
+      x = fifty_states$long, 
+      y = fifty_states$lat
+    ) +
+    coord_map() +
+    #fifty_states_inset_boxes() +
+    scale_color_manual(
+      values = c("grey60", "grey20"),
+      guide = F
+    ) +
+    scale_fill_manual(
+      values = c("grey60", "grey20"),
+      guide = F
+    ) +
+    theme_void()
+```
+
+```{r panel, fig.width = 13.5, fig.height = 10.2}
+moon_chart + 
+  annotation_custom(
+    ggplotGrob(map_regions), 
+    xmin = 1782.5, xmax = 1824.5, 
+    ymin = 4.1*10^6, ymax = 8.1*10^6
+  )
+
+ggsave(here::here("plots", "2020_25", "2020_25_AmericanSlavery.pdf"), 
+       width = 13.5, height = 10.2, device = cairo_pdf)
+
+pdftools::pdf_convert(here::here("plots", "2020_25", "2020_25_AmericanSlavery.pdf"),
+                      format = "png", dpi = 500)
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
