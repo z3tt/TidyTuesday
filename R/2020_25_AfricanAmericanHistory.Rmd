@@ -173,8 +173,8 @@ moon_chart <-
     ) +
     labs(
       # text partly from https://www.history.com/news/slavery-profitable-southern-economy
-      title = 'An Economy Built on <b style="color:#A80002">Slavery</b>',
-      subtitle = 'By 1680, property owners in the south of the United States began establishing plantation farms for cash crops like tobacco, cotton, and sugar cane—enterprises that required<br>increasing amounts of labor. To meet the need, wealthy planters became slave traders and imported ever more humans to the colonies, the vast majority from West Africa.<br>While the "Emancipation Proclamation" was made law as of 1863, slave owners in the South, namely Texas, still maintained slavery until <b>June 19<sup>th</sup> 1865</b> when Union soldiers<br>were able to enforce the law abolishing slavery in the region. The graphic below shows the share of <b style="color:#A80002">black humans in slavery</b>, <b style="color:#333333">most of them enslaved in the Southern states</b> and<br><b style="color:#FFC91B">black humans living in freedom</b> per decade from 1790 to 1870—the first U.S. census after the Liberation Day known as "Juneteenth".',
+      title = 'An Economy Built on <b style="color:#A80002">Slavery</b>—A Future Build on <b style="color:#FFC91B">Freedom</b>?',
+      subtitle = 'By 1680, property owners in the south of the United States began establishing plantation farms for cash crops like tobacco, cotton, and sugar cane—enterprises that required<br>increasing amounts of labor. To meet the need, wealthy planters became slave traders and imported ever more humans to the colonies, the vast majority from West Africa.<br>While the "Emancipation Proclamation" was made law as of 1863, slave owners in the South, namely Texas, still maintained slavery until <b>June 19<sup>th</sup> 1865</b> when Union soldiers<br>were able to enforce the law abolishing slavery in the region. The graphic below shows the share of <b style="color:#A80002">black humans in slavery</b>, <b style="color:#333333">most of them enslaved in the Southern states</b>, and<br><b style="color:#FFC91B">black humans living in freedom</b> per decade from 1790 to 1870—the first U.S. census after the Liberation Day known as "Juneteenth".',
       caption = '<b style="font-size:20pt;color:#333333;font-family:Staatliches">#JUNETEENTH #BLACKLIVESMATTER</b><br>Graphic: Cédric Scherer  •  Source: U.S. Census Bureau'
     )  +
     theme(
@@ -184,7 +184,7 @@ moon_chart <-
       plot.background = element_rect(color = "#333333", size = 2, fill = "white"),
       plot.margin = margin(20, 50, 20, 60),
       plot.title = element_markdown(family = "Staatliches", color = "#333333", 
-                                    size = 36, face = "bold",
+                                    size = 40, face = "bold",
                                     margin = margin(t = 15, b = 10)),
       plot.subtitle = element_markdown(color = "grey60", size = 11, lineheight = 1.5,
                                        margin = margin(t = 0, b = -3)),
@@ -288,7 +288,7 @@ map_regions <-
     theme_void()
 ```
 
-```{r panel, fig.width = 13.5, fig.height = 10.2}
+```{r panel, fig.width = 13.8, fig.height = 10.5}
 moon_chart + 
   annotation_custom(
     ggplotGrob(map_regions), 
@@ -297,7 +297,7 @@ moon_chart +
   )
 
 ggsave(here::here("plots", "2020_25", "2020_25_AmericanSlavery.pdf"), 
-       width = 13.5, height = 10.2, device = cairo_pdf)
+       width = 13.8, height = 10.5, device = cairo_pdf)
 
 pdftools::pdf_convert(here::here("plots", "2020_25", "2020_25_AmericanSlavery.pdf"),
                       format = "png", dpi = 500)
