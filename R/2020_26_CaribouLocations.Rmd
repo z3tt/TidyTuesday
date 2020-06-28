@@ -1,7 +1,7 @@
 ---
 title: "TidyTuesday 2020/26 - Carribou Locations by Movebank"
 author: "Cedric Scherer"
-date: "25th of June 2020"
+date: "28th of June 2020"
 output:
   html_document:
     theme: paper
