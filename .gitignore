@@ -2,8 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
-*plots/_all/
+/plots/_all/*
 *.pdf
-*html/
+/html/*
 *_secret.Rmd
 *_secret.png
+/data/2020_26/*
