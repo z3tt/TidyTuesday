@@ -1,7 +1,7 @@
 ---
-title: "TidyTuesday 2020/25 - African-American Hiostory by U.S. Census's Archives,"
+title: "TidyTuesday 2020/25 - African-American Hiostory by U.S. Census's Archives"
 author: "Cedric Scherer"
-date: "21th of June 2020"
+date: "21st of June 2020"
 output:
   html_document:
     theme: paper
