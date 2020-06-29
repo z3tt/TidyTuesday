@@ -74,7 +74,7 @@ moon_chart <-
         color = region
       ),
       curvature = 0.45,
-      size = .7,
+      size = .9,
       linetype = "dotted"
     ) +
     geom_line(
@@ -298,10 +298,10 @@ moon_chart +
     ymin = 2.3*10^6, ymax = 4.3*10^6
   )
 
-ggsave(here::here("plots", "2020_25", "2020_25_AmericanSlavery.pdf"), 
+ggsave(here::here("plots", "2020_25", "2020_25_AmericanSlavery2.pdf"), 
        width = 13.8, height = 10.5, device = cairo_pdf)
 
-pdftools::pdf_convert(here::here("plots", "2020_25", "2020_25_AmericanSlavery.pdf"),
+pdftools::pdf_convert(here::here("plots", "2020_25", "2020_25_AmericanSlavery2.pdf"),
                       format = "png", dpi = 500)
 ```
 
