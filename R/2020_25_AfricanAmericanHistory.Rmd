@@ -38,7 +38,7 @@ df_routes <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/
 ```{r data-prep}
 df_census_moon <-
   df_census %>% 
-  filter(region != "USA Total") %>% 
+  filter(region != "USA Total", is.na(division)) %>% 
   mutate(region = if_else(region == "South", "South", "Rest")) %>% 
   group_by(region, year) %>% 
   summarise(
@@ -64,8 +64,8 @@ moon_chart <-
       data = tibble(
         x = c(1820, 1793),
         xend = c(1810, 1790),
-        y = c(3285344, 6.8*10^6),
-        yend = c(5.9*10^6, 134848),
+        y = c(1642672, 3.4*10^6),
+        yend = c(2.9*10^6, 67424),
         region = c("South", "Rest")
       ),
       aes(
@@ -142,7 +142,7 @@ moon_chart <-
     annotate(
       "text",
       x = 1877,
-      y = 9.3*10^6,
+      y = 5.15*10^6,
       label = "        Black\n  Population",
       family = "Copse",
       color = "grey40",
@@ -159,8 +159,8 @@ moon_chart <-
     ) +
     scale_y_continuous(
       expand = c(.05, .05),
-      breaks = seq(0, 10^7, by = 10^6),
-      labels = c("  0", glue::glue("  {1:10}M")),
+      breaks = seq(0, 5*10^6, by = 10^6),
+      labels = c(" 0", glue::glue(" {1:5}M")),
       position = "right"
     ) +
     scale_color_manual(
@@ -174,7 +174,7 @@ moon_chart <-
     labs(
       # text partly from https://www.history.com/news/slavery-profitable-southern-economy
       title = 'An Economy Built on <b style="color:#A80002">Slavery</b>—A Future Build on <b style="color:#FFC91B">Freedom</b>?',
-      subtitle = 'By 1680, property owners in the south of the United States began establishing plantation farms for cash crops like tobacco, cotton, and sugar cane—enterprises that required<br>increasing amounts of labor. To meet the need, wealthy planters became slave traders and imported ever more humans to the colonies, the vast majority from West Africa.<br>While the "Emancipation Proclamation" was made law as of 1863, slave owners in the South, namely Texas, still maintained slavery until <b>June 19<sup>th</sup> 1865</b> when Union soldiers<br>were able to enforce the law abolishing slavery in the region. The graphic below shows the share of <b style="color:#A80002">black humans in slavery</b>, <b style="color:#333333">most of them enslaved in the Southern states</b>, and<br><b style="color:#FFC91B">black humans living in freedom</b> per decade from 1790 to 1870—the first U.S. census after the Liberation Day known as "Juneteenth".',
+      subtitle = 'By 1680, property owners in the south of North America began establishing plantation farms for cash crops like tobacco, cotton, and sugar cane—enterprises that required<br>increasing amounts of labor. To meet the need, wealthy planters became slave traders and imported ever more individuals to the colonies, the vast majority from West Africa.<br>While the "Emancipation Proclamation" was made law as of 1863, slave owners in the South, namely Texas, still maintained slavery until <b>June 19<sup>th</sup> 1865</b> when Union soldiers<br>were able to enforce the law abolishing slavery in the region. The graphic below shows the share of <b style="color:#A80002">black people in slavery</b>, <b style="color:#333333">most of them enslaved in the Southern states</b>, and<br><b style="color:#FFC91B">black people living in freedom</b> per decade from 1790 to 1870—the first U.S. census after the Liberation Day known as "Juneteenth".',
       caption = '<b style="font-size:20pt;color:#333333;font-family:Staatliches">#JUNETEENTH #BLACKLIVESMATTER</b><br>Graphic: Cédric Scherer  •  Source: U.S. Census Bureau'
     )  +
     theme(
@@ -227,6 +227,8 @@ map_regions <-
       "Rest"
     )
   ) %>% 
+  ## remove Alaska and Hawaii again since it makes nop sense back then (according to Reddit comments)
+  filter(!id %in% c("alaska", "hawaii")) %>% 
   ggplot(aes(map_id = id)) + 
     geom_map(
       fill = "white",
@@ -293,7 +295,7 @@ moon_chart +
   annotation_custom(
     ggplotGrob(map_regions), 
     xmin = 1782.5, xmax = 1824.5, 
-    ymin = 4.1*10^6, ymax = 8.1*10^6
+    ymin = 2.3*10^6, ymax = 4.3*10^6
   )
 
 ggsave(here::here("plots", "2020_25", "2020_25_AmericanSlavery.pdf"), 
