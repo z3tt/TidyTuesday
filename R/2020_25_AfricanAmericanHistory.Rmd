@@ -80,7 +80,7 @@ moon_chart <-
     geom_line(
       aes(
         color = region, 
-        color = after_scale(colorspace::lighten(color, .8, space = "HLS"))
+        color = after_scale(colorspace::lighten(color, .6, space = "HLS"))
       ),
       size = 2
     ) +
@@ -164,7 +164,7 @@ moon_chart <-
       position = "right"
     ) +
     scale_color_manual(
-      values = c("grey60", "grey20"),
+      values = c("grey65", "grey20"),
       guide = F
     ) +
     scale_fill_manual(
@@ -186,9 +186,9 @@ moon_chart <-
       plot.title = element_markdown(family = "Staatliches", color = "#333333", 
                                     size = 40, face = "bold",
                                     margin = margin(t = 15, b = 10)),
-      plot.subtitle = element_markdown(color = "grey60", size = 11, lineheight = 1.5,
+      plot.subtitle = element_markdown(color = "grey65", size = 11, lineheight = 1.5,
                                        margin = margin(t = 0, b = -3)),
-      plot.caption = element_markdown(color = "grey60", size = 10, 
+      plot.caption = element_markdown(color = "grey65", size = 10, 
                                       hjust = .5, vjust = .5, lineheight = 1.5,
                                       margin = margin(t = 35, b = 0)),
       plot.title.position = "plot"
@@ -280,11 +280,11 @@ map_regions <-
     coord_map() +
     #fifty_states_inset_boxes() +
     scale_color_manual(
-      values = c("grey60", "grey20"),
+      values = c("grey65", "grey20"),
       guide = F
     ) +
     scale_fill_manual(
-      values = c("grey60", "grey20"),
+      values = c("grey65", "grey20"),
       guide = F
     ) +
     theme_void()
@@ -298,10 +298,10 @@ moon_chart +
     ymin = 2.3*10^6, ymax = 4.3*10^6
   )
 
-ggsave(here::here("plots", "2020_25", "2020_25_AmericanSlavery2.pdf"), 
+ggsave(here::here("plots", "2020_25", "2020_25_AmericanSlavery.pdf"), 
        width = 13.8, height = 10.5, device = cairo_pdf)
 
-pdftools::pdf_convert(here::here("plots", "2020_25", "2020_25_AmericanSlavery2.pdf"),
+pdftools::pdf_convert(here::here("plots", "2020_25", "2020_25_AmericanSlavery.pdf"),
                       format = "png", dpi = 500)
 ```
 
