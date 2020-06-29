@@ -6,7 +6,7 @@ output:
   html_document:
     theme: paper
     highlight: kate
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
@@ -30,21 +30,21 @@ font_add_google("Merriweather", "Merriweather")
 ```{r data, message = F}
 filelist <- list.files(path = ".", pattern = "produkt_klima*", recursive = T)
 
-datalist <- filelist %>% 
+datalist <- filelist %>%
    purrr::map(~ readr::read_delim(., delim = ";"))
 
 data <- purrr::map2_dfr(
-  datalist, filelist, function(x, y) 
+  datalist, filelist, function(x, y)
     dplyr::select(
       x,
       station_id = STATIONS_ID,
-      date = MESS_DATUM, 
+      date = MESS_DATUM,
       snow_cm = "SHK_TAG"
-    ) %>% 
+    ) %>%
     mutate_all(as.numeric)
   )
 
-df_dahlem <- data %>% 
+df_dahlem <- data %>%
   mutate(
     date = lubridate::ymd(date),
     year = lubridate::year(date),
@@ -56,22 +56,22 @@ df_dahlem <- data %>%
       month %in% c(12, 1:2) ~ "Winter"
     ),
     t_avg = if_else(t_avg < -50, NA_real_, t_avg)
-  ) %>% 
-  group_by(date) %>% 
+  ) %>%
+  group_by(date) %>%
   summarize_all(first)
 ```
 
 ```{r}
 df_snow <-
-  df_dahlem %>% 
-  dplyr::select(date, snow_cm, year, month) %>% 
+  df_dahlem %>%
+  dplyr::select(date, snow_cm, year, month) %>%
   mutate(
-    day = lubridate::day(date), 
+    day = lubridate::day(date),
     winter_year = if_else(month < 7, year - 1, year),
     winter_month = if_else(month < 7, month + 6, month - 6)
-  ) %>% 
-  filter(!(day == 29 & month == 2)) %>% 
-  group_by(winter_year) %>% 
+  ) %>%
+  filter(!(day == 29 & month == 2)) %>%
+  group_by(winter_year) %>%
   mutate(
     winter_day = row_number(),
     snow_cm = if_else(snow_cm < 0, 0, snow_cm),
@@ -79,16 +79,16 @@ df_snow <-
     snow_add = if_else(snow_add < 0, 0, snow_add),
     snow_day = if_else(snow_add < 1, 0, 1),
     snow_day = if_else(is.na(snow_day), 0, snow_day)
-  ) 
+  )
 
 df_first_snow <-
   df_snow %>%
   filter(
-    winter_year > 1890, 
+    winter_year > 1890,
     winter_year < 2019,
     winter_year != 1945
-  ) %>% 
-  group_by(winter_year) %>% 
+  ) %>%
+  group_by(winter_year) %>%
   summarize(
     first_snow = min(winter_day[snow_day > 0]),
     last_snow = max(winter_day[snow_day > 0]),
@@ -98,15 +98,15 @@ df_first_snow <-
   )
 
 df_all_snow <-
-  df_snow %>% 
+  df_snow %>%
   filter(
-    winter_year > 1890, 
+    winter_year > 1890,
     winter_year < 2019,
     winter_year != 1945,
     snow_cm > 0
-  ) %>% 
-  mutate(xmas_snow = max(if_else(winter_day == 177 & snow_cm > 0, 1, 0))) %>% 
-  group_by(winter_year) %>% 
+  ) %>%
+  mutate(xmas_snow = max(if_else(winter_day == 177 & snow_cm > 0, 1, 0))) %>%
+  group_by(winter_year) %>%
   slice(-1)  ## rm first day of snow -> snow flake not |
 
 labs <-
@@ -133,24 +133,24 @@ arrows <-
     y = c(147.4, 264, 268, 133)
   )
 
-df_first_snow %>% 
+df_first_snow %>%
   ggplot(aes(winter_year, first_snow)) +
-    geom_smooth(color = "grey10", 
-                alpha = 0.1, 
+    geom_smooth(color = "grey10",
+                alpha = 0.1,
                 size = 0.8) +
-    geom_hline(yintercept = 177, 
-               size = 1.3, 
+    geom_hline(yintercept = 177,
+               size = 1.3,
                color = "#0e390e") +
-    geom_point(data = df_all_snow, 
-               aes(winter_year, winter_day, 
-                   color = as.factor(xmas_snow)), 
-               size = 0.68, 
-               shape = "|") + 
-    geom_text(aes(color = as.factor(xmas_snow), 
+    geom_point(data = df_all_snow,
+               aes(winter_year, winter_day,
+                   color = as.factor(xmas_snow)),
+               size = 0.68,
+               shape = "|") +
+    geom_text(aes(color = as.factor(xmas_snow),
                   size = snow_sum),
-             family = "EmojiOne", 
-             label = emoji('snowflake'), 
-             vjust = 0.25) + 
+             family = "EmojiOne",
+             label = emoji('snowflake'),
+             vjust = 0.25) +
     geom_text(aes(2019, 176),
               label = "?",
               family = "Merriweather",
@@ -173,13 +173,13 @@ df_first_snow %>%
     scale_x_continuous(limits = c(NA, 2019),
                        breaks = c(1891, seq(1900, 2010, by = 10), 2019),
                        labels = c("1891/92", "1900/01", "1910/11", "1920/21", "1930/31",
-                                  "1940/41", "1950/51", "1960/61", "1970/71", "1980/81", 
+                                  "1940/41", "1950/51", "1960/61", "1970/71", "1980/81",
                                   "1990/91", "2000/01", "2010/11", "2019/20"),
                        expand = c(0.014, 0.014)) +
     scale_y_continuous(limits = c(105, 305),
-                       breaks = c(124, 154, 177, 185, 216, 244, 275, 305), 
-                       labels = c("1st of November", "1st of December", "Christmas", 
-                                  "New Year's Day", "1st of February", "1st of March", 
+                       breaks = c(124, 154, 177, 185, 216, 244, 275, 305),
+                       labels = c("1st of November", "1st of December", "Christmas",
+                                  "New Year's Day", "1st of February", "1st of March",
                                   "1st of April", "1st of May"),
                        expand = c(0.001, 0.001),
                        sec.axis = dup_axis()) +
@@ -213,14 +213,14 @@ df_first_snow %>%
                                       color = "grey50",
                                       hjust = 0.5,
                                       margin = margin(t = 20, b = 10)),
-          plot.background = element_rect(fill = "grey10", 
+          plot.background = element_rect(fill = "grey10",
                                          color = "grey10"),
-          panel.background = element_rect(fill = "grey10", 
+          panel.background = element_rect(fill = "grey10",
                                           color = "grey10"),
-          panel.grid.major.y = element_line(color = "grey15", 
+          panel.grid.major.y = element_line(color = "grey15",
                                             size = 0.15))
 
-ggsave(here::here("plots", "2020_01", "2020_01_WhiteXmasBerlin.pdf"), 
+ggsave(here::here("plots", "2020_01", "2020_01_WhiteXmasBerlin.pdf"),
        width = 18, height = 9.5, device = cairo_pdf)
 ```
 

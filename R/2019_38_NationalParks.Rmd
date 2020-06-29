@@ -9,7 +9,7 @@ highlight: kate
 editor_options:
   chunk_output_type: console
 ---
-  
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = F)
 ```
@@ -30,14 +30,14 @@ font_add_google("Roboto Mono", "Roboto Mono")
 ## ggplot theme updates
 theme_set(theme_bw(base_family = "Lobster"))
 
-theme_update(rect = element_rect(fill = "#e8d8c3", 
+theme_update(rect = element_rect(fill = "#e8d8c3",
                                  color = "#e8d8c3"),
              panel.grid.major = element_blank(),
              panel.grid.minor = element_blank(),
-             panel.background = element_rect(fill = "#e8d8c3", 
+             panel.background = element_rect(fill = "#e8d8c3",
                                              color = NA),
              panel.border = element_blank(),
-             plot.background = element_rect(fill = "#e8d8c3", 
+             plot.background = element_rect(fill = "#e8d8c3",
                                             color = "#e8d8c3"),
              axis.ticks = element_blank(),
              axis.text = element_blank(),
@@ -45,34 +45,34 @@ theme_update(rect = element_rect(fill = "#e8d8c3",
              legend.position = c(0.5, 0.875),
              legend.title = element_text(size = 13),
              legend.text = element_text(family = "Montserrat"),
-             plot.title = element_text(size = 30, 
-                                       face = "bold", 
-                                       hjust = 0.5, 
+             plot.title = element_text(size = 30,
+                                       face = "bold",
+                                       hjust = 0.5,
                                        margin = margin(t = 10, b = 0)),
-             plot.subtitle = element_text(size = 18, 
-                                          color = "grey55", 
-                                          face = "bold", 
-                                          hjust = 0.5, 
+             plot.subtitle = element_text(size = 18,
+                                          color = "grey55",
+                                          face = "bold",
+                                          hjust = 0.5,
                                           margin = margin(t = 0, b = 15)),
-             plot.caption = element_text(size = 12, 
-                                         color = "grey55", 
-                                         hjust = 0.5, 
+             plot.caption = element_text(size = 12,
+                                         color = "grey55",
+                                         hjust = 0.5,
                                          margin = margin(t = 15, b = 10)))
 ```
 
 ```{r}
-df_nps <- 
+df_nps <-
   readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-17/national_parks.csv")
 
 df_states <-
-  readr::read_csv(here::here("data", "50_us_states_all_data.csv"), 
-                  col_names = F) %>% 
-  dplyr::select(state = "X2", ISO2 = "X3")%>% 
+  readr::read_csv(here::here("data", "2019_38", "50_us_states_all_data.csv"),
+                  col_names = F) %>%
+  dplyr::select(state = "X2", ISO2 = "X3")%>%
   add_row(state = "District of Colombia", ISO2 = "DC")
 ```
 
 ```{r}
-map_hex <- geojson_read(here::here("data", "us_states_hexgrid.geojson.json"),  what = "sp")
+map_hex <- geojson_read(here::here("data", "2019_38", "us_states_hexgrid.geojson.json"),  what = "sp")
 
 map_hex@data <-
   map_hex@data %>%
@@ -82,17 +82,17 @@ map_hex@data <-
 map_hex_fortified <- tidy(map_hex, region = "google_name")
 
 ## centroids for labels
-centroids <- cbind.data.frame(data.frame(gCentroid(map_hex, byid = T), 
+centroids <- cbind.data.frame(data.frame(gCentroid(map_hex, byid = T),
                                          id = map_hex@data$iso3166_2,
                                          id_long = str_wrap(map_hex@data$google_name, 12)))
- 
+
 ## number of NPs and visitors since 2010
 df_nps_sum <-
-  df_nps %>% 
-  mutate(year = as.numeric(year)) %>% 
-  filter(year > 1999) %>% 
-  group_by(state) %>% 
-  replace_na(list(visitors = 0)) %>% 
+  df_nps %>%
+  mutate(year = as.numeric(year)) %>%
+  filter(year > 1999) %>%
+  group_by(state) %>%
+  replace_na(list(visitors = 0)) %>%
   summarize(
     n = n_distinct(unit_name),
     visitors = sum(visitors, na.rm = T),
@@ -102,36 +102,36 @@ df_nps_sum <-
 
 ## change of visitor rates 90s versus 10s
 df_nps_change <-
-  df_nps %>% 
-  mutate(decade = year %/% 10 * 10) %>% 
-  filter(decade %in% c(1990, 2000)) %>% 
-  group_by(decade, state) %>% 
-  summarize(visitors = sum(visitors, na.rm = T)) %>% 
-  pivot_wider(names_from = decade, values_from = visitors) %>% 
+  df_nps %>%
+  mutate(decade = year %/% 10 * 10) %>%
+  filter(decade %in% c(1990, 2000)) %>%
+  group_by(decade, state) %>%
+  summarize(visitors = sum(visitors, na.rm = T)) %>%
+  pivot_wider(names_from = decade, values_from = visitors) %>%
   mutate(change = (`2000` / `1990`), change_log = log2(change))
-  
+
 ## combine data
-df_nps_hex <- 
+df_nps_hex <-
   map_hex_fortified %>%
-  left_join(df_states, by = c("id" = "state")) %>% 
-  left_join(df_nps_sum, by = c("ISO2" = "state")) %>% 
+  left_join(df_states, by = c("id" = "state")) %>%
+  left_join(df_nps_sum, by = c("ISO2" = "state")) %>%
   left_join(df_nps_change, by = c("ISO2" = "state"))
 ```
 
 ```{r}
 hex_nps <-
-  df_nps_hex %>% 
-  replace_na(list(n = 0)) %>% 
+  df_nps_hex %>%
+  replace_na(list(n = 0)) %>%
   ggplot() +
-    geom_polygon(aes(long, lat, 
-                     group = group, 
-                     fill = n), 
+    geom_polygon(aes(long, lat,
+                     group = group,
+                     fill = n),
                  color = "white") +
-    geom_text(data = centroids, 
+    geom_text(data = centroids,
               aes(x = x, y = y + 0.35, label = id),
               family = "Montserrat",
               fontface = "bold") +
-    geom_text(data = centroids, 
+    geom_text(data = centroids,
               aes(x = x, y = y - 0.3, label = id_long),
               family = "Montserrat",
               color = "grey30",
@@ -155,11 +155,11 @@ hex_nps <-
 
 hex_visits <-
   ggplot(df_nps_hex) +
-    geom_polygon(aes(long, lat, 
-                     group = group, 
-                     fill = visitors_m), 
+    geom_polygon(aes(long, lat,
+                     group = group,
+                     fill = visitors_m),
                  color = "white") +
-    geom_text(data = centroids, 
+    geom_text(data = centroids,
               aes(x = x, y = y, label = id),
               family = "Montserrat",
               color = "grey50",
@@ -176,19 +176,19 @@ hex_visits <-
                                  title.position = "top",
                                  title.hjust = 0.5))
 
-hex_change <- 
+hex_change <-
   ggplot(df_nps_hex) +
-    geom_polygon(aes(long, lat, 
-                     group = group, 
-                     fill = change_log), 
+    geom_polygon(aes(long, lat,
+                     group = group,
+                     fill = change_log),
                  color = "white") +
-    geom_text(data = centroids, 
+    geom_text(data = centroids,
               aes(x = x, y = y, label = id),
               family = "Montserrat",
               color = "grey50",
               fontface = "bold") +
     coord_map() +
-    rcartocolor::scale_fill_carto_c(palette = "Temps", 
+    rcartocolor::scale_fill_carto_c(palette = "Temps",
                                     name = "Change in Visitor Numbers (1990s to 2000s)",
                                     direction = -1,
                                     limits = c(-2, 2),
@@ -204,10 +204,10 @@ hex_change <-
 ```
 
 ```{r full-panel}
-hex_nps / plot_spacer() / hex_visits / plot_spacer() / hex_change + 
+hex_nps / plot_spacer() / hex_visits / plot_spacer() / hex_change +
   plot_layout(heights = c(1, 0.05, 1, 0.05, 1))
 
-ggsave(here::here("plots", "2019_38", "2019_38_NationalParks.pdf"), 
+ggsave(here::here("plots", "2019_38", "2019_38_NationalParks.pdf"),
        width = 8, height = 16.5, device = cairo_pdf)
 ```
 

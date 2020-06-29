@@ -9,7 +9,7 @@ highlight: kate
 editor_options:
   chunk_output_type: console
 ---
-  
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = F)
 ```
@@ -34,18 +34,18 @@ theme_update(rect = element_rect(fill = "#f2eadf"),
              axis.text = element_blank(),
              axis.title = element_blank(),
              axis.ticks = element_blank(),
-             panel.border = element_rect(color = "grey55", 
+             panel.border = element_rect(color = "grey55",
                                          size = 2))
 ```
 
 ```{r data}
 df_squirrels <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-29/nyc_squirrels.csv")
 
-cp <- sf::read_sf(dsn = here::here("data", "shp_CentralPark", "CentralPark.shp"), layer = "CentralPark")
+cp <- sf::read_sf(dsn = here::here("data", "2019_44", "shp_CentralPark", "CentralPark.shp"), layer = "CentralPark")
 ```
 
 ```{r map-squirrel-density}
-map_density <- 
+map_density <-
   ggplot(df_squirrels) +
     geom_sf(data = cp, color = "grey70") +
     geom_point(aes(long, lat), size = 1.8, color = "grey55") +
@@ -54,23 +54,23 @@ map_density <-
                                       size = 1.2) +
     scale_x_continuous(limits = c(-73.982, -73.9495)) +
     scale_y_continuous(limits = c(40.7648, 40.8)) +
-    rcartocolor::scale_color_carto_c(palette = "Sunset", 
+    rcartocolor::scale_color_carto_c(palette = "Sunset",
                                      direction = -1,
                                      breaks = c(4, 44.5, 86),
                                      labels = c("low", "**<span style='font-family:Cambria'>←  </span> Clustering of Sightings <span style='font-family:Cambria'>  →</span>**", "high"),
                                      name = "Squirrel Sightings\nin NYC's Central Park",
                                      guide = guide_colorbar(direction = "horizontal",
-                                                            barheight = unit(3, units = "mm"), 
+                                                            barheight = unit(3, units = "mm"),
                                                             barwidth = unit(100, units = "mm"),
-                                                            draw.ulim = FALSE, 
+                                                            draw.ulim = FALSE,
                                                             ticks.colour = "transparent",
                                                             title.position = 'top',
-                                                            title.hjust = 0.5, 
+                                                            title.hjust = 0.5,
                                                             label.hjust = 0.5)) +
-    
-    annotate("text", x = -73.9625, y = 40.786, 
+
+    annotate("text", x = -73.9625, y = 40.786,
              label = "Jacqueline Kennedy\nOnassis Reservoir",
-             family = "Alice", fontface = "bold", 
+             family = "Alice", fontface = "bold",
              color = "#2e85b0", size = 4.5) +  ## 580000 in combination with palette = "Burg"
     labs(caption = "  Visualization by Cédric Scherer • Data: NYC Squirrel Census • Map: OpenStreetMap") +
     theme(legend.position = c(0.295, 0.9),
@@ -79,32 +79,32 @@ map_density <-
                                      face = "bold",
                                      color = "grey40",
                                      lineheight = 1.025,
-                                     margin = margin(b = 4)), 
+                                     margin = margin(b = 4)),
           legend.text = element_markdown(family = "Alice",
                                      size = 15,
                                      color = "grey40"),
-          legend.background = element_rect(fill = "#f2eadf", 
-                                           color = "grey55", 
+          legend.background = element_rect(fill = "#f2eadf",
+                                           color = "grey55",
                                            size = 1.2),
           legend.margin = margin(7, 9, 7, 9, "mm"),
-          plot.caption = element_text(family = "Alice", 
-                                      color = "grey40", 
+          plot.caption = element_text(family = "Alice",
+                                      color = "grey40",
                                       hjust = 0),
           plot.margin = margin(12, 6, 12, 18),
           panel.background = element_rect(fill = "grey90", colour = NA))
 ```
 
 ```{r map-fur-color}
-map_fur <- 
-  df_squirrels %>% 
-  filter(!is.na(primary_fur_color)) %>% 
-  mutate(primary_fur_color = glue::glue("{primary_fur_color} Squirrels")) %>% 
+map_fur <-
+  df_squirrels %>%
+  filter(!is.na(primary_fur_color)) %>%
+  mutate(primary_fur_color = glue::glue("{primary_fur_color} Squirrels")) %>%
   ggplot() +
     geom_sf(data = cp, color = "grey70", size = 0.3) +
-    geom_point(aes(long, lat, 
+    geom_point(aes(long, lat,
                    fill = primary_fur_color,
                    alpha = primary_fur_color),
-               shape = 21, color = "grey20", 
+               shape = 21, color = "grey20",
                size = 1.2, stroke = 0.2) +
     scale_x_continuous(limits = c(-73.982, -73.9495)) +
     scale_y_continuous(limits = c(40.7648, 40.8)) +
@@ -115,7 +115,7 @@ map_fur <-
     facet_grid(primary_fur_color~.) +
     theme(strip.background = element_rect(fill = "transparent",
                                           color = "transparent"),
-          strip.text.y = element_text(family = "Alice", 
+          strip.text.y = element_text(family = "Alice",
                                       color = "grey55",
                                       size = 22,
                                       face = "bold",
@@ -128,44 +128,44 @@ map_fur <-
 ```{r full-panel, fig.width = 13, fig.height = 12.8}
 map_density + map_fur + plot_layout(widths = c(1, 0.4))
 
-ggsave(here::here("plots", "2019_44", "2019_44_Squirrels.pdf"), 
+ggsave(here::here("plots", "2019_44", "2019_44_Squirrels.pdf"),
        width = 13, height = 12.8, device = cairo_pdf)
 ```
 
 ## Hex map
 
 ```{r hex-map, fig.width = 11.5, fig.height = 12}
-img_a <- png::readPNG(here::here("img", "compass.png")) 
-a <- grid::rasterGrob(img_a, interpolate = T) 
+img_a <- png::readPNG(here::here("img", "compass.png"))
+a <- grid::rasterGrob(img_a, interpolate = T)
 
-ggplot(df_squirrels) + 
-  geom_hex(aes(long, lat, color = ..count..), size = 0.03) + 
-  coord_fixed() + 
-  scale_x_continuous(labels = scales::unit_format(accuracy = 0.01, sep = "", unit = "°W"), 
-                     position = "top") + 
+ggplot(df_squirrels) +
+  geom_hex(aes(long, lat, color = ..count..), size = 0.03) +
+  coord_fixed() +
+  scale_x_continuous(labels = scales::unit_format(accuracy = 0.01, sep = "", unit = "°W"),
+                     position = "top") +
   scale_y_continuous(labels = scales::unit_format(accuracy = 0.01, sep = "", unit = "°N")) +
-  rcartocolor::scale_color_carto_c(palette = "Sunset", 
-                                   name = "Number of Squirrels Counted\nin NYC's Central Park", 
+  rcartocolor::scale_color_carto_c(palette = "Sunset",
+                                   name = "Number of Squirrels Counted\nin NYC's Central Park",
                                    breaks = c(1,seq(5, 40, by = 5)),
-                                   guide = guide_colorbar(barheight = unit(5, units = "mm"), 
+                                   guide = guide_colorbar(barheight = unit(5, units = "mm"),
                                                           barwidth = unit(120, units = "mm"),
                                                           direction = "horizontal",
                                                           title.position = "top",
                                                           title.hjust = 0.5)) +
   rcartocolor::scale_fill_carto_c(palette = "Sunset", guide = F) +
-  annotate("text", x = -73.963, y = 40.786, 
+  annotate("text", x = -73.963, y = 40.786,
              label = "Jacqueline Kennedy\nOnassis Reservoir",
-             family = "Alice", fontface = "bold", 
+             family = "Alice", fontface = "bold",
              color = "#2e85b0", size = 4.5) +
   annotation_custom(a, xmin = -73.957, xmax = -73.953, ymin = 40.773, ymax = 40.777) +
-  labs(x = NULL, y = NULL, caption = "\nVisualization by Cédric Scherer • Data by NYC Squirrel Census") + 
-  theme_light() + 
+  labs(x = NULL, y = NULL, caption = "\nVisualization by Cédric Scherer • Data by NYC Squirrel Census") +
+  theme_light() +
   theme(axis.text = element_text(family = "Roboto Mono", size = 15, color = "grey50"),
-        panel.grid.minor = element_blank(), 
+        panel.grid.minor = element_blank(),
         plot.caption = element_text(family = "Alice", size = 13, color = "grey50"),
-        legend.position = c(0.28, 0.86), 
-        legend.title = element_text(size = 25, family = "Alice", face = "bold"), 
-        legend.text = element_text(family = "Alice", size = 20, color = "grey50"), 
+        legend.position = c(0.28, 0.86),
+        legend.title = element_text(size = 25, family = "Alice", face = "bold"),
+        legend.text = element_text(family = "Alice", size = 20, color = "grey50"),
         legend.background = element_rect(fill = NA))
 
 ggsave(here::here("plots", "2019_44", "2019_44_Squirrels_hex.pdf"), width = 11.5, height = 12, device = cairo_pdf)
@@ -176,4 +176,3 @@ ggsave(here::here("plots", "2019_44", "2019_44_Squirrels_hex.pdf"), width = 11.5
 ```{r session-info}
 sessionInfo()
 ```
-

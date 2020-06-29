@@ -9,7 +9,7 @@ highlight: kate
 editor_options:
   chunk_output_type: console
 ---
-  
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = F)
 ```
@@ -29,7 +29,7 @@ font_add_google("Playfair Display", "Playfair Display")
 ## ggplot theme
 theme_set(theme_minimal(base_family = "Fira Sans"))
 
-theme_update(plot.background = element_rect(fill = "transparent", 
+theme_update(plot.background = element_rect(fill = "transparent",
                                             color = "transparent"),
              panel.background = element_rect(fill = NA, color = NA),
              panel.grid = element_blank(),
@@ -62,9 +62,9 @@ theme_update(plot.background = element_rect(fill = "transparent",
 ```{r data}
 df_food <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-02-18/food_consumption.csv')
 
-countries <- readr::read_csv(here::here("data", "countryContinent.csv")) %>% 
-  mutate(country = str_replace(country, "\\s\\(.*", "")) %>% 
-  mutate(country = str_replace(country, "\\,.*", "")) %>% 
+countries <- readr::read_csv(here::here("data", "2020_08", "countryContinent.csv")) %>%
+  mutate(country = str_replace(country, "\\s\\(.*", "")) %>%
+  mutate(country = str_replace(country, "\\,.*", "")) %>%
   mutate(
     country = case_when(
       country == "United Kingdom of Great Britain and Northern Ireland" ~ "United Kingdom",
@@ -82,24 +82,24 @@ countries <- readr::read_csv(here::here("data", "countryContinent.csv")) %>%
     )
   )
 
-df_food_cont <- 
-  df_food %>% 
+df_food_cont <-
+  df_food %>%
   mutate(country = case_when(
     country == "Hong Kong SAR. China" ~ "Hong Kong",
     country == "Taiwan. ROC" ~ "Taiwan",
     TRUE ~ country
-  )) %>% 
-  left_join(countries) %>% 
+  )) %>%
+  left_join(countries) %>%
   mutate(
     total_consumption = sum(consumption, na.rm = T),
     total_emmission = sum(co2_emmission, na.rm = T),
-  ) %>% 
-  group_by(continent) %>% 
+  ) %>%
+  group_by(continent) %>%
   mutate(
     cont_consumption = sum(consumption, na.rm = T) / total_consumption,
     cont_emmission = sum(co2_emmission, na.rm = T) / total_emmission
-  ) %>% 
-  group_by(continent, country, cont_consumption, cont_emmission, total_consumption, total_emmission) %>% 
+  ) %>%
+  group_by(continent, country, cont_consumption, cont_emmission, total_consumption, total_emmission) %>%
   summarize(
     count_consumption = sum(consumption, na.rm = T) / unique(total_consumption),
     count_emmission = sum(co2_emmission, na.rm = T) / unique(total_emmission)
@@ -112,8 +112,8 @@ df_food_cont <-
 
 ```{r plot-consumption}
 df_consumption <-
-  df_food_cont %>% 
-  arrange(cont_consumption, count_consumption) %>% 
+  df_food_cont %>%
+  arrange(cont_consumption, count_consumption) %>%
   mutate(
     pos = cumsum(count_consumption),
     pos = if_else(!is.na(lag(pos)), pos - ((pos - lag(pos)) / 2), pos / 2),
@@ -121,105 +121,105 @@ df_consumption <-
     hjust = if_else(angle > 90, 0, 1),
     angle = ifelse(angle > 90, angle + 180, angle),
     label_big = if_else(
-      country %in% (top_frac(df_food_cont, n = .5, wt = count_consumption) %>% pull(country)), 
+      country %in% (top_frac(df_food_cont, n = .5, wt = count_consumption) %>% pull(country)),
       country, NA_character_
     ),
     label_small = if_else(
-      country %in% (top_frac(df_food_cont, n = .5, wt = -count_consumption) %>% pull(country)), 
+      country %in% (top_frac(df_food_cont, n = .5, wt = -count_consumption) %>% pull(country)),
       country, NA_character_
     )
-  ) %>% 
-  mutate(continent = fct_reorder(factor(continent), -cont_consumption)) %>% 
-  mutate(country = fct_reorder2(factor(country), as.numeric(continent), count_consumption, .desc = F)) %>% 
+  ) %>%
+  mutate(continent = fct_reorder(factor(continent), -cont_consumption)) %>%
+  mutate(country = fct_reorder2(factor(country), as.numeric(continent), count_consumption, .desc = F)) %>%
   group_by(continent) %>%
-  arrange(count_consumption) %>% 
+  arrange(count_consumption) %>%
   mutate(
     alpha = count_consumption / max(count_consumption),
     pos_cont = min(pos) + (max(pos) - min(pos)) / 2,
     angle_cont = 90 - 360 * (pos_cont - 0.5),# / n(),
     hjust_cont = if_else(angle_cont > 90, 0, 1),
     angle_cont = ifelse(angle_cont > 90, angle_cont + 180, angle_cont)
-  ) 
+  )
 
 plot_c <-
-  df_consumption %>% 
+  df_consumption %>%
   ggplot(aes(1, count_consumption)) +
     geom_col(
       aes(
-        fill = continent, 
-        alpha = alpha, 
-        #color = after_scale(colorspace::darken(fill, .2)), 
+        fill = continent,
+        alpha = alpha,
+        #color = after_scale(colorspace::darken(fill, .2)),
         fill = after_scale(colorspace::lighten(fill, .3))
-      ), 
+      ),
       color = "white",
       size = .5
     ) +
     geom_col(
-      aes(fill = continent, 
-          color = after_scale(colorspace::lighten(fill, .5))), 
+      aes(fill = continent,
+          color = after_scale(colorspace::lighten(fill, .5))),
       width = .4,
       size = .5
     ) +
     geom_rect(
-      xmin = -Inf, xmax = .8, 
-      ymin = -Inf, ymax = Inf, 
+      xmin = -Inf, xmax = .8,
+      ymin = -Inf, ymax = Inf,
       fill = "white"
     ) +
-    geom_text(aes(1.475, pos, 
-                  label = label_big, 
+    geom_text(aes(1.475, pos,
+                  label = label_big,
                   color = continent,
                   color = after_scale(colorspace::darken(color, .3)),
                   alpha = sqrt(alpha),
-                  angle = angle, 
+                  angle = angle,
                   hjust = hjust,
                   size = count_consumption^2),
-              family = "Fira Sans", 
+              family = "Fira Sans",
               fontface = "bold") +
-    geom_text(aes(1.475, pos, 
-                  label = label_small, 
+    geom_text(aes(1.475, pos,
+                  label = label_small,
                   color = continent,
                   color = after_scale(colorspace::darken(color, .3)),
                   alpha = sqrt(alpha),
-                  angle = angle, 
+                  angle = angle,
                   hjust = hjust,
                   size = count_consumption^2),
-              family = "Fira Sans", 
+              family = "Fira Sans",
               fontface = "plain") +
     geom_text(data = df_consumption %>% filter(continent == "Oceania") %>% summarize(pos_cont = unique(pos_cont)),
-              aes(1, pos_cont, 
-                  label = continent, 
+              aes(1, pos_cont,
+                  label = continent,
                   color = continent,
                   color = after_scale(colorspace::darken(color, .3))),
               family = "Fira Sans",
               fontface = "bold",
-              size = 6.2, 
+              size = 6.2,
               lineheight = .9,
               hjust = .45,
               vjust = .5) +
     geom_text(data = df_consumption %>% filter(continent != "Oceania") %>% group_by(continent) %>% summarize(pos_cont = unique(pos_cont)),
-              aes(1, pos_cont, 
-                  label = continent, 
+              aes(1, pos_cont,
+                  label = continent,
                   color = continent,
                   color = after_scale(colorspace::darken(color, .3))),
               family = "Fira Sans",
               fontface = "bold",
-              size = 8.7, 
+              size = 8.7,
               lineheight = .9,
               hjust = .5,
               vjust = .5) +
-    coord_polar(theta = "y") + 
+    coord_polar(theta = "y") +
     scale_x_continuous(limits = c(0, 1.9)) +
     scale_color_carto_d(palette = "Peach", direction = -1, guide = F) +
-    scale_fill_carto_d(palette = "Peach", direction = -1, guide = F) + 
+    scale_fill_carto_d(palette = "Peach", direction = -1, guide = F) +
     scale_alpha(range = c(.3, 1), guide = F) +
     scale_size(range = c(.7, 14), guide = F)
 
 plot_consumption <-
-  ggdraw(plot_c) + 
-  draw_image(here::here("img", "spoon_birthday_mod.png"), 
-             x = .5, y = .5013, 
-             hjust = .5, vjust = .5, 
-             width = 0.31, height = 0.31) 
+  ggdraw(plot_c) +
+  draw_image(here::here("img", "spoon_birthday_mod.png"),
+             x = .5, y = .5013,
+             hjust = .5, vjust = .5,
+             width = 0.31, height = 0.31)
 ```
 
 
@@ -227,8 +227,8 @@ plot_consumption <-
 
 ```{r plot-emission}
 df_emmission <-
-  df_food_cont %>% 
-  arrange(cont_emmission, count_emmission) %>% 
+  df_food_cont %>%
+  arrange(cont_emmission, count_emmission) %>%
   mutate(
     pos = cumsum(count_emmission),
     pos = if_else(!is.na(lag(pos)), pos - ((pos - lag(pos)) / 2), pos / 2),
@@ -236,68 +236,68 @@ df_emmission <-
     hjust = if_else(angle > 90, 0, 1),
     angle = ifelse(angle > 90, angle + 180, angle),
     label_big = if_else(
-      country %in% (top_frac(df_food_cont, n = .5, wt = count_emmission) %>% pull(country)), 
+      country %in% (top_frac(df_food_cont, n = .5, wt = count_emmission) %>% pull(country)),
       country, NA_character_
     ),
     label_small = if_else(
-      country %in% (top_frac(df_food_cont, n = .5, wt = -count_emmission) %>% pull(country)), 
+      country %in% (top_frac(df_food_cont, n = .5, wt = -count_emmission) %>% pull(country)),
       country, NA_character_
     )
-  ) %>% 
-  mutate(continent = fct_reorder(factor(continent), -cont_emmission)) %>% 
-  mutate(country = fct_reorder2(factor(country), as.numeric(continent), count_emmission, .desc = F)) %>% 
+  ) %>%
+  mutate(continent = fct_reorder(factor(continent), -cont_emmission)) %>%
+  mutate(country = fct_reorder2(factor(country), as.numeric(continent), count_emmission, .desc = F)) %>%
   group_by(continent) %>%
-  arrange(count_emmission) %>% 
+  arrange(count_emmission) %>%
   mutate(
     alpha = count_emmission / max(count_emmission),
     pos_cont = min(pos) + (max(pos) - min(pos)) / 2,
     angle_cont = 90 - 360 * (pos_cont - 0.5),# / n(),
     hjust_cont = if_else(angle_cont > 90, 0, 1),
     angle_cont = ifelse(angle_cont > 90, angle_cont + 180, angle_cont)
-  ) 
+  )
 
 plot_e <-
-  df_emmission %>% 
+  df_emmission %>%
   ggplot(aes(1, count_emmission)) +
     geom_col(
       aes(
-        fill = continent, 
-        alpha = alpha, 
+        fill = continent,
+        alpha = alpha,
         fill = after_scale(colorspace::lighten(fill, .3))
-      ), 
+      ),
       color = "white",
       size = .5
     ) +
     geom_col(
-      aes(fill = continent, 
-          color = after_scale(colorspace::lighten(fill, .5))), 
+      aes(fill = continent,
+          color = after_scale(colorspace::lighten(fill, .5))),
       width = .4,
       size = .5
     ) +
     geom_rect(
-      xmin = -Inf, xmax = .8, 
-      ymin = -Inf, ymax = Inf, 
+      xmin = -Inf, xmax = .8,
+      ymin = -Inf, ymax = Inf,
       fill = "white"
     ) +
-    geom_text(aes(1.475, pos, 
-                  label = label_big, 
+    geom_text(aes(1.475, pos,
+                  label = label_big,
                   color = continent,
                   color = after_scale(colorspace::darken(color, .3)),
                   alpha = sqrt(alpha),
-                  angle = angle, 
+                  angle = angle,
                   hjust = hjust,
                   size = count_emmission^2),
-              family = "Fira Sans", 
+              family = "Fira Sans",
               fontface = "bold") +
-    geom_text(aes(1.475, pos, 
-                  label = label_small, 
+    geom_text(aes(1.475, pos,
+                  label = label_small,
                   color = continent,
                   color = after_scale(colorspace::darken(color, .3)),
                   alpha = sqrt(alpha),
-                  angle = angle, 
+                  angle = angle,
                   hjust = hjust,
                   size = count_emmission^2),
-              family = "Fira Sans", 
+              family = "Fira Sans",
               fontface = "plain") +
     geom_text(data = df_emmission %>% filter(continent == "Oceania") %>% summarize(pos_cont = unique(pos_cont)),
               aes(1, pos_cont,
@@ -321,18 +321,18 @@ plot_e <-
               lineheight = .9,
               hjust = .5,
               vjust = .5) +
-    coord_polar(theta = "y") + 
+    coord_polar(theta = "y") +
     scale_x_continuous(limits = c(0, 1.9)) +
     scale_color_carto_d(palette = "TealGrn", direction = -1, guide = F) +
-    scale_fill_carto_d(palette = "TealGrn", direction = -1, guide = F) + 
+    scale_fill_carto_d(palette = "TealGrn", direction = -1, guide = F) +
     scale_alpha(range = c(.3, 1), guide = F) +
-    scale_size(range = c(.7, 14), guide = F) 
+    scale_size(range = c(.7, 14), guide = F)
 
 plot_emmission <-
-  ggdraw(plot_e) + 
-  draw_image(here::here("img", "co2_mod.png"), 
-             x = .5007, y = .5014, 
-             hjust = .5, vjust = .5, 
+  ggdraw(plot_e) +
+  draw_image(here::here("img", "co2_mod.png"),
+             x = .5007, y = .5014,
+             hjust = .5, vjust = .5,
              width = 0.315, height = 0.315)
 ```
 
@@ -340,11 +340,11 @@ plot_emmission <-
 
 ```{r panel, fig.width = 40, fig.height = 26.8}
 p_consumption <-
-  plot_consumption + 
+  plot_consumption +
   theme(plot.margin = margin(0, -160, 0, 0))
 
 p_emmission <-    
-  plot_emmission + 
+  plot_emmission +
   theme(plot.margin = margin(0, 0, 0, -160))
 
 p_consumption + p_emmission +
@@ -352,8 +352,8 @@ p_consumption + p_emmission +
                   subtitle = "Global comparison of different diets in terms of <span style='color:#dd4840;'><b>Average Consumption</b> (kg/person/year)</span> of both animal and non-animal products<br>as well as <span style='color:#2f7091;'><b>Carbon Emissions</b> (kg CO<sub>2</sub>/person/year)</span> per continent and country. Font size and color intensity indicate each country's<br>estimate with <b>countries printed in bold</b> belonging to the upper 50% of consumers and CO<sub>2</sub> emissioners, respectively.",
                   caption = "Visualization by Cédric Scherer  •  Data by Food and Agriculture Organization of the United Nations (FAO) via nu3  •  Icons by FreePik")
 
-ggsave(here::here("plots", "2020_08", "2020_08_Carbon_Foodprint_alt.pdf"), 
-       width = 40, height = 26.8, device = cairo_pdf) 
+ggsave(here::here("plots", "2020_08", "2020_08_Carbon_Foodprint_alt.pdf"),
+       width = 40, height = 26.8, device = cairo_pdf)
 ```
 
 
@@ -362,4 +362,3 @@ ggsave(here::here("plots", "2020_08", "2020_08_Carbon_Foodprint_alt.pdf"),
 ```{r session-info}
 sessionInfo()
 ```
-

@@ -9,7 +9,7 @@ highlight: kate
 editor_options:
   chunk_output_type: console
 ---
-  
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = F, fig.showtext = T, fig.retina = 1)
 ```
@@ -43,44 +43,44 @@ df_volcano <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience
 df_eruptions <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-12/eruptions.csv')
 
 df_eruptions <-
-  df_eruptions %>% 
+  df_eruptions %>%
   filter(volcano_number %in% unique(df_volcano$volcano_number))
 
-map <- 
+map <-
   rnaturalearth::ne_countries(
     scale = 110,
     returnclass = "sf"
-  ) %>% 
+  ) %>%
   sf::st_transform(crs = "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs")
 
 
 sf_volcano <-
-  df_volcano %>% 
+  df_volcano %>%
   st_as_sf(
     coords = c("longitude", "latitude"),
     crs = 4326
-  ) %>% 
+  ) %>%
   st_transform(crs = st_crs(map))
-  
-plates <- sf::read_sf(here::here("data", "tectonicplates-master", "PB2002_plates.shp")) %>% 
+
+plates <- sf::read_sf(here::here("data", "2020_20", "PB2002_plates.shp")) %>%
   st_transform(crs = st_crs(map))
 ```
 
 ```{r distributions}
-v <- 
-  df_volcano %>% 
+v <-
+  df_volcano %>%
   ggplot(aes(longitude)) +
     geom_density(
-      color = colorspace::darken("#ffc922", .2, space ="HLS"), 
-      fill = "#ffc922", 
+      color = colorspace::darken("#ffc922", .2, space ="HLS"),
+      fill = "#ffc922",
       alpha = .6,
       size = .3,
       bw = .5
     ) +
     ggforce::geom_mark_circle(
       aes(
-        x = 140, 
-        y = .019, 
+        x = 140,
+        y = .019,
         label = "Highest number of volcanos   "
       ),
       color = "transparent",
@@ -104,30 +104,30 @@ v <-
     ) +
     theme(
       panel.background = element_rect(
-        color = "transparent", 
+        color = "transparent",
         fill = "transparent"
       ),
       plot.background = element_rect(
-        color = "transparent", 
+        color = "transparent",
         fill = "transparent"
       ),
       plot.margin = margin(b = -1.4)
     )
 
-e <- 
-  df_eruptions %>% 
+e <-
+  df_eruptions %>%
   ggplot(aes(longitude)) +
     geom_density(
-      color = colorspace::darken("#cf1020", .2, space ="HLS"), 
-      fill = "#cf1020", 
+      color = colorspace::darken("#cf1020", .2, space ="HLS"),
+      fill = "#cf1020",
       alpha = .6,
       size = .3,
       bw = .5
     ) +
     ggforce::geom_mark_circle(
       aes(
-        x = 138.8, 
-        y = .029, 
+        x = 138.8,
+        y = .029,
         label = "Highest number of eruptions   "
       ),
       color = "transparent",
@@ -151,11 +151,11 @@ e <-
     ) +
     theme(
       panel.background = element_rect(
-        color = "transparent", 
+        color = "transparent",
         fill = "transparent"
       ),
       plot.background = element_rect(
-        color = "transparent", 
+        color = "transparent",
         fill = "transparent"
       ),
       plot.margin = margin(t = -1.4)
@@ -163,10 +163,10 @@ e <-
 ```
 
 ```{r map, fig.width = 12, fig.height = 6.55}
-m <- 
-  ggplot(map) + 
+m <-
+  ggplot(map) +
     geom_sf(
-      color = "transparent", 
+      color = "transparent",
       fill = "#F3F0ED"
     ) +
     geom_sf(
@@ -174,7 +174,7 @@ m <-
       fill = "transparent",
       color = "#E4DCD5",
       size = .3
-    ) + 
+    ) +
     geom_sf(
       data = sf_volcano,
       shape = 21,
@@ -192,9 +192,9 @@ m <-
 
 ggdraw(m) +
   draw_plot(v, .5, .653, 1.007, .365, hjust = .5, vjust = 0) +
-  draw_plot(e, .5, .6472, 1.007, .555, hjust = .5, vjust = 1) 
+  draw_plot(e, .5, .6472, 1.007, .555, hjust = .5, vjust = 1)
 
-ggsave(here::here("plots", "2020_20", "2020_20_Volcanoes.pdf"), 
+ggsave(here::here("plots", "2020_20", "2020_20_Volcanoes.pdf"),
        width = 12, height = 6.55, device = cairo_pdf)
 
 pdftools::pdf_convert(here::here("plots", "2020_20", "2020_20_Volcanoes.pdf"),
@@ -213,7 +213,7 @@ sp_world <-  ne_countries(returnclass = 'sp')
 shift <- 180 + 20
 
 # create "split line" to split polygons
-split <- 
+split <-
   SpatialLines(
     list(Lines(list(Line(cbind(180 - shift, c(-90, 90)))),
          ID = "line")),
@@ -229,49 +229,49 @@ bf <- gBuffer(line, byid = T, width = 0.000001)
 # split country polygons using intersecting thin polygon (buffer)
 sp_world_split <- gDifference(sp_world, bf, byid = T)
 
-map_split <- 
-  sp_world_split %>% 
-  st_as_sf() %>% 
+map_split <-
+  sp_world_split %>%
+  st_as_sf() %>%
   st_transform(crs = "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=160 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs")
 
 ## plates               
-# sp_plates <- sf::read_sf(here::here("data", "tectonicplates-master", "PB2002_plates.shp")) %>% 
-#   st_transform(crs = st_crs(bf)) %>% 
+# sp_plates <- sf::read_sf(here::here("data", "2020_20", "PB2002_plates.shp")) %>%
+#   st_transform(crs = st_crs(bf)) %>%
 #   as(., "Spatial")
 #          
 # line <- gIntersection(split, sp_plates)
 # bf <- gBuffer(line, byid = T, width = 0.000001)  
 #       
 # sp_plates_split <- gDifference(sp_plates, bf)
-# 
-# plates_split <- 
-#   sp_plates_split %>% 
-#   st_as_sf() %>% 
+#
+# plates_split <-
+#   sp_plates_split %>%
+#   st_as_sf() %>%
 #   st_transform(crs = "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=160 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs")
 
 sf_volcano <-
-  df_volcano %>% 
+  df_volcano %>%
   st_as_sf(
     coords = c("longitude", "latitude"),
     crs = 4326
-  ) %>% 
+  ) %>%
   st_transform(crs = st_crs(map_split))
 
 
 ## distribuitions
-v <- 
-  df_volcano %>% 
+v <-
+  df_volcano %>%
   mutate(
     longitude = if_else(
       longitude < -20,
-      360 + longitude, 
+      360 + longitude,
       longitude
     )
-  ) %>% 
+  ) %>%
   ggplot(aes(longitude)) +
     geom_density(
-      color = colorspace::darken("#ffc922", .2, space ="HLS"), 
-      fill = "#ffc922", 
+      color = colorspace::darken("#ffc922", .2, space ="HLS"),
+      fill = "#ffc922",
       alpha = .6,
       size = .3,
       bw = .5
@@ -303,37 +303,37 @@ v <-
     ) +
     theme(
       panel.background = element_rect(
-        color = "transparent", 
+        color = "transparent",
         fill = "transparent"
       ),
       plot.background = element_rect(
-        color = "transparent", 
+        color = "transparent",
         fill = "transparent"
       ),
       plot.margin = margin(b = -1.4)
     )
 
-e <- 
-  df_eruptions %>% 
+e <-
+  df_eruptions %>%
   mutate(
     longitude = if_else(
       longitude < -20,
-      360 + longitude, 
+      360 + longitude,
       longitude
     )
-  ) %>% 
+  ) %>%
   ggplot(aes(longitude)) +
     geom_density(
-      color = colorspace::darken("#cf1020", .2, space ="HLS"), 
-      fill = "#cf1020", 
+      color = colorspace::darken("#cf1020", .2, space ="HLS"),
+      fill = "#cf1020",
       alpha = .6,
       size = .3,
       bw = .5
     ) +
     ggforce::geom_mark_circle(
       aes(
-        x = 140.5, 
-        y = .03, 
+        x = 140.5,
+        y = .03,
         label = "Highest number of eruptions   "
       ),
       color = "transparent",
@@ -357,21 +357,21 @@ e <-
     ) +
     theme(
       panel.background = element_rect(
-        color = "transparent", 
+        color = "transparent",
         fill = "transparent"
       ),
       plot.background = element_rect(
-        color = "transparent", 
+        color = "transparent",
         fill = "transparent"
       ),
       plot.margin = margin(t = -1.4)
     )
-  
+
 ## map
-m <- 
-  ggplot(map_split) + 
+m <-
+  ggplot(map_split) +
     geom_sf(
-      color = "transparent", 
+      color = "transparent",
       fill = "#F3F0ED"
     ) +
     # geom_sf(
@@ -379,7 +379,7 @@ m <-
     #   fill = "transparent",
     #   color = "#E4DCD5",
     #   size = .3
-    # ) + 
+    # ) +
     geom_sf(
       data = sf_volcano,
       shape = 21,
@@ -397,9 +397,9 @@ m <-
 
 ggdraw(m) +
   draw_plot(v, .5, .663, 1.008, .38, hjust = .5, vjust = 0) +
-  draw_plot(e, .5, .6569, 1.008, .57, hjust = .5, vjust = 1) 
+  draw_plot(e, .5, .6569, 1.008, .57, hjust = .5, vjust = 1)
 
-ggsave(here::here("plots", "2020_20", "2020_20_Volcanoes_center.pdf"), 
+ggsave(here::here("plots", "2020_20", "2020_20_Volcanoes_center.pdf"),
        width = 12, height = 6.347221, device = cairo_pdf)
 
 pdftools::pdf_convert(here::here("plots", "2020_20", "2020_20_Volcanoes_center.pdf"),
@@ -416,7 +416,7 @@ sp_world <- ne_countries(returnclass = 'sp')
 shift <- 180 - 65
 
 # create "split line" to split polygons
-split <- 
+split <-
   SpatialLines(
     list(Lines(list(Line(cbind(180 - shift, c(-90, 90)))),
          ID = "line")),
@@ -432,34 +432,34 @@ bf <- gBuffer(line, byid = T, width = 0.000001)
 # split country polygons using intersecting thin polygon (buffer)
 sp_world_split <- gDifference(sp_world, bf, byid = T)
 
-map_split <- 
-  sp_world_split %>% 
-  st_as_sf() %>% 
+map_split <-
+  sp_world_split %>%
+  st_as_sf() %>%
   st_transform(crs = "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=245 +x_0=0 +y_0=0 +ellps=WGS84 +units=m +no_defs")
 
 sf_volcano <-
-  df_volcano %>% 
+  df_volcano %>%
   st_as_sf(
     coords = c("longitude", "latitude"),
     crs = 4326
-  ) %>% 
+  ) %>%
   st_transform(crs = st_crs(map_split))
 
 
 ## distribuitions
-v <- 
-  df_volcano %>% 
+v <-
+  df_volcano %>%
   mutate(
     longitude = if_else(
       longitude < 65,
-      longitude + 360, 
+      longitude + 360,
       longitude
     )
-  ) %>% 
+  ) %>%
   ggplot(aes(longitude)) +
     geom_density(
-      color = colorspace::darken("#ffc922", .2, space ="HLS"), 
-      fill = "#ffc922", 
+      color = colorspace::darken("#ffc922", .2, space ="HLS"),
+      fill = "#ffc922",
       alpha = .6,
       size = .3,
       bw = .5
@@ -491,29 +491,29 @@ v <-
     ) +
     theme(
       panel.background = element_rect(
-        color = "transparent", 
+        color = "transparent",
         fill = "transparent"
       ),
       plot.background = element_rect(
-        color = "transparent", 
+        color = "transparent",
         fill = "transparent"
       ),
       plot.margin = margin(b = -1.4)
     )
 
-e <- 
-  df_eruptions %>% 
+e <-
+  df_eruptions %>%
   mutate(
     longitude = if_else(
       longitude < 65,
-      longitude + 360, 
+      longitude + 360,
       longitude
     )
-  ) %>% 
+  ) %>%
   ggplot(aes(longitude)) +
     geom_density(
-      color = colorspace::darken("#cf1020", .2, space ="HLS"), 
-      fill = "#cf1020", 
+      color = colorspace::darken("#cf1020", .2, space ="HLS"),
+      fill = "#cf1020",
       alpha = .6,
       size = .3,
       bw = .5
@@ -545,21 +545,21 @@ e <-
     ) +
     theme(
       panel.background = element_rect(
-        color = "transparent", 
+        color = "transparent",
         fill = "transparent"
       ),
       plot.background = element_rect(
-        color = "transparent", 
+        color = "transparent",
         fill = "transparent"
       ),
       plot.margin = margin(t = -1.4)
     )
-  
+
 ## map
-m <- 
-  ggplot(map_split) + 
+m <-
+  ggplot(map_split) +
     geom_sf(
-      color = "transparent", 
+      color = "transparent",
       fill = "#F3F0ED"
     ) +
     geom_sf(
@@ -579,9 +579,9 @@ m <-
 
 ggdraw(m) +
   draw_plot(v, .5, .663, 1.008, .393, hjust = .5, vjust = 0) +
-  draw_plot(e, .5, .6569, 1.008, .565, hjust = .5, vjust = 1) 
+  draw_plot(e, .5, .6569, 1.008, .565, hjust = .5, vjust = 1)
 
-ggsave(here::here("plots", "2020_20", "2020_20_Volcanoes_center2.pdf"), 
+ggsave(here::here("plots", "2020_20", "2020_20_Volcanoes_center2.pdf"),
        width = 12, height = 6.347221, device = cairo_pdf)
 
 pdftools::pdf_convert(here::here("plots", "2020_20", "2020_20_Volcanoes_center2.pdf"),
@@ -593,4 +593,3 @@ pdftools::pdf_convert(here::here("plots", "2020_20", "2020_20_Volcanoes_center2.
 ```{r session-info}
 sessionInfo()
 ```
-

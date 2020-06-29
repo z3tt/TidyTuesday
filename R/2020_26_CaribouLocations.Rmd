@@ -6,7 +6,7 @@ output:
   html_document:
     theme: paper
     highlight: kate
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
@@ -34,12 +34,12 @@ theme_set(theme_void(base_family = "Lora"))
 
 theme_update(
   plot.title = element_markdown(family = "Lilita One",
-                                size = 24, 
-                                face = "bold", 
+                                size = 24,
+                                face = "bold",
                                 hjust = 0),
-  plot.caption = element_markdown(size = 12, 
+  plot.caption = element_markdown(size = 12,
                                   lineheight = 1.4,
-                                  hjust = 0, 
+                                  hjust = 0,
                                   margin = margin(10, 0, 15, 0)),
   plot.margin = margin(rep(20, 4))
 )
@@ -58,8 +58,8 @@ proj <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 ## location data incl. individual information as spatial object ########################################
 ## only for females tagged from 2000 on
 sf_females <-
-  df_loc %>% 
-  full_join(df_ind) %>% 
+  df_loc %>%
+  full_join(df_ind) %>%
   mutate(
     year = lubridate::year(timestamp),
     month = lubridate::month(timestamp),
@@ -67,18 +67,18 @@ sf_females <-
   ) %>% filter(
     year > 2000,
     sex == "f"
-  ) %>% 
+  ) %>%
   st_as_sf(
-    coords = c("longitude", "latitude"), 
+    coords = c("longitude", "latitude"),
     crs = 4326
-  ) %>% 
-  st_transform(crs = proj) %>% 
+  ) %>%
+  st_transform(crs = proj) %>%
   mutate(
     x = st_coordinates(.)[,1],
     y = st_coordinates(.)[,2],
     study_site = if_else(
-      study_site == "Kennedy", 
-      "Kennedy\nSiding", 
+      study_site == "Kennedy",
+      "Kennedy\nSiding",
       study_site
     )
   )
@@ -88,27 +88,27 @@ sf_females <-
 rds <- here::here("data", "2020_26", "canada_treecover_agg.Rds")
 
 if (!file.exists(rds)) {
-  raster_canada_120 <- 
-    raster(here::here("data", "2020_26", "Hansen_GFC2015_treecover2000_60N_120W.tif")) %>% 
+  raster_canada_120 <-
+    raster(here::here("data", "2020_26", "Hansen_GFC2015_treecover2000_60N_120W.tif")) %>%
     aggregate(., fact = 25)
-  
-  raster_canada_130 <- 
-    raster(here::here("data", "2020_26", "Hansen_GFC2015_treecover2000_60N_130W.tif")) %>% 
+
+  raster_canada_130 <-
+    raster(here::here("data", "2020_26", "Hansen_GFC2015_treecover2000_60N_130W.tif")) %>%
     aggregate(., fact = 25)
-  
+
   ## turn rasters into single data frame
   df_canada <-
-    raster_canada_120 %>% 
-    rasterToPoints() %>% 
-    as_tibble() %>% 
-    rename("tc" = contains("treecover")) %>% 
+    raster_canada_120 %>%
+    rasterToPoints() %>%
+    as_tibble() %>%
+    rename("tc" = contains("treecover")) %>%
     bind_rows(
-      raster_canada_130 %>% 
-        rasterToPoints() %>% 
-        as_tibble() %>% 
+      raster_canada_130 %>%
+        rasterToPoints() %>%
+        as_tibble() %>%
     rename("tc" = contains("treecover"))
     )
-  
+
   write_rds(df_canada, path = rds)
 } else {
   df_canada <- read_rds(rds)
@@ -122,11 +122,11 @@ crs(bbox) <- crs(proj)
 ## Low-res DEM data + hillshade for North America ######################################################
 extent <- data.frame(x = c(-180, -42), y = c(24, 85))
 
-dem <- 
+dem <-
   get_elev_raster(
-    extent, 
-    z = 4, 
-    prj = proj, 
+    extent,
+    z = 4,
+    prj = proj,
     clip = "bbox"
   )
 
@@ -135,31 +135,31 @@ dem@data@values <- dem@data@values * 10
 slope <- terrain(dem, opt = 'slope')
 aspect <- terrain(dem, opt = 'aspect')
 
-df_hill <- 
-  hillShade(slope, aspect, 40, 270) %>% 
-  aggregate(fact = 2, method = "bilinear") %>% 
-  focal(w = matrix(1/9, nc = 3, nr = 3), mean) %>% 
-  rasterToPoints() %>% 
-  as_tibble() %>% 
+df_hill <-
+  hillShade(slope, aspect, 40, 270) %>%
+  aggregate(fact = 2, method = "bilinear") %>%
+  focal(w = matrix(1/9, nc = 3, nr = 3), mean) %>%
+  rasterToPoints() %>%
+  as_tibble() %>%
   mutate(layer = (layer * 10)^.8)
 
-df_slope <- 
-  slope %>% 
-  aggregate(fact = 2, method = "bilinear") %>% 
-  rasterToPoints() %>% 
-  as_tibble() %>% 
+df_slope <-
+  slope %>%
+  aggregate(fact = 2, method = "bilinear") %>%
+  rasterToPoints() %>%
+  as_tibble() %>%
   ## invert the scale so that more slope is darker
-  mutate(slope = 1 - slope) 
+  mutate(slope = 1 - slope)
 
 
 ## High-res DEM data + hillshade for study area ########################################################
 extent_bc <- data.frame(x = c(-124.46, -119.45), y = c(54, 57.3))
 
-dem_bc <- 
+dem_bc <-
   get_elev_raster(
-    extent_bc, 
-    z = 7, 
-    prj = proj, 
+    extent_bc,
+    z = 7,
+    prj = proj,
     clip = "bbox"
   )
 
@@ -168,47 +168,47 @@ dem_bc@data@values <- dem_bc@data@values * 10
 slope_bc <- terrain(dem_bc, opt = 'slope')
 aspect_bc <- terrain(dem_bc, opt = 'aspect')
 
-df_hill_bc <- 
-  hillShade(slope_bc, aspect_bc, 40, 270) %>% 
-  aggregate(fact = 2, method = "bilinear") %>% 
-  focal(w = matrix(1/9, nc = 3, nr = 3), mean) %>% 
-  rasterToPoints() %>% 
+df_hill_bc <-
+  hillShade(slope_bc, aspect_bc, 40, 270) %>%
+  aggregate(fact = 2, method = "bilinear") %>%
+  focal(w = matrix(1/9, nc = 3, nr = 3), mean) %>%
+  rasterToPoints() %>%
   as_tibble()
 
-df_slope_bc <- 
-  slope_bc %>% 
-  aggregate(fact = 2, method = "bilinear") %>% 
-  rasterToPoints() %>% 
-  as_tibble() %>% 
+df_slope_bc <-
+  slope_bc %>%
+  aggregate(fact = 2, method = "bilinear") %>%
+  rasterToPoints() %>%
+  as_tibble() %>%
   ## invert the scale so that more slope is darker
-  mutate(slope = 1 - slope) 
+  mutate(slope = 1 - slope)
 
 
 ## water: oceans, lakes, rivers ########################################################################
-sf_oceans <- 
-  rnaturalearth::ne_download(scale = 10, 
-                             category = "physical", 
+sf_oceans <-
+  rnaturalearth::ne_download(scale = 10,
+                             category = "physical",
                              type = "ocean",
-                             returnclass = "sf") %>% 
-  st_transform(crs = proj) %>% 
-  st_make_valid() %>% 
+                             returnclass = "sf") %>%
+  st_transform(crs = proj) %>%
+  st_make_valid() %>%
   st_crop(bbox)
 
 sf_lakes <-
-  rnaturalearth::ne_download(scale = 10, 
-                             category = "physical", 
+  rnaturalearth::ne_download(scale = 10,
+                             category = "physical",
                              type = "lakes",
-                             returnclass = "sf") %>% 
+                             returnclass = "sf") %>%
   st_transform(crs = proj) %>%  
-  st_make_valid() %>% 
+  st_make_valid() %>%
   st_crop(bbox)
-  
+
 sf_rivers <-
-  rnaturalearth::ne_download(scale = 10, 
-                             category = "physical", 
+  rnaturalearth::ne_download(scale = 10,
+                             category = "physical",
                              type = "rivers_lake_centerlines",
-                             returnclass = "sf") %>% 
-  st_transform(crs = proj) %>% 
+                             returnclass = "sf") %>%
+  st_transform(crs = proj) %>%
   st_crop(bbox)
 
 ```
@@ -240,7 +240,7 @@ m <-
       alpha = .6
     ) +
     geom_sf(
-      data = sf_oceans, 
+      data = sf_oceans,
       color = "transparent",
       fill = "#9bbaf3",
       alpha = .45
@@ -279,7 +279,7 @@ m <-
       caption = '**A)** The Woodland Caribou, *Rangifer tarandus*, primarily occurs in North America and extends from Alaska to the northern United States and across all jurisdictions in Canada<br>except Nova Scotia, New Brunswick, Prince Edward Island, and Nunavut (Edmonds 1991, Thomas & Gray 2002). Individuals of the Northern Caribou, *Rangifer tarandus caribou*,<br>have been equipped with tracking collars to monitor their spatial distribution and recovery in British Columbia, Canada. The subspecies occurs in the mountainous and low-<br>land plateau areas of west-central and northern British Columbia and has distinct horizontal as well as vertical change in location when migrating (Heard & Vagt 1998).'
     )
 
-ggsave(here::here("plots", "2020_26", "2020_26_Caribous_a_map.pdf"), 
+ggsave(here::here("plots", "2020_26", "2020_26_Caribous_a_map.pdf"),
        width = 14.4, height = 12, device = cairo_pdf)
 ```
 
@@ -311,12 +311,12 @@ labels <-
 
 set.seed(2020)
 
-p <- 
-  sf_females %>% 
-  group_by(study_site) %>% 
-  sample_n(4000) %>% 
-  ungroup() %>% 
-  arrange(timestamp) %>% 
+p <-
+  sf_females %>%
+  group_by(study_site) %>%
+  sample_n(4000) %>%
+  ungroup() %>%
+  arrange(timestamp) %>%
   ggplot() +
     geom_raster(
       data = df_canada,
@@ -375,9 +375,9 @@ ggsave(here::here("plots", "2020_26", "2020_26_Caribous_b_herds2.pdf"),
 ```
 
 ```{r plot-densities}
-d <- 
-  sf_females %>% 
-  arrange(timestamp) %>% 
+d <-
+  sf_females %>%
+  arrange(timestamp) %>%
   ggplot() +
     geom_raster(
       data = df_hill_bc,
@@ -437,9 +437,9 @@ d <-
     labs(
     #   title = "7 Years of Woodland Caribou Movement in Northern British Columbia"
       caption = "**C)** Northern Caribous concentrate their core range in forest habitats to obtain forage and shelter. They feed<br>primarily on lichens in winter that are found in high-elevation windswept ridges, subalpine and low-elevation<br>forests used by caribou (Jones *et al.* 2004). In summer, a wide variety of shrubs, forbs, and grasses serves as food<br>source. Shown are hered core areas, based on all cow locations. Green cells represent tree cover of 75% or more."
-    ) 
+    )
 
-ggsave(here::here("plots", "2020_26", "2020_26_Caribous_c_density.pdf"), 
+ggsave(here::here("plots", "2020_26", "2020_26_Caribous_c_density.pdf"),
        width = 9.7, height = 12, device = cairo_pdf)
 ```
 
@@ -447,22 +447,22 @@ ggsave(here::here("plots", "2020_26", "2020_26_Caribous_c_density.pdf"),
 ## final panel
 
 ```{r full-panel}
-panel <- 
-  m + p + d + 
+panel <-
+  m + p + d +
   plot_layout(widths = c(.43, .29, .29)) +
   plot_annotation(
   title = 'Spatial patterns of South Peace Northern Caribou (*Rangifer tarandus caribou* pop. 15) in British Columbia, Canada',
   caption = 'Visualization: Cédric Scherer  •  Movement data: BC Ministry of Environment (2014) and Seip & Price (2019)  •  Elevation data: Amazon Web Services Terrain Tiles via {elevatr}  •  Forest cover data: Hansen **et al.** (2013)'
 )
 
-ggsave(here::here("plots", "2020_26", "2020_26_Caribous_full.pdf"), 
+ggsave(here::here("plots", "2020_26", "2020_26_Caribous_full.pdf"),
        width = 34, height = 13, device = cairo_pdf)
 
 ## convert to png
 pdfs <- list.files(here::here("plots", "2020_26"), pattern = "*.pdf")
 setwd(here::here("plots", "2020_26"))
 for(pdf in pdfs) {
-  pdf_convert(pdf = here::here("plots", "2020_26", pdf), 
+  pdf_convert(pdf = here::here("plots", "2020_26", pdf),
               format = "png", dpi = 180)
 }
 ```
