@@ -50,7 +50,8 @@ theme_update(plot.background = element_rect(fill = "#6d7069",
                                           face = "plain",
                                           hjust = .5,
                                           lineheight = 1.05,
-                                          margin = margin(0, 0, 80, 0)),
+                                          #margin = margin(0, 0, 80, 0)),
+                                          margin = margin(30, 0, 80, 0)),
              plot.caption = element_text(size = 20,
                                          color = "grey70",
                                          face = "bold",
@@ -169,12 +170,13 @@ df_hotels %>%
     scale_color_manual(values = col5, guide = F) +  ## -> set to "col8" for colored text in the two lower rows
     scale_fill_manual(values = col8, guide = F) +
     scale_alpha_manual(values = c(1, .6, .35), guide = F) +
-    labs(title = "Are new parents the most lucrative hotel guests?",
+    labs(#title = "Are new parents the most lucrative hotel guests?",
          subtitle = "Most guests that traveled with babies did not cancel their hotel booking, stayed over the weekend\nand had at least one special request. These guests also booked more often at least lunch or dinner.\nThe data comprises ~12,000 hotel bookings & cancelations in the period from July 2015 to August 2017.",
          caption = "Visualization by Cédric Scherer  •  Data by Antonio, Almeida & Nunes 2019 (doi: 10.1016/j.dib.2018.11.126)")
 
-ggsave(here::here("plots", "2020_07", "2020_07_HotelBookings.pdf"), #"plots", 
-       width = 24, height = 19.82, device = cairo_pdf)  
+ggsave(here::here("plots", "2020_07", "2020_07_HotelBookings.pdf"), 
+       #width = 24, height = 19.82, device = cairo_pdf)  
+       width = 24, height = 18.82, device = cairo_pdf) 
 ```
 
 ***
