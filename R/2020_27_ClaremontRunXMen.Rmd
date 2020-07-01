@@ -22,16 +22,17 @@ library(ggstream)
 library(colorspace)
 library(ggtext)
 library(ragg)
+library(cowplot)
 library(pdftools)
 
 ## ggplot theme
 theme_set(theme_minimal(base_family = "Reem Kufi", base_size = 12))
 
 theme_update(
-  plot.title = element_markdown(size = 28,
-                                face = "bold",
-                                hjust = .5,
-                                margin = margin(10, 0, 20, 0)),
+  plot.title = element_text(size = 27,
+                            face = "bold",
+                            hjust = .5,
+                            margin = margin(10, 0, 30, 0)),
   plot.caption = element_text(size = 9,
                               color = "grey40",
                               hjust = .5,
@@ -103,7 +104,7 @@ df_smooth <-
 ## factor levels for type of appearance
 levels <- c("depicted", "speech", "thought", "narrative")
 
-## factorized data in logn format
+## factorized data in long format
 df_best_stream_fct <-
   df_best_stream %>% 
   bind_rows(df_smooth) %>% 
@@ -111,8 +112,8 @@ df_best_stream_fct <-
     costume = if_else(costume == "Costume", "costumed", "casual"),
     char_costume = if_else(
       char_popular == "Storm",
-      glue::glue("{char_popular} ({costume})  "),
-      glue::glue("{char_popular} ({costume})                  ")
+      glue::glue("{char_popular} ({costume})"),
+      glue::glue("{char_popular} ({costume})   ")
     ),
     char_costume = fct_reorder(char_costume, rank)
   ) %>% 
@@ -124,7 +125,7 @@ df_best_stream_fct <-
   mutate(parameter = factor(parameter, levels = levels))
 ```
 
-```{r facet, fig.width = 16, fig.height = 12}
+```{r plot-prep}
 pal <- c(
   "#FFB400", lighten("#FFB400", .25, space = "HLS"),
   "#C20008", lighten("#C20008", .2, space = "HLS"),
@@ -143,15 +144,15 @@ labels <-
 
 texts <-
   tibble(
-    issue = c(295, 80, 245, 127, 190),
-    value = c(-35, 37, 30, 57, 55),
+    issue = c(295, 80, 245, 127, 196),
+    value = c(-35, 35, 30, 57, 55),
     parameter = c("depicted", "depicted", "thought", "speech", "speech"),
     text = c(
       '**Gambit** was introduced for the first time in issue #266 called "Gambit: Out of the Frying Pan"— nevertheless, he is the **4<sup>th</sup> most popular X-Men character**!',
-      '**Wolverine is the most popular X-Men** and has a regular presence in the X-Men comics between 1971 and 1991.',
+      '**Wolverine is the most popular X-Men** and has a regular presence in the X-Men comics between 1975 and 1991.',
       '**Storm** is by far the most thoughtful of the five most popular X-Men characters, especially in issues #220, #223 and #265. Storm **ranks 5<sup>th</sup>**.',
       "**Magneto** was ranked by IGN as the *Greatest Comic Book Villain of All Time*. And even though he only appears from time to time he **ranks 2<sup>nd</sup>**—<br>4 ranks higher than his friend and opponent Professor X!",
-      'The **3<sup>rd</sup> most popular X-men character Nightcrawler** gets injured during the *Mutant Massacre* and fell into a coma after an attack from Riptide in issue #211.'
+      'The **3<sup>rd</sup> most popular X-men character Nightcrawler** gets injured during the "Mutant Massacre"  and fell into a coma after an attack from Riptide in issue #211.'
     ),
     char_popular = c("Gambit", "Wolverine", "Storm", "Magneto", "Nightcrawler"),
     costume = "costumed",
@@ -161,12 +162,14 @@ texts <-
     parameter = factor(parameter, levels = levels),
     char_costume = if_else(
       char_popular == "Storm",
-      glue::glue("{char_popular} ({costume})  "),
-      glue::glue("{char_popular} ({costume})                  ")
+      glue::glue("{char_popular} ({costume})"),
+      glue::glue("{char_popular} ({costume})   ")
     ),
     char_costume = factor(char_costume, levels = levels(df_best_stream_fct$char_costume))
   )
+```
 
+```{r facet, fig.width = 16, fig.height = 12}
 g <- 
   df_best_stream_fct %>% 
   ggplot(aes(
@@ -225,7 +228,7 @@ g <-
     ) +
     scale_x_continuous(
       limits = c(74, NA),
-      breaks = c(97, seq(125, 250, by = 25), 280),
+      breaks = c(94, seq(125, 250, by = 25), 280),
       labels = glue::glue("Issue\n#{c(97, seq(125, 250, by = 25), 280)}"),
       position = "top"
     ) + 
@@ -241,21 +244,32 @@ g <-
     ) +
     coord_cartesian(clip = "off") +
     labs(
-      title = "Appearance of the Five Most Popular X-Men Characters in Chris Claremont's Comics",
-      caption = "Visualization by Cédric Scherer  •  Data by Claremont Run Project via Malcom Barret  •  Popularity Scores by ranker.com"
+      title = "Appearance of the Five Most Popular X-Men Characters in Chris Claremont's                           Comics",
+      caption = "Visualization by Cédric Scherer  •  Data by Claremont Run Project via Malcom Barret  •  Popularity Scores by ranker.com  •  Logo by Comicraft"
     ) 
+
+ggdraw(g) + 
+  draw_image(
+    here::here("img", "uncannyxmen.png"), 
+    x = .82, y = .955, 
+    width = .1, 
+    hjust = .5, vjust = .5
+  )
 
 ggsave(here::here("plots", "2020_27", "2020_27_Xmen_clean.pdf"), 
       width = 16, height = 12, device = cairo_pdf)
 
-g +
+
+## plot with annotations
+gg <- 
+  g +
   geom_textbox(
     data = texts,
     aes(
       issue, value, 
       label = text,
       color = char_costume,
-      color = after_scale(darken(color, .07, space = "HLS")),
+      color = after_scale(darken(color, .12, space = "HLS")),
       vjust = vjust
     ),
     family = "Reem Kufi",
@@ -263,6 +277,14 @@ g +
     fill = "grey95",
     maxwidth = unit(7.25, "lines"),
     hjust = .5
+  )
+
+ggdraw(gg) + 
+  draw_image(
+    here::here("img", "uncannyxmen.png"), 
+    x = .82, y = .955, 
+    width = .1, 
+    hjust = .5, vjust = .5
   )
 
 ggsave(here::here("plots", "2020_27", "2020_27_Xmen_annotated.pdf"), 
