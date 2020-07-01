@@ -2,8 +2,8 @@
 
 ![./plots/2020_26/2020_26_Caribous_full_title.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_26/2020_26_Caribous_full_title.png)
 
-### Single Plots:
-
+**Single Plots:**
+<br>
 ![./plots/2020_26/2020_26_Caribous_a_map.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_26/2020_26_Caribous_a_map.png)<br>
 ![./plots/2020_26/2020_26_Caribous_b_herds.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_26/2020_26_Caribous_b_herds.png)<br>
 ![./plots/2020_26/2020_26_Caribous_c_density.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_26/2020_26_Caribous_c_density.png)
