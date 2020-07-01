@@ -1,5 +1,5 @@
 ---
-title: "TidyTuesday 2020/27 - X-Men Locations by Claremont Run Project"
+title: "TidyTuesday 2020/27 - X-Men by Claremont Run Project"
 author: "Cedric Scherer"
 date: "30th of June 2020"
 output:
