@@ -73,10 +73,17 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/22 [🍹 50 Most Popular Cocktails 2020](https://github.com/Z3tt/TidyTuesday/master/plots/2020_22)
   - 2020/23 [🔴 Marble Races](https://github.com/Z3tt/TidyTuesday/master/plots/2020_23)
   - 2020/25 [🕊️ American Slavery and Juneteenth](https://github.com/Z3tt/TidyTuesday/master/plots/2020_25)
-  - 2020/25 [🦌️ Northern Caribou Movement](https://github.com/Z3tt/TidyTuesday/master/plots/2020_26)
+  - 2020/26 [🦌️ Northern Caribou Movement](https://github.com/Z3tt/TidyTuesday/master/plots/2020_26)
+  - 2020/27 [🦸 Uncanny X-Men](https://github.com/Z3tt/TidyTuesday/master/plots/2020_27)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/27](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_27) 🦸️ Uncanny X-Men by [http://Claremont Run](http://www.claremontrun.com/)
+
+![./plots/2020_27/2020_27_Xmen_annotated.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_27/2020_27_Xmen_annotated.png)
 
 ***
 
