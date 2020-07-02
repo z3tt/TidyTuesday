@@ -57,8 +57,8 @@ theme_update(plot.background = element_rect(fill = "#6d7069",
                                          face = "bold",
                                          hjust = .5,
                                          margin = margin(40, 0, 0, 0)),
-             plot.title.position = "plot",
-             plot.caption.position = "plot",
+             #plot.title.position = "plot",
+             #plot.caption.position = "plot",
              plot.margin = margin(30, 60, 30, 60),
              panel.spacing.y = unit(0, "pt"))
 ```
@@ -176,7 +176,7 @@ df_hotels %>%
 
 ggsave(here::here("plots", "2020_07", "2020_07_HotelBookings.pdf"), 
        #width = 24, height = 19.82, device = cairo_pdf)  
-       width = 24, height = 18.82, device = cairo_pdf) 
+       width = 24, height = 18.84, device = cairo_pdf) 
 ```
 
 ***
