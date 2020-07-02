@@ -41,7 +41,7 @@ The full versions of all my contributions can be found [here](https://github.com
 ***
 
 ### [Week 2020/20](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_20) 🌋 Volcano Eruptions by [Smithsonian](https://www.himalayandatabase.com/)
-![./plots/2020_20/2020_20_Volcanoes.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_20/2020_20_Volcanoes.png)
+![./plots/2020_20/2020_20_Volcanoes_center2.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_20/2020_20_Volcanoes_center2.png)
 
 ***
 
