@@ -273,7 +273,7 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
 
 ***
 
-### [Week 2019/24](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_24️) 🌠 Meteorites by [NASA](https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh/data)
+### [Week 2019/24](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2019_24) 🌠 Meteorites by [NASA](https://data.nasa.gov/Space-Science/Meteorite-Landings/gh4g-9sfh/data)
 ![./plots/2019_24/2019_24_Meteorites.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2019_24/2019_24_Meteorites.png)
 
 ***
