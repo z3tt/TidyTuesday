@@ -346,7 +346,7 @@ df_best_stream_fct %>%
     theme(axis.text.x = element_blank())
 
 ggsave(here::here("plots", "2020_27", "2020_27_Xmen_wallpaper.pdf"), 
-      width = 16, height = 12, device = cairo_pdf)
+      width = 16, height = 13, device = cairo_pdf)
 ```
 
 
