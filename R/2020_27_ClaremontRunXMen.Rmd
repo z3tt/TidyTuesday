@@ -291,13 +291,73 @@ ggsave(here::here("plots", "2020_27", "2020_27_Xmen_annotated.pdf"),
       width = 16, height = 12, device = cairo_pdf)
 ```
 
+
+### Wallpaper version
+
+```{r wallpaper, fig.width = 16, fig.height = 12}
+df_best_stream_fct %>% 
+  ggplot(aes(
+      issue, value, 
+      color = char_costume, 
+      fill = char_costume
+    )) +
+    geom_stream(
+      geom = "contour",
+      color = "white",
+      size = 1.25,
+      bw = .1
+    ) +
+    geom_hline(yintercept = 0, color = "grey88") +
+    geom_stream(
+      geom = "polygon",
+      #n_grid = 12000,
+      bw = .1,
+      size = 0
+    ) +
+    annotate(
+      "rect",
+      xmin = -Inf, xmax = 78, 
+      ymin = -Inf, ymax = Inf,
+      fill = "grey88"
+    ) +
+    annotate(
+      "rect",
+      xmin = 299, xmax = Inf, 
+      ymin = -Inf, ymax = Inf,
+      fill = "grey88"
+    ) +
+    facet_grid( ## needs facet_grid for space argument
+      parameter ~ ., 
+      scales = "free_y", 
+      space = "free"
+    ) +
+    scale_x_continuous(limits = c(74, NA)) + 
+    scale_y_continuous(expand = c(.03, .03)) + 
+    scale_color_manual(
+      expand = c(0, 0),
+      values = pal,
+      guide = F
+    ) +
+    scale_fill_manual(
+      values = pal,
+      guide = F
+    ) +
+    coord_cartesian(clip = "off") +
+    theme(axis.text.x = element_blank())
+
+ggsave(here::here("plots", "2020_27", "2020_27_Xmen_wallpaper.pdf"), 
+      width = 16, height = 12, device = cairo_pdf)
+```
+
+
 ```{r convert}
 ## convert to png
-pdf_convert(pdf = here::here("plots", "2020_27", "2020_27_Xmen_clean.pdf"),
-            format = "png", dpi = 350)
-
-pdf_convert(pdf = here::here("plots", "2020_27", "2020_27_Xmen_annotated.pdf"),
-            format = "png", dpi = 350)
+pdfs <- list.files(here::here("plots", "2020_27"), pattern = "*.pdf")
+setwd(here::here("plots", "2020_27"))
+for(pdf in pdfs) {
+  pdf_convert(pdf = here::here("plots", "2020_27", pdf),
+              format = "png", dpi = 300)
+}
 ```
 
 ***
