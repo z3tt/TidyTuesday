@@ -68,8 +68,7 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/16 [🎙️ Best Hip-Hop Songs of All Time](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_16)
   - 2020/18 [🎭️ Broadway Musicals (RTFM Edition)](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_18)
   - 2020/19 [🐻 Animal Crossing](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_19)
-  - 2020/20 [🌋 Volcano Eruptions](https://github.com/Z3tt/TidyTuesday/tree/
-    master/plots/2020_20)
+  - 2020/20 [🌋 Volcano Eruptions](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_20)
   - 2020/21 [🏐 Beach Volleyball](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_21)
   - 2020/22 [🍹 50 Most Popular Cocktails 2020](https://github.com/Z3tt/TidyTuesdaytree//master/plots/2020_22)
   - 2020/23 [🔴 Marble Races](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_23)
