@@ -75,9 +75,16 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/25 [🕊️ American Slavery and Juneteenth](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_25)
   - 2020/26 [🦌️ Northern Caribou Movement](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_26)
   - 2020/27 [🦸 Uncanny X-Men](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_27)
+  - 2020/28 [☕️ Coffee Ratings](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_28)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/27](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_28) ☕️ Coffee Ratings by [Coffee Quality Institute](https://github.com/jldbc/coffee-quality-database)
+
+![./plots/2020_20/2020_28_CoffeeRatings.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_28/2020_28_CoffeeRatings.png)
 
 ***
 

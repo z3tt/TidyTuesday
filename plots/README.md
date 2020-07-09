@@ -7,6 +7,11 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
+### [2020/27](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_28) ☕️ Coffee Ratings by [Coffee Quality Institute](https://github.com/jldbc/coffee-quality-database)
+
+![./plots/2020_20/2020_28_CoffeeRatings.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_28/2020_28_CoffeeRatings.png)
+***
+
 ### [2020/27](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_27) 🦸️ Uncanny X-Men by [Claremont Run Project](http://www.claremontrun.com/)
 
 ![./plots/2020_27/2020_27_Xmen_annotated.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_27/2020_27_Xmen_annotated.png)
