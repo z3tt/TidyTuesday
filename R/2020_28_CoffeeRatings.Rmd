@@ -1,0 +1,256 @@
+---
+title: "TidyTuesday 2020/28 - Coffee Ratings by James LeDoux & Coffee Quality Database"
+author: "Cedric Scherer"
+date: "8th of July 2020"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE}
+## packages
+library(tidyverse)
+library(ggdist)
+library(colorspace)
+library(grid)
+library(png)
+library(ggtext)
+library(ragg)
+library(pdftools)
+
+## ggplot theme
+theme_set(theme_minimal(base_family = "Bebas Neue", base_size = 16))
+
+theme_update(
+  panel.grid = element_blank(),
+  axis.title = element_blank(),
+  axis.text = element_blank(),
+  plot.background = element_rect(color = NA, fill = "#faf9f5")
+)
+```
+
+```{r data}
+df_coffee <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-07/coffee_ratings.csv')
+```
+
+```{r data-prep}
+df_coffee_p <-
+  df_coffee %>% 
+  filter(total_cup_points != 0) %>% 
+  group_by(species, owner, country_of_origin, farm_name, mill, ico_number, harvest_year, grading_date) %>% 
+  summarize(total_cup_points = mean(total_cup_points)) %>% 
+  group_by(country_of_origin) %>%
+  filter(n() >= 25) %>%
+  mutate(#
+    med = median(total_cup_points),
+    min = min(total_cup_points),
+    n = n(),
+    country_of_origin = case_when(
+      country_of_origin == "Tanzania, United Republic Of" ~ "Tanzania",
+      country_of_origin == "United States (Hawaii)" ~ "Hawaii",
+      TRUE ~ country_of_origin
+    )
+  ) %>% 
+  ungroup() %>% 
+  mutate(
+    country = fct_reorder(country_of_origin, med),
+    y = as.numeric(country) - .3 ## left-over from earlier trials
+  ) 
+```
+
+```{r plot, fig.width = 12.5, fig.height = 9}
+img <- readPNG(here::here("img", "coffee.png"))
+r <- rasterGrob(img, interpolate = TRUE)
+
+df_coffee_sum <- 
+  df_coffee_p %>% 
+  group_by(country)  %>% 
+  slice(1)
+
+df_labs <-
+  tibble(
+    x = c(60.5, 88.2, 61.7, 86.2),
+    y = c(6.2, 12.2, 1.2, 2.1),
+    label = c("The coffee bean with the lowest\nrating has its origin in Guatemala.", "The best coffee—in\nterms of both median and\nmaximum rating—is shipped\nto you from Ethiopia!", "One bean from Nicaragua\ngot a bad rating, too.", "With 218 tested beans,\nMexico is the country with\nthe most reviews.")
+  )
+
+ggplot(df_coffee_p, aes(
+    total_cup_points, 
+    y = y
+  )) + 
+  annotation_custom(r, xmin = 59, xmax = 65, ymin = -1, ymax = 4.5) +
+  ## labels countries
+  geom_text(
+    data = df_coffee_sum,
+    aes(
+      x = min, 
+      y = y,
+      label = country,
+      size = n
+    ),
+    family = "Bebas Neue",
+    color = "grey88",
+    fontface = "bold",
+    vjust = 0,
+    hjust = -0.01
+  ) +
+  ## stripe
+  stat_interval(
+    aes(y = y - .05),
+    orientation = "horizontal",
+    .width = c(.25, .5, .95, 1),
+    stroke = 0,
+    size = 1.4
+  ) +
+  ## indicator median
+  geom_point(
+    data = df_coffee_sum,
+    aes(x = med, y = y - .18),
+    shape = 17,
+    color = "grey20",
+    size = 2
+  ) + 
+  geom_text(
+    data = df_coffee_sum,
+    aes(
+      x = med + .16, 
+      y = y - .11,
+      label = glue::glue("{round(med, 1)} points") 
+    ),
+    family = "Bebas Neue",
+    color = "grey20",
+    size = 2.5,
+    vjust = 1,
+    hjust = 0
+  ) +
+  ## indicator minimum
+  geom_point(
+    data = df_coffee_sum,
+    aes(x = min + .01, y = y - .19),
+    shape = 2,
+    color = "firebrick",
+    size = 1.9
+  ) + 
+  geom_text(
+    data = df_coffee_sum,
+    aes(
+      x = min + .17, 
+      y = y - .11,
+      label = glue::glue("{round(min, 1)} points") 
+    ),
+    family = "Bebas Neue",
+    color = "firebrick",
+    size = 2.5,
+    vjust = 1,
+    hjust = 0
+  ) +
+  ## dots
+  stat_dots(
+    quantiles = NA,
+    orientation = "horizontal",
+    normalize = "none",
+    scale = .87,
+    color = "#6f4e37",
+    fill = "#6f4e37"
+  ) +
+  ## labels axis
+  geom_text(
+    data = tibble(
+      x = seq(60, 90, by = 10),
+      y = 8.385,
+      label = glue::glue("{seq(60, 90, by = 10)} points")
+    ),
+    aes(
+      x = x, 
+      y = y,
+      label = label
+    ),
+    inherit.aes = F,
+    family = "Bebas Neue",
+    color = "grey65",
+    size = 3.5
+  ) +
+  geom_point(
+    data = tibble(
+      x = rep(seq(60, 90, by = 10), 2),
+      y = rep(c(8.55, 8.22), each = 4)
+    ),
+    aes(
+      x = x, 
+      y = y
+    ),
+    inherit.aes = F,
+    color = "grey65",
+    shape = "|",
+    size = 1
+  ) +
+  ## label text
+  geom_textbox(
+    data = tibble(
+      x = 64.5,
+      y = 9.7,
+      label = "<b style='font-size:24pt;'>Not my cup of coffee...</b><br><br>Each dot depicts one coffee bean rated by Coffee Quality Institute's trained reviewers. In addition, the multiple interval stripes show where <b style='color:#6F2808;'>25%</b>, <b style='color:#CE711B;'>50%</b>, <b style='color:#AE9760;'> 95%</b>, and <b style='color:#A3A3A3;'>100%</b> of the beans fall along the rating gradient from 0 to 100 points. The rated coffee beans range from 59.8 points (Guatemala) to 89.9 (Ethiopia). Only countries of origin with 25 or more tested beans are shown. The red empty triangle marks the minimum rating, the black filled triangle indicates each country's median score.<br><br><i style='color:#99754d;'>Visualization by Cédric Scherer</i>"
+    ),
+    aes(
+      x = x, y = y, label = label
+    ),
+    inherit.aes = F,
+    family = "Playfair Display",
+    size = 3,
+    lineheight = 1.5,
+    width = unit(3.8, "inch"),
+    fill = NA,
+    box.colour = NA,
+    hjust = .5,
+    vjust = 0
+  ) +
+  ## annotations
+  geom_text(
+    data = df_labs,
+    aes(x, y, label = label),
+    inherit.aes = F,
+    family = "Arapey",
+    color = "#99754d",
+    size = 2.8,
+    lineheight = .87
+  ) +
+  scale_x_continuous(
+    breaks = seq(60, 90, by = 10),
+    labels = function(x) paste0(x, " points")
+  ) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_color_manual(
+    values = c("grey85", "#ccbe9b", "#e8984e", "#94350b"),
+    guide = F
+  ) +
+  scale_size(
+    range = c(8.75, 15.5),
+    guide = F
+  ) #+
+  #ggsave(here::here("dev", glue::glue("2020_28___{format(Sys.time(), '%Y%m%d_%H%M%S')}.pdf")), 
+  #       width = 12.5, height = 9, device = cairo_pdf)
+```
+
+```{r save-convert}
+ggsave(here::here("plots", "2020_28", "2020_28_CoffeeRatings.pdf"), 
+      width = 12.5, height = 9, device = cairo_pdf)
+
+## convert to png
+pdf_convert(pdf = here::here("plots", "2020_28", "2020_28_CoffeeRatings.pdf"),
+              format = "png", dpi = 400)
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
