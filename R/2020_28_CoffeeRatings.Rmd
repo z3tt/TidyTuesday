@@ -54,7 +54,7 @@ df_coffee_p <-
     n = n(),
     country_of_origin = case_when(
       country_of_origin == "Tanzania, United Republic Of" ~ "Tanzania",
-      country_of_origin == "United States (Hawaii)" ~ "Hawaii",
+      str_detect(country_of_origin, "United States") ~ "United States",
       TRUE ~ country_of_origin
     )
   ) %>% 
