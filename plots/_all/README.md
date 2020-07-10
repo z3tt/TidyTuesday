@@ -10,6 +10,10 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ![./plots/2020_20/2020_28_CoffeeRatings.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_28/2020_28_CoffeeRatings.png)
 
+**Extended version showing countries with 15 or more reviews:**
+![./plots/2020_20/2020_28_CoffeeRatings_ext.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_28/2020_28_CoffeeRatings_ext.png)
+
+
 ***
 
 ### [2020/27](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_27) 🦸️ Uncanny X-Men by [http://Claremont Run](http://www.claremontrun.com/)
