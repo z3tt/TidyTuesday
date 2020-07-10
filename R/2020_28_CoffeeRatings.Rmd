@@ -44,7 +44,7 @@ df_coffee_p <-
   df_coffee %>% 
   filter(total_cup_points != 0) %>% 
   group_by(species, owner, country_of_origin, farm_name, mill, ico_number, harvest_year, grading_date) %>% 
-  summarize(total_cup_points = mean(total_cup_points)) %>% 
+  summarize(total_cup_points = mean(total_cup_points, na.rm = T)) %>% 
   group_by(country_of_origin) %>%
   filter(n() >= 25) %>%
   mutate(#
