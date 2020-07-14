@@ -77,15 +77,22 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/26 [🦌️ Northern Caribou Movement](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_26)
   - 2020/27 [🦸 Uncanny X-Men](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_27)
   - 2020/28 [☕️ Coffee Ratings](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_28)
+  - 2020/29 [👨‍🚀 Astronaut Database](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_29)
 <!-- tocstop -->
 
 </details>
 
 ***
 
+### [2020/29](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_29) 👨‍🚀 Astronaut Database by [Stavnichuk & Corlett (2020)](https://doi.org/10.17632/86tsnnbv2w.1)
+
+![./plots/2020_29/2020_29_Astronauts.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_29/2020_29_Astronauts.png)
+
+***
+
 ### [2020/27](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_28) ☕️ Coffee Ratings by [Coffee Quality Institute](https://github.com/jldbc/coffee-quality-database)
 
-![./plots/2020_20/2020_28_CoffeeRatings.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_28/2020_28_CoffeeRatings.png)
+![./plots/2020_20/2028_28_CoffeeRatings.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_28/2020_28_CoffeeRatings.png)
 
 ***
 
