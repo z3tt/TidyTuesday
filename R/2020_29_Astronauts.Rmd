@@ -143,7 +143,7 @@ p <-
     ## caption
     annotate(
       "text", 
-      x = 555, y = 16300,
+      x = 555, y = 16600,
       label = "Visualization by Cédric Scherer  •  Data by Stavnichuk & Corlett 2020 (DOI: 10.17632/86tsnnbv2w.1)", 
       family = "Oswald",
       size = 5.6, 
