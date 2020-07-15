@@ -33,8 +33,7 @@ df_missions <-
   summarize(
     hours = sum(hours_mission),
     year = min(year_of_mission),
-    max_year = max(year_of_mission),
-    nationality = unique(nationality)
+    max_year = max(year_of_mission)
   ) %>% 
   ungroup() %>% 
   mutate(year = -year) %>% 
