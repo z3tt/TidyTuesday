@@ -180,10 +180,10 @@ p <-
 p
 
 ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_clean.pdf"), 
-      width = 25, height = 22.9, device = cairo_pdf)
+      width = 25, height = 23.63, device = cairo_pdf)
 
 pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_clean.pdf"),
-            format = "png", dpi = 500)
+            format = "png", dpi = 120)
 ```
 
 ```{r plot-with-annotations, fig.width = 25, fig.height = 23.63}
@@ -225,10 +225,10 @@ p +
   )
 
 ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_color.pdf"), 
-      width = 25, height = 22.9, device = cairo_pdf)
+      width = 25, height = 23.63, device = cairo_pdf)
 
 pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_color.pdf"),
-            format = "png", dpi = 500)
+            format = "png", dpi = 120)
 ```
 
 
