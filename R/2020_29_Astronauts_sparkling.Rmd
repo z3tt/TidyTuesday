@@ -19,6 +19,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina
 library(tidyverse)
 library(ggblur)
 library(ggtext)
+library(colorspace)
 library(ragg)
 library(pdftools)
 ```
@@ -64,7 +65,7 @@ df_text <-
 
 ## colorful blurs
 
-```{r plot, fig.width = 25, fig.height = 23.63}
+```{r plot-color, fig.width = 25, fig.height = 23.63}
 p <-
   df_missions %>% 
   ggplot(aes(
@@ -73,6 +74,17 @@ p <-
       color = year, 
       fill = year
     )) +
+    ## sparkling points
+    geom_point_blur(
+      aes(
+        y = hours + 5, 
+        size = hours,
+        blur_size = hours,
+        color = year,
+        color = after_scale(lighten(color, .4, space = "HLS"))
+      ),
+      blur_steps = 150
+    ) +
     ## curves
     ggforce::geom_link(
       aes(
@@ -81,7 +93,7 @@ p <-
         y = 0,
         yend = hours + 5,
         color = year,
-        color = after_scale(colorspace::desaturate(color, .3)),
+        color = after_scale(desaturate(color, .3)),
         alpha = hours
       ),
       n = 300,
@@ -99,16 +111,6 @@ p <-
         y = hours + 5, 
         size = hours
       )
-    ) +
-    geom_point_blur(
-      aes(
-        y = hours + 5, 
-        size = hours,
-        blur_size = hours,
-        color = year,
-        color = after_scale(colorspace::lighten(color, .2, space = "HLS"))
-      ),
-      blur_steps = 100
     ) +
     ## tick marks years
     geom_text(
@@ -166,7 +168,7 @@ p <-
     scale_y_continuous(limits = c(0, 22000), expand = c(0, 0)) + #limits = c(0, 156091.8)
     scico::scale_color_scico(palette = "hawaii", guide = F, direction = -1) +
     scico::scale_fill_scico(palette = "hawaii", guide = F, direction = -1) +
-    scale_blur_size_continuous(range = c(2, 15)) +
+    scale_blur_size_continuous(range = c(1, 15), guide = F) +
     scale_size(range = c(.001, 3), guide = F) +
     scale_alpha(range = c(.33, 1), guide = F) +
     theme_void() +
@@ -181,7 +183,7 @@ ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_clean.pdf")
       width = 25, height = 22.9, device = cairo_pdf)
 
 pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_clean.pdf"),
-            format = "png", dpi = 120)
+            format = "png", dpi = 500)
 ```
 
 ```{r plot-with-annotations, fig.width = 25, fig.height = 23.63}
@@ -232,7 +234,7 @@ pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_color.
 
 ## white blurs
 
-```{r plot, fig.width = 25, fig.height = 23.63}
+```{r plot-white, fig.width = 25, fig.height = 23.63}
 p <-
   df_missions %>% 
   ggplot(aes(
@@ -248,7 +250,7 @@ p <-
         size = hours,
         blur_size = hours
       ),
-      blur_steps = 250,
+      blur_steps = 150,
       color = "grey85"
     ) +
     ## curves
@@ -259,7 +261,7 @@ p <-
         y = 0,
         yend = hours + 5,
         color = year,
-        color = after_scale(colorspace::desaturate(color, .3)),
+        color = after_scale(desaturate(color, .3)),
         alpha = hours
       ),
       n = 300,
@@ -334,7 +336,7 @@ p <-
     scale_y_continuous(limits = c(0, 22000), expand = c(0, 0)) + #limits = c(0, 156091.8)
     scico::scale_color_scico(palette = "hawaii", guide = F, direction = -1) +
     scico::scale_fill_scico(palette = "hawaii", guide = F, direction = -1) +
-    scale_blur_size_continuous(range = c(0, 15)) +
+    scale_blur_size_continuous(range = c(1, 15), guide = F) +
     scale_size(range = c(.001, 3), guide = F) +
     scale_alpha(range = c(.33, 1), guide = F) +
     theme_void() +
@@ -346,7 +348,7 @@ p <-
 p
 
 ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_clean.pdf"), 
-      width = 25, height = 22.9, device = cairo_pdf)
+      width = 25, height = 23.63, device = cairo_pdf)
 
 pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_clean.pdf"),
             format = "png", dpi = 500)
@@ -391,7 +393,7 @@ p +
   )
 
 ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_white.pdf"), 
-      width = 25, height = 22.9, device = cairo_pdf)
+      width = 25, height = 23.63, device = cairo_pdf)
 
 pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_white.pdf"),
             format = "png", dpi = 500)
