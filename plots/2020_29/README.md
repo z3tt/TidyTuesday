@@ -3,4 +3,10 @@
 ![./plots/2020_29/2020_29_Astronauts_hd.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_29/2020_29_Astronauts_hd.png)
 
 **Version without annotations:**
-![./plots/2020_29/2020_29_Astronauts_clean_hd.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_29/2020_29_Astronauts_clean_hd.png)
+![./plots/2020_29/2020_29_Astronauts_blur_color_clean_hd.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_29/2020_29_Astronauts_blur_color_clean_hd.png)
+
+**Version with White Blur:**
+![./plots/2020_29/2020_29_Astronauts_blur_white_hd.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_29/2020_29_Astronauts_blur_white_hd.png)
+
+**Version without Blur:**
+![./plots/2020_29/2020_29_Astronauts_hd.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_29/2020_29_Astronauts_hd.png)
