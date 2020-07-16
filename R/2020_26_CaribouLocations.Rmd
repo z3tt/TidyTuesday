@@ -203,14 +203,13 @@ sf_lakes <-
   st_make_valid() %>%
   st_crop(bbox)
 
-sf_rivers <-
-  rnaturalearth::ne_download(scale = 10,
-                             category = "physical",
-                             type = "rivers_lake_centerlines",
-                             returnclass = "sf") %>%
-  st_transform(crs = proj) %>%
-  st_crop(bbox)
-
+# sf_rivers <-
+#   rnaturalearth::ne_download(scale = 10,
+#                              category = "physical",
+#                              type = "rivers_lake_centerlines",
+#                              returnclass = "sf") %>%
+#   st_transform(crs = proj) %>%
+#   st_crop(bbox)
 ```
 
 ```{r map-northamerica}
@@ -436,7 +435,7 @@ d <-
     scale_alpha_continuous(range = c(.3, .9), guide = F) +
     labs(
     #   title = "7 Years of Woodland Caribou Movement in Northern British Columbia"
-      caption = "**C)** Northern Caribous concentrate their core range in forest habitats to obtain forage and shelter. They feed<br>primarily on lichens in winter that are found in high-elevation windswept ridges, subalpine and low-elevation<br>forests used by caribou (Jones *et al.* 2004). In summer, a wide variety of shrubs, forbs, and grasses serves as food<br>source. Shown are hered core areas, based on all cow locations. Green cells represent tree cover of 75% or more."
+      caption = "**C)** Northern Caribous concentrate their core range in forest habitats to obtain forage and shelter. They feed<br>primarily on lichens in winter that are found in high-elevation windswept ridges, subalpine and low-elevation<br>forests used by caribou (Jones *et al.* 2004). In summer, a wide variety of shrubs, forbs, and grasses serves as food<br>source. Shown are herd core areas, based on all cow locations. Green cells represent tree cover of 75% or more."
     )
 
 ggsave(here::here("plots", "2020_26", "2020_26_Caribous_c_density.pdf"),
