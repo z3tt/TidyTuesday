@@ -35,7 +35,7 @@ theme_update(
   plot.title = element_text(hjust = .5, face = "bold", color = "grey35", 
                             size = 11, margin = margin(b = 3)),
   plot.caption = element_text(color = "grey65", size = 8, 
-                              margin = margin(20, 0, 5, 0)),
+                              margin = margin(15, 0, 5, 0)),
   strip.text = element_blank(),
   panel.spacing = unit(.075, "lines"),
   plot.margin = margin(rep(7, 4))
@@ -337,7 +337,7 @@ glm / (
   ) +
   plot_layout(heights = c(1, .24)) +
   plot_annotation(
-    caption = "Visualization by Cédric Scherer  •  Data by RSPCA Australia"  
+    caption = "Visualization by Cédric Scherer  •  Data by RSPCA Australia (Royal Society for the Prevention of Cruelty to Animals)"  
   ) # +
   # ggsave(here::here("dev", glue::glue("2020_28___{format(Sys.time(), '%Y%m%d_%H%M%S')}.pdf")), 
   #        width = 15, height = 12, device = cairo_pdf)
