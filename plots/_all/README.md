@@ -6,6 +6,13 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
+### [2020/30](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_30) 😿 Australian Animal Outcomes by [RSPCA](https://www.rspca.org.au/sites/default/files/RSPCA%20Report%20on%20animal%20outcomes%202018-2019.pdf)
+
+![./plots/2020_30/2020_30_AnimalOutcomes.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_30/2020_30_AnimalOutcomes.png)
+
+***
+### [2020/29](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_29) 👨‍🚀 Astronaut Database by [Stavnichuk & Corlett (2020)](https://doi.org/10.17632/86tsnnbv2w.1)
+
 ![./plots/2020_29/2020_29_Astronauts_hd.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_29/2020_29_Astronauts_hd.png)
 
 **Version without annotations:**
@@ -16,6 +23,16 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 **Version without Blur:**
 ![./plots/2020_29/2020_29_Astronauts_hd.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_29/2020_29_Astronauts_hd.png)
+
+***
+
+### [2020/28](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_28) ☕️ Coffee Ratings by [Coffee Quality Institute](https://github.com/jldbc/coffee-quality-database)
+
+![./plots/2020_28/2020_28_CoffeeRatings.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_28/2020_28_CoffeeRatings.png)
+
+**Extended Version:**
+![./plots/2020_28/2020_28_CoffeeRatings_ext.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_28/2020_28_CoffeeRatings_ext.png)
+
 ***
 
 ### [2020/27](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2028_28) ☕️ Coffee Ratings by [Coffee Quality Institute](https://github.com/jldbc/coffee-quality-database)
