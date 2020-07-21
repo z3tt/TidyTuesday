@@ -21,7 +21,7 @@ library(patchwork)
 library(showtext)
 
 ## ggplot theme updates
-source(here::here("theme", "tidy_grey.R"))
+source(here::here("R", "tidy_grey.R"))
 
 ## add fonts via showtext (extrafont and ★ do not work together)
 font_add_google("Poppins", "Poppins")

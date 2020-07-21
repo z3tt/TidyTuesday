@@ -22,7 +22,7 @@ library(lemon)
 library(showtext)
 
 ## ggplot theme updates
-source(here::here("theme", "tidy_grey.R"))
+source(here::here("R", "tidy_grey.R"))
 theme_update(rect = element_rect(fill = "#001a33"),
              strip.background = element_rect(fill = "#001a33", colour = "transparent"), 
              plot.margin = margin(0, 80, 10, 80),

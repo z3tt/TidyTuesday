@@ -23,7 +23,7 @@ library(patchwork)
 library(emoGG)
 
 ## ggplot theme updates
-source(here::here("theme", "tidy_grey.R"))
+source(here::here("R", "tidy_grey.R"))
 ```
 
 ## Trade deficit in goods and the number of people employed in manufacturing

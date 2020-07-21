@@ -22,7 +22,7 @@ library(ggrepel)
 library(showtext)
 
 ## ggplot theme updates
-source(here::here("theme", "tidy_grey.R"))
+source(here::here("R", "tidy_grey.R"))
 theme_update(line = element_blank(),
              rect = element_rect(fill = "#f7f5ee", color = "transparent"),
              panel.border = element_blank(),

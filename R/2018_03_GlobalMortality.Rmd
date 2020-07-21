@@ -23,7 +23,7 @@ library(cartogram)
 library(patchwork)
 
 ## ggplot theme updates
-source(here::here("theme", "tidy_grey.R"))
+source(here::here("R", "tidy_grey.R"))
 
 theme_update(
   axis.ticks = element_blank(),

@@ -21,7 +21,7 @@ library(geofacet)
 library(ggtext)
 
 ## ggplot theme updates
-source(here::here("theme", "tidy_grey.R"))
+source(here::here("R", "tidy_grey.R"))
 
 theme_set(theme_custom(base_family = "Rockwell"))
 theme_update(rect = element_rect(fill = "#f5f3f3"),

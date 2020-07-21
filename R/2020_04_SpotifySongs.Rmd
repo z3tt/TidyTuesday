@@ -22,7 +22,7 @@ library(extrafont)
 library(cowplot)
 
 ## theme
-source(here::here("theme", "tidy_grey.R"))
+source(here::here("R", "tidy_grey.R"))
 
 theme_set(theme_custom(base_family = "Fjalla One"))
 
