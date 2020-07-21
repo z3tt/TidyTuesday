@@ -1,0 +1,361 @@
+---
+title: "TidyTuesday 2020/30 - Australian Animal Outcomes by RSPCA"
+author: "Cedric Scherer"
+date: "21st of July 2020"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE}
+## packages
+library(tidyverse)
+library(sf)
+library(geofacet)
+library(treemapify)
+library(ggtext)
+library(colorspace)
+library(ragg)
+library(cowplot)
+library(patchwork)
+library(cowplot)
+library(pdftools)
+
+theme_set(theme_void(base_size = 15, base_family = "Oswald"))
+
+theme_update(
+  legend.position = "none",
+  plot.title = element_text(hjust = .5, face = "bold", color = "grey35", 
+                            size = 11, margin = margin(b = 3)),
+  plot.caption = element_text(color = "grey65", size = 8, 
+                              margin = margin(20, 0, 5, 0)),
+  strip.text = element_blank(),
+  panel.spacing = unit(.075, "lines"),
+  plot.margin = margin(rep(7, 4))
+)
+```
+
+```{r data}
+df_pets <- 
+  readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-21/animal_outcomes.csv') %>% 
+  pivot_longer(
+    cols = ACT:WA,
+    names_to = "region",
+    values_to = "animals"
+  ) %>% 
+  mutate(
+    name = case_when(
+      region == "ACT" ~ "Australian Capital Territory",
+      region == "NSW" ~ "New South Wales",
+      region == "NT" ~ "Northern Territory",
+      region == "QLD" ~ "Queensland",
+      region == "SA" ~ "South Australia",
+      region == "TAS" ~ "Tasmania",
+      region == "VIC" ~ "Victoria",
+      region == "WA" ~ "Western Australia"
+    )
+  )
+```
+
+```{r data-prep}
+df_pets_prep <-
+  df_pets %>% 
+    mutate(
+      animal_type = if_else(animal_type == "Horses", "Other Animals", animal_type),
+      animal_type = if_else(animal_type == "Other Animals", "Other", animal_type)
+    ) %>% 
+    group_by(name, year, animal_type) %>% 
+    mutate(overall = sum(animals, na.rm = T)) %>% 
+    filter(outcome %in% c("Reclaimed", "Rehomed", "Released", "Transferred")) %>% 
+    group_by(name, region, animal_type, year, overall) %>% 
+    summarize(released = sum(animals, na.rm = T)) %>% 
+    group_by(name, region, animal_type, year) %>% 
+    mutate(rel = if_else(overall > 0, released / overall, 0)) %>% 
+    mutate(rel = cut(rel, breaks = seq(0, 1, by = .1))) %>% 
+    mutate(animal_type = fct_reorder(animal_type, overall)) %>% 
+    mutate(animal_type = fct_relevel(animal_type, "Other", after = Inf))
+
+## modifications geofacet
+my_grid <- aus_grid1
+my_grid$row[my_grid$code == "TAS"] <- 4
+
+## map
+sf_australia <-
+  sf::read_sf(here::here("data", "2020_30", "Australia_Polygon.shp")) %>% 
+  filter(name %in% unique(df_pets$name))
+
+int <- st_intersection(sf_australia, sf_australia)
+inn <- int[int$id != int$id.1,]
+```
+
+## Treemap Facet
+
+```{r treemap-facet-function}
+## per type
+facet_treemap <- function(year_highlight) {
+  df_pets_prep %>% 
+    filter(year == year_highlight) %>% 
+    ggplot(aes(
+        area = overall, 
+        fill = animal_type, 
+        subgroup = name
+      )) +
+      geom_treemap(
+        aes(alpha = rel),
+        color = NA
+      ) +
+      facet_geo(~ region, grid = my_grid) +
+      rcartocolor::scale_color_carto_d(palette = "Bold", guide = F) +
+      rcartocolor::scale_fill_carto_d(palette = "Bold", guide = F) +
+      scale_alpha_discrete(breaks = seq(.05, 1, length.out = 10)) +
+      guides(alpha = guide_legend(override.aes = list(fill = "#7F3C8D"))) +
+      ggtitle(glue::glue("{year_highlight}"))
+}
+```
+
+```{r plot-2018}
+g <- 
+  facet_treemap(year_highlight = 2018) +
+    geom_treemap_text(
+      aes(
+        label = animal_type, 
+        colour = animal_type, 
+        colour = after_scale(darken(colour, .1, space = "HLS")), 
+        alpha = rel
+      ),
+      family = "Staatliches", 
+      place = "topleft", 
+      grow = TRUE
+    ) +
+    geom_treemap_subgroup_text(
+      family = "Oswald SemiBold", 
+      fontface = "italic",
+      color = "white", 
+      alpha = .75, 
+      size = 16, 
+      place = "bottomleft",
+      grow = F
+    ) +
+    labs(title = "") +
+    theme(
+      panel.spacing = unit(.25, "lines"),
+      plot.margin = margin(b = 30)
+    )
+```
+
+## Legend
+
+```{r legend}
+df_legend <-
+  tibble(
+    animal_type = rep(factor(unique(df_pets_prep$animal_type), levels = levels(df_pets_prep$animal_type)), 10),
+    rel = rep(seq(.1, 1, by = .1), each = 5)
+  )
+
+pal <- darken(rev(rcartocolor::carto_pal(name = "Bold", n = 5)), .1, space = "HLS")
+
+l <- 
+  ggplot(df_legend, aes(
+      rel, 
+      fct_rev(animal_type), 
+      alpha = rel
+    )) +
+    geom_tile(
+      aes(
+        fill = animal_type, 
+        color = after_scale(darken(fill, .15, space = "HLS"))
+      ),
+      size = .2
+    ) +
+    geom_hline(
+      data = tibble(y = -.5:5.5),
+      aes(yintercept = y),
+      color = "white",
+      size = .7
+    ) +
+    geom_segment(
+      data = tibble(x = c(.3, .8), xend = c(.17, .92)),
+      aes(
+        x = x, xend = xend,
+        y = 6, yend = 6
+      ),
+      inherit.aes = F,
+      arrow = arrow(length = unit(.2, "lines"), type = "closed"),
+      color = "grey45",
+      size = .4
+    ) +
+    geom_text(
+      data = tibble(
+        x = c(.055, 1.05),
+        h = c(0, 1),
+        label = c("\u226410%", ">100%")
+      ),
+      aes(x = x, y = 6, label = label, hjust = h),
+      inherit.aes = F,
+      family = "Oswald",
+      color = "grey45",
+      size = 2.8
+    ) +
+    annotate(
+      "text", x = .55, y = 6,
+      label = "Life Release Rate (LRR)",
+      family = "Oswald",
+      fontface = "bold",
+      color = "grey45",
+      size = 3.2
+    ) +
+    rcartocolor::scale_color_carto_d(palette = "Bold", guide = F) +
+    rcartocolor::scale_fill_carto_d(palette = "Bold", guide = F) +
+    scale_x_continuous(
+      expand = c(.005, .005)
+    ) +
+    scale_y_discrete(
+      expand = c(.3, .3),
+      position = "right"
+    ) +
+    scale_alpha(
+      range = c(.05, 1), 
+      limits = c(0, 1)
+    ) +
+    theme(axis.text.y = element_text(size = 12, family = "Staatliches", 
+                                     color = pal, hjust = 0))
+```
+
+## Inset Map
+
+```{r map}
+df_labs <-
+  tibble(
+    name = unique(df_pets_prep$name),
+    x = c(155, 147, 133.5, 144, 135, 148, 144, 121.5),
+    y = c(-36.5, -32, -20, -23, -29, -45.5, -37, -26)
+  ) %>% 
+  mutate(name = str_wrap(name, 12))
+  
+m <-
+  ggplot(sf_australia) +
+    geom_sf(
+      fill = "grey85", 
+      color = "grey85", 
+      size = .05
+    ) +
+    geom_sf(
+      data = inn,
+      color = "grey65", 
+      size = .2
+    ) +
+    geom_text(
+      data = df_labs,
+      aes(x, y, label = name),
+      family = "Oswald",
+      fontface = "italic",
+      color = "grey45",
+      size = 2.8,
+      lineheight = .9
+    ) +
+  annotate(
+    "segment",
+    x = 152.5, xend = 149,
+    y = -36.5, yend = -35.5,
+    color = "grey45",
+    size = .35
+  )
+```
+
+## Title
+
+```{r title}
+t <-
+  ggplot(tibble(
+      x = 1, 
+      y = 1,
+      label = "<b style='font-size:18pt;font-family:Staatliches'>Rehoming and releasing neglected and unwanted animals in Australia</b><br><br>
+      <span style='font-size:11pt;color:#737373'>While the number of animals received by the RSPCA, Australia’s oldest and largest animal welfare organisation, is stable the release rates have been increasing over the last decades. A measure for this change over time is what’s called the **live release rate (LRR)**—namely the proportion of animals per animal type that was adopted out, reunited with their owners or released back into the wild.<br><br>
+      With a great deal of effort from RSPCAs all over the country, notable improvements in the outcomes for cats and dogs have been achieved. This can be attributed to the introduction of new approaches and programs to increase the number of animals adopted and reunited with their owners.<br>
+      But also the number of wildlife presented to the RSPCA has significantly increased in the past decade. Unfortunately, many of the animals are injured which often causes significant pain and suffering and/or compromise survival in the wild. The RSPCA performs a difficult but valuable role relieving this suffering through humane euthanasia, leading to low LLR estimates in most years.</span><br><br>
+      <i style='font-size:9pt;color:#737373;'>**How to read:** Each Australian state and territory (excluding Jervis Bay) of Australia is represente by a treemap. In a treemap each rectangle has an area proportional to a given value—here it represents the number of animals per type. As one can see, cats and dogs are the most commonly received animals in RSPCAs across all states but Queensland. The color intensity of each rectangle is proportional to the live release ratio (LRR). Nowadays the LRR is quite high for most animal types and has seen an steady increase over the last decades (see timeline below).</i>"
+    )) +
+    geom_textbox(
+      aes(x, y, label = label),
+      width = unit(35.5, "lines"),
+      family = "Oswald",
+      color = "grey30",
+      lineheight = 1.3,
+      hjust = 0,
+      box.colour = NA
+    ) +
+    coord_cartesian(clip = "off")
+```
+
+## Full Panel
+
+```{r panel, fig.width = 15, fig.heifght = 12}
+glm <- 
+  ggdraw(g) +
+    draw_plot(l, .88, .15, .24, .17, hjust = .5, vjust = .5) +
+    draw_plot(m, .88, .76, .35, .47, hjust = .5, vjust = .5) +
+    draw_plot(t, .001, .27, .35, .35, hjust = .5, vjust = .5)
+
+glm / (
+    facet_treemap(1999) +
+    facet_treemap(2000) +
+    facet_treemap(2001) +
+    facet_treemap(2002) +
+    facet_treemap(2003) +
+    facet_treemap(2004) +
+    facet_treemap(2005) +
+    facet_treemap(2006) +
+    facet_treemap(2007) +
+    facet_treemap(2008) +
+    facet_treemap(2009) +
+    facet_treemap(2010) +
+    facet_treemap(2011) +
+    facet_treemap(2012) +
+    facet_treemap(2013) +
+    facet_treemap(2014) +
+    facet_treemap(2015) +
+    ggplot(tibble(x = 1, y = 1, label = "Incomplete\nData")) +
+      geom_text(
+        aes(x, y, label = label),
+        family = "Oswald",
+        color = "grey65",
+        size = 4.5,
+        lineheight = .9,
+        vjust = .2
+      ) +
+      ggtitle("2016") +
+    facet_treemap(2017) +
+    facet_treemap(2018) +
+    plot_layout(nrow = 2)
+  ) +
+  plot_layout(heights = c(1, .24)) +
+  plot_annotation(
+    caption = "Visualization by Cédric Scherer  •  Data by RSPCA Australia"  
+  ) # +
+  # ggsave(here::here("dev", glue::glue("2020_28___{format(Sys.time(), '%Y%m%d_%H%M%S')}.pdf")), 
+  #        width = 15, height = 12, device = cairo_pdf)
+```
+
+```{r plot-save-convert}
+path <- here::here("plots", "2020_30", "2020_30_AnimalOutcomes.pdf")
+
+ggsave(path, width = 15, height = 12, device = cairo_pdf)
+
+pdf_convert(pdf = path, format = "png", dpi = 350, 
+            filenames = here::here("plots", "2020_30", "2020_30_AnimalOutcomes.png"))
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
