@@ -4,11 +4,11 @@
 .Ruserdata
 /plots/_all/*
 *.pdf
-/html/*
 *_secret.Rmd
 *_secret.png
 /data/2020_26/*
 /dev/*
-/gifs/*/*.png
-/gifs/*/*.mp4
-/codes/*
+misc/html/*
+misc/gifs/*/*.png
+misc/gifs/*/*.mp4
+misc/codes/*
