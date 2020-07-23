@@ -1,0 +1,30 @@
+---
+title: "Untitled"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(pdftools)
+library(magick)
+
+## convert pdf's to png's
+setwd(here::here("dev"))
+pdfs <- list.files(here::here("dev"), pattern = "*.pdf")
+
+for(pdf in pdfs) {
+  pdf_convert(pdf = here::here("dev", pdf), 
+              format = "png", dpi = 150)
+}
+
+system("magick.exe convert *.png -resize 1000x1000 -gravity center -background white -extent 1000x1000 out-%03d.png")
+
+## convert png's to gif
+system("magick.exe -delay 15 out*.png -delay 500 out-238.png -loop 0 dev_2020_30_AnimalOutcomes.gif")
+```
+
