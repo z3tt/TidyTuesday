@@ -18,7 +18,7 @@ In total, 500 plant species are considered extinct as of 2020. 19.6% of those we
 
 Credit: [Florent Lavergne](https://www.behance.net/florentlavergne) and [Cédric Scherer](twitter.com/@CedScherer)
 
-```
+
 ### Data Dictionary
 
 ## `plants_extinct_wide.csv`
@@ -60,7 +60,7 @@ plants <- readxl::read_excel(here::here("data", "master_table_plants_extinct.xls
 
 ## clean names
 h <-
-  tibble(h1 = names(plants), h2= as.character(plants[1,])) %>%
+  tibble(h1 = names(plants), h2 = as.character(plants[1,])) %>%
   mutate(name = if_else(is.na(h2), h1, h2))
 
 ## fix duplicated NA name

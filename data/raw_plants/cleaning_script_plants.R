@@ -5,7 +5,7 @@ plants <- readxl::read_excel(here::here("data", "master_table_plants_extinct.xls
 
 ## clean names
 h <- 
-  tibble(h1 = names(plants), h2= as.character(plants[1,])) %>% 
+  tibble(h1 = names(plants), h2 = as.character(plants[1,])) %>% 
   mutate(name = if_else(is.na(h2), h1, h2))
 
 ## fix duplicated NA name
@@ -20,9 +20,6 @@ plants <- plants[-1,]
 
 ## remove empty cols at the end
 plants <- plants[, -c(25:28)]
-
-## remove NA columns
-#plants <- plants[, -c(17, 23)]
 
 plants_wide <-
   plants %>% 
