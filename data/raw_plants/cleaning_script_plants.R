@@ -46,3 +46,46 @@ plants_long <-
   replace_na(list(threathened = 0, actioned = 0))
 
 write_csv(plants_long, here::here("data", "plants_extinct_long.csv"))
+
+
+##############################################################################
+## Detect color fills in original files ######################################
+
+# library(tidyverse)
+# library(readxl)
+# library(tidyxl)
+# 
+# path <- "master_table_plants_extinct_color.xlsx"
+# 
+# # Read in the sheet, I've opted to not use the first line as headers since I add them back in manually at the end.
+# x <- read_excel(path, col_names = FALSE)
+# 
+# # Pulling the formatting out of the sheet
+# formats <- xlsx_formats(path)
+# 
+# # Pulling the fill colours specifically out of the path
+# fill_colours_path <- formats$local$fill$patternFill$fgColor$rgb
+# 
+# #  Import all the cells (note that it also imports extra whitespace beyond column 24, this is deal with below),
+# # Create new columns of 'x_fill' with the fill colours, by looking up the local format id of each cell
+# fills <- xlsx_cells(path,
+#                     sheet = "Sheet1") %>% 
+#   mutate(fill_colour = fill_colours_path[local_format_id]) %>% 
+#   select(row, col, fill_colour) %>% 
+#   spread(col, fill_colour) %>% 
+#   set_names(paste0(colnames(x), "_fill"))
+# 
+# # Combine the original sheet and the format sheet
+# y <- bind_cols(x, fills)
+# 
+# # Removed the two header rows, will be added back in below
+# y1 <- y[-(1:2),]
+# 
+# # Moved format colours from their columns to where they are on the sheet 
+# # (i.e. moved the hexcode info from columns 35:52 to columns 6:23)
+# y1[,(6:23)] <- y1[,(35:52)]
+# 
+# # Removed excess columns right of 'Red List Category' column
+# y1 <- y1[,-(25:length(y1))]
+
+
