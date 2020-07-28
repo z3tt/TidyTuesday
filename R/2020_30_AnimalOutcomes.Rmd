@@ -25,7 +25,6 @@ library(colorspace)
 library(ragg)
 library(cowplot)
 library(patchwork)
-library(cowplot)
 library(pdftools)
 
 theme_set(theme_void(base_size = 15, base_family = "Oswald"))
