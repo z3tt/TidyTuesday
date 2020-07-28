@@ -15,16 +15,17 @@ library(magick)
 
 ## convert pdf's to png's
 setwd(here::here("dev"))
-pdfs <- list.files(here::here("dev"), pattern = "*.pdf")
+pdfs <- list.files(here::here("dev"), pattern = "2020_.*pdf")
 
 for(pdf in pdfs) {
   pdf_convert(pdf = here::here("dev", pdf), 
               format = "png", dpi = 150)
 }
 
-system("magick.exe convert *.png -resize 1000x1000 -gravity center -background white -extent 1000x1000 out-%03d.png")
+system("magick.exe convert 2020_*.png -resize 1000x1200 -gravity center -background black -extent 1000x1200 out-%03d.png")
+
 
 ## convert png's to gif
-system("magick.exe -delay 15 out*.png -delay 500 out-238.png -loop 0 dev_2020_30_AnimalOutcomes.gif")
+system("magick.exe -delay 20 out*.png -delay 500 out-251.png -loop 0 2020_31_PalmerPenguins.gif")
 ```
 
