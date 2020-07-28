@@ -83,9 +83,16 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/28 [☕️ Coffee Ratings](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_28)
   - 2020/29 [👨‍🚀 Astronaut Database](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_29)
   - 2020/30 [😿 Australian Animal Outcomes](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_30)
+  - 2020/31 [🐧 Palmer Penguins](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_31)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/31](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_31) 🐧 Palmer Penguins by [Gorman, Williams and Fraser (2014)](https://portal.edirepository.org/nis/mapbrowse?packageid=knb-lter-pal.219.5)
+
+![./plots/2020_31/2020_31_PalmerPenguins.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_31/2020_31_PalmerPenguins.png)
 
 ***
 
