@@ -1,0 +1,357 @@
+---
+title: "TidyTuesday 2020/32 - European Energy by EuroStat"
+author: "Cedric Scherer"
+date: "4th of August 2020"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE}
+## packages
+library(tidyverse)
+library(geofacet)
+library(gggibbous)
+library(ggtext)
+library(colorspace)
+library(ragg)
+library(patchwork)
+library(pdftools)
+
+theme_set(theme_void(base_family = "Avenir Next Condensed"))
+
+theme_update(
+  legend.position = "none",
+  plot.title = element_text(hjust = .5, face = "bold", color = "grey35", 
+                            size = 13, margin = margin(b = 10, t = 6)),
+  plot.caption = element_text(color = "grey65", size = 8, 
+                              margin = margin(15, 0, 5, 0)),
+  strip.text = element_blank(),
+  panel.spacing = unit(.075, "lines"),
+  plot.margin = margin(rep(7, 4)),
+  plot.background = element_rect(color = "grey94", fill = "grey94", size = 1.8)
+)
+```
+
+```{r data}
+df_energy <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-08-04/energy_types.csv') %>% 
+  mutate(
+    country_name = if_else(country == "EL", "Greece", country_name),
+    country = if_else(country == "EL", "GR", country)
+  ) %>% 
+  filter(level == "Level 1")
+```
+
+```{r data-prep}
+## add Gerogia to geofacet
+my_grid <- 
+  europe_countries_grid1 %>% 
+  filter(!code %in% c("IS", "BY", "RU", "MD", "CH")) %>% 
+  add_row(row = 6, col = 10, code = "GE", name = "Georgia") %>% 
+  mutate(row = if_else(code == "IE", 2, row)) 
+```
+
+```{r moon-facet}
+moons <-
+  df_energy %>% 
+  mutate(
+    type_agg = if_else(
+      type %in% c("Conventional thermal", "Nuclear"),
+      "Non-renewable", "Renewable"
+    )
+  ) %>% 
+  group_by(country, country_name, type_agg) %>% 
+  summarize(sum = sum(`2018`)) %>% 
+  mutate(
+    total = sum(sum),
+    prop = sum / unique(total)
+  ) %>% 
+  ungroup() %>% 
+  mutate(country = if_else(country == "UK", "GB", country)) %>% 
+  full_join(my_grid, by = c("country" = "code")) %>% 
+  mutate(country_name = if_else(country == "GB", "United Kingdom", country_name)) %>% 
+  mutate(max = max(total)) %>% 
+  filter(type_agg == "Renewable") %>%
+  ggplot(aes(
+    x = .5, 
+    y = .5, 
+    size = total
+  )) +
+  geom_point(
+    aes(size = max),
+    color = lighten("#228b22", .65, space = "combined"),
+    shape = 21,
+    #fill = "transparent",
+    fill = "grey94",  ## change for white version
+    stroke = .9
+  ) +
+  geom_moon(
+    aes(ratio = prop), 
+    fill = "#228b22", 
+    color = "#228b22",
+    stroke = .3
+  ) +
+  geom_moon(
+    aes(ratio = 1 - prop), 
+    fill = "white", 
+    color = "#228b22",
+    stroke = .3,
+    right = FALSE
+  ) +
+  geom_text(
+    aes(label = country_name),
+    x = .5,
+    y = .98,
+    size = 3.5,
+    family = "Avenir Next Condensed",
+    color = "grey55",
+    vjust = 0
+  ) +
+  facet_geo(~ country, grid = my_grid) +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(limits = c(0, 1)) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_size(range = c(.1, 30)) + 
+  theme(
+    plot.background = element_rect(fill = "white"),
+    plot.margin = margin(15, 25, 15, 25)
+  ) 
+```
+
+```{r dot-facet}
+df_energy_dots <-
+  df_energy %>% 
+  mutate(
+    type_agg = if_else(
+      type %in% c("Conventional thermal", "Nuclear"),
+      type, "Renewable"
+    )
+  ) %>% 
+  group_by(country, country_name, type_agg) %>% 
+  summarize(sum = sum(`2018`)) %>% 
+  mutate(
+    total = sum(sum),
+    prop = sum / unique(total)
+  ) %>% 
+  ungroup() %>% 
+  mutate(country = if_else(country == "UK", "GB", country)) %>% 
+  full_join(my_grid, by = c("country" = "code")) %>% 
+  mutate(country_name = if_else(country == "GB", "United Kingdom", country_name))
+
+dot_facet <- function(energy, color, size) { 
+  df_energy_dots %>% 
+  filter(type_agg == energy) %>% 
+  mutate(max = max(sum)) %>% 
+  ggplot(aes(
+    x = .5, 
+    y = .5, 
+    size = sum
+  )) +
+  geom_point(
+    color = color,
+    shape = 16
+  ) +
+  geom_point(
+    aes(size = max),
+    color = lighten(color, .65, space = "combined"),
+    shape = 21,
+    fill = "transparent",
+    stroke = .7
+  ) +
+  facet_geo(~ country, grid = my_grid) +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(limits = c(0, 1)) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_size_area(max_size = size) + 
+  theme(
+    plot.title = element_text(color = color),
+    plot.background = element_rect(fill = "white"),
+    plot.margin = margin(5, 10, 5, 10)
+  )
+}
+
+dots_r <- 
+  dot_facet(energy = "Renewable", color = "#228b22", size = 25 / 4) +
+  ggtitle("Renewable energy") +
+  theme(plot.margin = margin(5, 10, 15, 10))
+
+dots_n <- 
+  dot_facet(energy = "Nuclear", color = "#871a1a", size = 40 / 4) +
+  ggtitle("Nuclear energy") +
+  theme(plot.margin = margin(10, 10, 15, 10))
+
+dots_t <- 
+  dot_facet(energy = "Conventional thermal", color = "black", size = 34 / 4) +
+  ggtitle("Conventional thermal energy") +
+  theme(plot.margin = margin(10, 10, 0, 10))
+```
+
+```{r text-legend-panel}
+df_leg <- 
+  df_energy_dots %>% 
+  group_by(type_agg) %>% 
+  arrange(-sum) %>% 
+  slice(1) %>% 
+  add_column(
+    x = rev(seq(.16, .82, length.out = 3)),
+    y = 1.04
+  )
+
+df_labs <-
+  tribble(
+    ~x, ~y, ~label, ~color,
+    .8, .265, "<span style='font-size:10pt'>**Germany as a reference**<br>(571.8 terawatt hours)</span><br><span style='font-size:8pt'>which is the largest energy<br>producing country in Europe</span>", "B",
+    .4, .45, "**Energy production**<br>per country", "A",
+    .68, .02, "**Renewable energy**<br><span style='font-size:9pt'>water, wind, radiation,<br>geothermal resources</span>", "A",
+    .24, .02, "**Non-renewable energy**<br><span style='font-size:9pt'>oil, natural gas, coal,<br>uranium, plutonium</span>", "C"
+  )
+
+df_lines <-
+  tribble(
+    ~x, ~y, ~xend, ~yend, ~color,
+    .275, .445, .314, .28, "A",  ## energy production
+    .61, .34, .455, .35, "B",  ## reference
+    .6, .08, .45, .21, "A",  ## reneweable
+    .35, .21, .2, .08, "C"  ## non-renewable
+  )
+
+legend <-
+  df_energy_dots %>% 
+  mutate(max = max(total)) %>% 
+  filter(
+    type_agg == "Renewable",
+    country == "IT"
+  ) %>%
+  ggplot(
+    aes(
+      x = .4, 
+      y = .25
+    )
+  ) +
+  ## legend moon facet #########################################################
+  geom_point(
+    size = 31,
+    color = lighten("#228b22", .65, space = "combined"),
+    shape = 21,
+    #fill = "white",
+    fill = "grey94", ## change for white version
+    stroke = 1.1
+  ) +
+  geom_moon(
+    aes(ratio = prop), 
+    size = 21, 
+    fill = "#228b22", 
+    color = "#228b22",
+    stroke = .3
+  ) +
+  geom_moon(
+    aes(ratio = 1 - prop), 
+    size = 21,
+    fill = "white", 
+    color = "#228b22",
+    stroke = .3,
+    right = FALSE
+  ) +
+  geom_richtext(
+    data = df_labs,
+    aes(
+      x = x, y = y, 
+      label = label, 
+      color = color
+    ),
+    family = "Avenir Next Condensed",
+    size = 4,
+    lineheight = .9,
+    fill = NA,
+    label.color = NA
+  ) +
+  geom_curve(
+    data = df_lines,
+    aes(
+      x = x, xend = xend,
+      y = y, yend = yend,
+      color = color
+    ),
+    curvature = .42
+  ) +
+  ## legend small multiples ####################################################
+  geom_point(
+    data = df_leg,
+    aes(
+      x = x, y = y, 
+      color = type_agg, 
+      size = sum
+    )
+  ) +
+  geom_richtext(
+    data = df_leg,
+    aes(x = x, y = y + .09, color = type_agg, label = glue::glue("<span style='font-size:10pt'>{type_agg}:</span><br>**{country_name}**")),
+    family = "Avenir Next Condensed",
+    size = 4.5,
+    fill = NA,
+    label.color = NA
+  ) +
+  geom_richtext(
+    data = df_leg,
+    aes(x = x, y = y - .09, color = type_agg, label = glue::glue("{round(sum / 1000, 1)} TWh<br><span style='font-size:8pt'>({round(prop, 2)*100}% of its production)</span>")),
+    family = "Avenir Next Condensed",
+    size = 4.5,
+    lineheight = .8,
+    fill = NA,
+    label.color = NA
+  ) +
+  ## title + texts #############################################################
+  geom_textbox(
+    data = tibble(
+      x = 0,
+      y = c(1.45, .7, -.34, -.6),
+      label = c(
+        "<b style='font-size:18pt'>How European countries generated electricity in 2018</b><br><br>**Germany** is the largest energy producing country in Europe.<br>It generates the most renewable and conventional thermal energy, representing 31% and 56% of its overall production respectively. **France** is the second largest energy European producer and by far the largest nuclear energy provider: 71% of its production is based on nuclear fission to generate heat.", 
+        "Renewable energy is energy that comes from resources that are naturally replenished such as sunlight, wind, water, and geothermal heat. Unlike fossil fuels, such as oil, natural gas and coal, or nuclear power sources such as uranium and plutonium, renewable energy regenerates naturally in a short period of time.",
+        "**Norway** had an electricity production almost entirely made up of renewable energy (97.7%). This makes Norway the second largest producer of this energy type in Europe. Interestingly, most of the renewable energy is produced by hydro and pumped hydro power that take up 95% and only 2.6% by wind. In contrast, twelve European countries produce less than 20% of their energy with renewable resources: **Malta** (0%), **Hungary** (5%), **Estonia** (6%), **Czechia** (7%), **Cyprus** (9%), **Ukraine** (9%), **Poland** (10%), **Netherlands** (13%), **Bulgaria** (17%), **Belgium** (18%), **Slovakia** (19%), and **France** (19%).",
+        "*Visualization by Cédric Scherer • Data by Eurostat*"),
+      v = c(.5, .5, .5, 1.3)
+    ),
+    aes(x = x, y = y, label = label, vjust = v),
+    width = unit(3.5, "inch"),
+    color = "black",
+    family = "Playfair Display",
+    lineheight = 1.7,
+    size = 3,
+    fill = NA,
+    box.colour = NA,
+    hjust = 0
+  ) +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(limits = c(0, 1)) +
+  scale_y_continuous(limits = c(-.6, 1.5)) +
+  scale_color_manual(values = c("#228b22", "#45B145", "#929292", "black", "#871a1a", "#228b22"), guide = F) +
+  scale_size_area(max_size = 39 / 4, guide = F)
+```
+
+```{r full-panel}
+path <- here::here("plots", "2020_32", "2020_32_EuropeanEnergy")
+
+((legend | moons | (dots_r / dots_n / dots_t)) + plot_layout(widths = c(.35, 1, .35))) +
+  ggsave(glue::glue("{path}.pdf"), width = 19, height = 11, device = cairo_pdf)
+  #ggsave(here::here("dev", glue::glue("2020_32___{format(Sys.time(), '%Y%m%d_%H%M%S')}.pdf")),
+  #       width = 19, height = 11, device = cairo_pdf)
+
+pdf_convert(pdf = glue::glue("{path}.pdf"), format = "png", dpi = 250, 
+            filenames = glue::glue("{path}.png"))
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
