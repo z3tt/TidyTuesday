@@ -84,7 +84,7 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/29 [👨‍🚀 Astronaut Database](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_29)
   - 2020/30 [😿 Australian Animal Outcomes](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_30)
   - 2020/31 [🐧 Palmer Penguins](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_31)
-  - 2020/32 [⚡ European Energy](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_32)
+  - 2020/32 [⚡ European Energy](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_32)
 <!-- tocstop -->
 
 </details>
