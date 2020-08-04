@@ -7,6 +7,12 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
+### [2020/32](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_32) ⚡ European Energy by [Eurostat](https://ec.europa.eu/eurostat/statistics-explained/index.php/Electricity_generation_statistics_%E2%80%93_first_results)
+
+![./plots/2020_31/2020_32/2020_32_EuropeanEnergy.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_32/2020_32_EuropeanEnergy.png)
+
+***
+
 ### [2020/31](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_31) 🐧 Palmer Penguins by [Gorman, Williams and Fraser (2014)](https://portal.edirepository.org/nis/mapbrowse?packageid=knb-lter-pal.219.5)
 
 ![./plots/2020_31/2020_31_PalmerPenguins.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_31/2020_31_PalmerPenguins.png)
