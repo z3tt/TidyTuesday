@@ -50,10 +50,10 @@ df_energy <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/
 ```
 
 ```{r data-prep}
-## add Gerogia to geofacet
+## add Georgia to geofacet
 my_grid <- 
   europe_countries_grid1 %>% 
-  filter(!code %in% c("IS", "BY", "RU", "MD", "CH")) %>% 
+  #filter(!code %in% c("IS", "BY", "RU", "MD", "CH")) %>% 
   add_row(row = 6, col = 10, code = "GE", name = "Georgia") %>% 
   mutate(row = if_else(code == "IE", 2, row)) 
 ```
@@ -77,7 +77,7 @@ moons <-
   mutate(country = if_else(country == "UK", "GB", country)) %>% 
   full_join(my_grid, by = c("country" = "code")) %>% 
   mutate(country_name = if_else(country == "GB", "United Kingdom", country_name)) %>% 
-  mutate(max = max(total)) %>% 
+  mutate(max = max(total, na.rm = T)) %>% 
   filter(type_agg == "Renewable") %>%
   ggplot(aes(
     x = .5, 
@@ -148,7 +148,10 @@ df_energy_dots <-
 dot_facet <- function(energy, color, size) { 
   df_energy_dots %>% 
   filter(type_agg == energy) %>% 
-  mutate(max = max(sum)) %>% 
+  mutate(
+    max = max(sum, na.rm = T),
+    sum = if_else(sum == 0, NA_real_, sum)
+  ) %>% 
   ggplot(aes(
     x = .5, 
     y = .5, 
@@ -156,7 +159,8 @@ dot_facet <- function(energy, color, size) {
   )) +
   geom_point(
     color = color,
-    shape = 16
+    shape = 16,
+    stroke = 0
   ) +
   geom_point(
     aes(size = max),
@@ -224,7 +228,7 @@ df_lines <-
 
 legend <-
   df_energy_dots %>% 
-  mutate(max = max(total)) %>% 
+  mutate(max = max(total, na.rm = T)) %>% 
   filter(
     type_agg == "Renewable",
     country == "IT"
@@ -316,7 +320,7 @@ legend <-
         "<b style='font-size:18pt'>How European countries generated electricity in 2018</b><br><br>**Germany** is the largest energy producing country in Europe.<br>It generates the most renewable and conventional thermal energy, representing 31% and 56% of its overall production respectively. **France** is the second largest energy European producer and by far the largest nuclear energy provider: 71% of its production is based on nuclear fission to generate heat.", 
         "Renewable energy is energy that comes from resources that are naturally replenished such as sunlight, wind, water, and geothermal heat. Unlike fossil fuels, such as oil, natural gas and coal, or nuclear power sources such as uranium and plutonium, renewable energy regenerates naturally in a short period of time.",
         "**Norway** had an electricity production almost entirely made up of renewable energy (97.7%). This makes Norway the second largest producer of this energy type in Europe. Interestingly, most of the renewable energy is produced by hydro and pumped hydro power that take up 95% and only 2.6% by wind. In contrast, twelve European countries produce less than 20% of their energy with renewable resources: **Malta** (0%), **Hungary** (5%), **Estonia** (6%), **Czechia** (7%), **Cyprus** (9%), **Ukraine** (9%), **Poland** (10%), **Netherlands** (13%), **Bulgaria** (17%), **Belgium** (18%), **Slovakia** (19%), and **France** (19%).",
-        "*Visualization by Cédric Scherer • Data by Eurostat*"),
+        "<span style='color:#656565'>Note: Energy production is mapped to the area of the circles.<br>*Visualization by Cédric Scherer • Data by Eurostat*</span>"),
       v = c(.5, .5, .5, 1.3)
     ),
     aes(x = x, y = y, label = label, vjust = v),
@@ -339,7 +343,7 @@ legend <-
 ```{r full-panel}
 path <- here::here("plots", "2020_32", "2020_32_EuropeanEnergy")
 
-((legend | moons | (dots_r / dots_n / dots_t)) + plot_layout(widths = c(.35, 1, .35))) +
+((legend | moons | (dots_r / dots_n / dots_t))  + plot_layout(widths = c(.35, 1, .35))) +
   ggsave(glue::glue("{path}.pdf"), width = 19, height = 11, device = cairo_pdf)
   #ggsave(here::here("dev", glue::glue("2020_32___{format(Sys.time(), '%Y%m%d_%H%M%S')}.pdf")),
   #       width = 19, height = 11, device = cairo_pdf)
