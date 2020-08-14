@@ -1,0 +1,304 @@
+---
+title: "TidyTuesday 2020/33 - Avatar: The Last Airbender by {appa}"
+author: "Cedric Scherer"
+date: "11th of August 2020"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE}
+## packages
+library(tidyverse)
+library(ggdist)
+library(ggtext)
+library(colorspace)
+library(ragg)
+library(cowplot)
+library(pdftools)
+
+theme_set(theme_void(base_family = "Cabin", base_size = 16))
+
+theme_update(
+  legend.position = "none",
+  axis.text = element_blank(),
+  axis.title = element_blank(),
+  plot.title = element_text(family = "Monda", size = 32, face = "bold", color = "grey80", 
+                            hjust = .0, margin = margin(0, 0, 15, 0)),
+  plot.caption = element_text(family = "Monda", color = "grey45", size = 7, 
+                              hjust = .5, margin = margin(25, 0, 3, 0)),
+  plot.margin = margin(180, 30, 10, 30),
+  plot.background = element_rect(color = "grey14", fill = "grey14")
+)
+```
+
+```{r data}
+df_avatar_raw <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-08-11/avatar.csv')
+```
+
+```{r data-prep}
+df_avatar_elements <- 
+  df_avatar_raw %>% 
+  mutate(
+    book = factor(book, levels = c("Water", "Earth", "Fire")),
+    imdb_rating = if_else(book_num == 1 & chapter_num == 20, 9.7, imdb_rating)
+  ) %>% 
+  mutate(
+    book = factor(book, levels = c("Fire", "Earth", "Water")),
+    full_text = str_to_lower(full_text)
+  ) %>% 
+  filter(character != "Scene Description") %>% 
+  group_by(book_num, book, chapter_num, chapter, imdb_rating) %>% 
+  summarize(
+    Water = str_count(full_text, "water"),
+    Earth = str_count(full_text, "earth"),
+    Fire = str_count(full_text, "fire"),
+    Air = str_count(full_text, "air"),
+  ) %>% 
+  pivot_longer(
+    cols = Water:Air,
+    names_to = "element",
+    values_to = "count"
+  ) %>% 
+  mutate(
+    element = if_else(element == book, element, "other"),
+    element = factor(element, levels = c("other", "Water", "Earth", "Fire"))
+  ) %>% 
+  uncount(count)
+
+pal <- c("grey35", "#0051a1", "#ecb100", "#A10000") 
+pal_axis <- desaturate(lighten(rev(pal[2:4]), .2, space = "combined"), .3)
+```
+
+```{r halfs-elements-per-chapter-other-cat}
+main <- 
+  df_avatar_elements %>% 
+  group_by(book_num, chapter_num) %>% 
+  mutate(id = group_indices()) %>% 
+  ggplot(aes(chapter_num, book, fill = element, group = element)) +
+    stat_halfeye(
+      adjust = .12,
+      trim = F,
+      height = 1.2,
+      fill = "black",
+      color = NA,
+      slab_color = "black",
+      slab_size = .45
+    ) + 
+    stat_halfeye(
+      aes(
+        fill = element,
+        fill = after_scale(desaturate(darken(fill, .3, space = "combined"), .3))
+      ),
+      adjust = .12,
+      trim = F,
+      height = 1.2,
+      color = NA,
+      alpha = .6
+    ) + 
+    geom_text(
+      data = df_avatar_elements %>% group_by(book, chapter) %>% slice(1),
+      aes(label = str_wrap(chapter, 24)),
+      nudge_y = -.1,
+      family = "Cabin",
+      color = "grey50",
+      size = 1.6,
+      lineheight = .85,
+      vjust = 1
+    ) +
+    geom_text(
+      data = df_avatar_elements %>% group_by(book, chapter) %>% slice(1),
+      aes(label = format(imdb_rating, nsmall = 1), color = imdb_rating),
+      nudge_y = -.06,
+      family = "Monda",
+      fontface = "bold",
+      size = 2.5
+    ) +
+    coord_cartesian(clip = "off") +
+    scale_x_continuous(expand = c(.001, .001)) +
+    scale_y_discrete(
+      labels = c(
+        '<span style="font-size:8pt">Book 3:</span><br>**Fire**<br><br><br>', 
+        '<span style="font-size:8pt">Book 2:</span><br>**Earth**<br><br><br>', 
+        '<span style="font-size:8pt">Book 1:</span><br>**Water**<br><br><br>'
+      ),
+      expand = c(.05, .05)
+    ) +
+    #scico::scale_color_scico(palette = "lajolla", direction = -1, end = .75) +
+    scale_color_gradient(low = "grey35", high = "grey87", guide = "none") +
+    scale_fill_manual(values = pal, guide = "none") +
+    theme(axis.text.y = element_markdown(size = 20, color = pal_axis, 
+                                         family = "herculanum", hjust = .8, 
+                                         margin = margin(r = 12))) +
+    labs(caption = 'Visualization by Cédric Scherer • "Avatar: The Last Airbender" transcript data via the {appa} R package')
+```
+
+```{r legend}
+legend <- 
+  df_avatar_elements %>% 
+  group_by(book_num, chapter_num) %>% 
+  mutate(id = group_indices()) %>% 
+  ggplot(aes(chapter_num, book, fill = element, group = element)) +
+    stat_halfeye(
+      adjust = .12,
+      trim = F,
+      height = .9,
+      fill = "black",
+      color = NA,
+      slab_color = "black",
+      slab_size = .45
+    ) + 
+    stat_halfeye(
+      aes(
+        fill = element,
+        fill = after_scale(desaturate(darken(fill, .3, space = "combined"), .3))
+      ),
+      adjust = .12,
+      trim = F,
+      height = .9,
+      color = NA,
+      alpha = .6
+    ) + 
+    geom_text(
+      data = df_avatar_elements %>% group_by(book, chapter) %>% slice(1),
+      aes(label = str_wrap(chapter, 24)),
+      nudge_y = -.1,
+      family = "Cabin",
+      color = "grey50",
+      size = 2,
+      alpha = .8,
+      lineheight = .85,
+      vjust = 1
+    ) +
+    geom_text(
+      data = df_avatar_elements %>% group_by(book, chapter) %>% slice(1),
+      aes(label = format(imdb_rating, nsmall = 1), color = imdb_rating),
+      nudge_y = -.06,
+      family = "Monda",
+      fontface = "bold",
+      size = 3,
+      alpha = .8
+    ) +
+    annotate(
+      "rect", 
+      xmin = -Inf, xmax = 5.5, 
+      ymin = 1.7, ymax = Inf,
+      color = "grey14",
+      fill = "grey14"
+    ) +
+    annotate(
+      "rect", 
+      xmin = 7.5, xmax = Inf, 
+      ymin = 1.7, ymax = Inf,
+      color = "grey14",
+      fill = "grey14"
+    ) +
+    annotate(
+      "text",
+      x = 7.35,
+      y = 1.94,
+      label = 'IMDb Rating',
+      family = "Monda",
+      fontface = "bold",
+      color = "grey70",
+      size = 2.8,
+      #alpha = .8,
+      hjust = 0
+    ) +
+    annotate(
+      "text",
+      x = 7.35,
+      y = 1.89,
+      label = 'Chapter name',
+      family = "Monda",
+      color = "grey50",
+      size = 2,
+      hjust = 0
+    ) +
+    annotate(
+      "text",
+      x = 5.25,
+      y = 2.37,
+      label = 'Mentions of\nthe element\nthat serves as\nseason title',
+      family = "Monda",
+      fontface = "bold",
+      color = "#A2924F",
+      alpha = .8,
+      size = 3.3,
+      lineheight = .85,
+      hjust = .5
+    ) +
+    annotate(
+      "text",
+      x = 7.65,
+      y = 2.2,
+      label = 'Mentions of\nall other\nelements',
+      family = "Monda",
+      fontface = "bold",
+      color = "#6D6D6D",
+      alpha = .8,
+      size = 3.3,
+      lineheight = .85,
+      hjust = .5
+    ) +
+    coord_cartesian(xlim = c(4, 9), ylim = c(2.2, 2.2)) +
+    theme_void() +
+    theme(plot.background = element_blank(), legend.position = "none") +
+    scale_x_continuous(expand = c(.001, .001)) +
+    #scico::scale_color_scico(palette = "lajolla", direction = -1, end = .75) +
+    scale_color_gradient(low = "grey35", high = "grey87", guide = "none") +
+    scale_fill_manual(values = pal, guide = "none")
+```
+
+
+```{r title}
+title <-
+  tibble(
+    x = 1, y = 1,
+    label = 'The American animated television series “Avatar: The Last Airbender” is set in a world where human civilization consists of four nations, named after the four classical elements: the **Water Tribes**, the **Earth Kingdom**, the **Fire Nation**, and the **Air Nomads**. In each nation, certain people, known as **benders** of each element, have the ability to telekinetically manipulate and control the element corresponding to their nation, using gestures based on Chinese martial arts. The **Avatar** is the only person with the ability to bend all four elements.<br><br>The three seasons (called *books*) so far are named after the elements <b style="color:#5371AF">Water</b>, <b style="color:#EAC181">Earth</b>, and <b style="color:#C73B3B">Fire</b> so I asked myself: ***In each season, do characters mention the respective element more often?***<br>Turns out: <b style="color:#C73B3B">“Fire”</b> is mentioned more often than the three other elements together in the third season—but that does not apply to the other two seasons <b style="color:#5371AF">“Water”</b> and <b style="color:#EAC181">“Earth”</b>.<br><b style="color:#C73B3B">“Fire”</b>, symbolic of many things including life and death, is also the most spoken word in “Avatar: The Last Airbender”. In the series, it is inseparably connected to the ultimate obstacle to world peace, the Fire Nation, and to Aang’s greatest foe, the Fire Lord.'
+  ) %>% 
+  ggplot(aes(x, y, label = label)) +
+    geom_textbox(
+      width = unit(11.8, "inch"),
+      family = "Cabin",
+      color = "grey50",
+      size = 3.8,
+      fill = NA,
+      box.colour = NA,
+      hjust = 1
+    ) +
+    scale_x_continuous(expand = c(0, 0), limits = c(0, NA)) +
+    labs(title = '  The Elements of “Avatar: The Last Airbender”') +
+    theme(plot.margin = margin(rep(0, 4)), 
+          plot.background = element_rect(fill = NA, color = NA))
+```
+
+```{r full-panel}
+path <- here::here("plots", "2020_33", "2020_33_AvatarLastAirbender")
+
+ggdraw(main) +
+  draw_plot(legend, 1, .96, .3, .3, hjust = 1, vjust = 1) +
+  draw_plot(title, .025, .95, .7, .25, hjust = 0, vjust = 1) +
+  ggsave(glue::glue("{path}.pdf"), width = 17, height = 8.5, device = cairo_pdf)
+  # ggsave(here::here("dev", glue::glue("2020_33___{format(Sys.time(), '%Y%m%d_%H%M%S')}.pdf")),
+  #        width = 17, height = 8.5, device = cairo_pdf)
+
+pdf_convert(pdf = glue::glue("{path}.pdf"), format = "png", dpi = 350, 
+            filenames = glue::glue("{path}.png"))
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
+
