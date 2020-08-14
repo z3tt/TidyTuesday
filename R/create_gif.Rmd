@@ -22,9 +22,9 @@ for(pdf in pdfs) {
               format = "png", dpi = 150)
 }
 
-system("magick.exe convert 2020_*.png -resize 1400x800 -gravity center -background white -extent 1400x800 out-%03d.png")
+system("magick.exe convert 2020_*.png -resize 1700x850 -gravity center -background black -extent 1700x850 out-%03d.png")
 
 ## convert png's to gif
-system("magick.exe -delay 20 out*.png -delay 500 out-293.png -loop 0 2020_32_EuropeanEnergy.gif")
+system("magick.exe -delay 20 out*.png -delay 500 out-342.png -loop 0 2020_33_AvatarLastAirbender.gif")
 ```
 
