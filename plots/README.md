@@ -7,6 +7,12 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
+### [2020/33](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_33) ⚔️ Avatar: The Latest Airbender by [{appa}](https://github.com/averyrobbins1/appa)
+
+![./plots/2020_31/2020_33/2020_33_AvatarLastAirbender.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_33/2020_33_AvatarLastAirbender.png)
+
+***
+
 ### [2020/32](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_32) ⚡ European Energy by [Eurostat](https://ec.europa.eu/eurostat/statistics-explained/index.php/Electricity_generation_statistics_%E2%80%93_first_results)
 
 ![./plots/2020_31/2020_32/2020_32_EuropeanEnergy.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_32/2020_32_EuropeanEnergy.png)
