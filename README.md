@@ -86,9 +86,17 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/31 [🐧 Palmer Penguins](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_31)
   - 2020/32 [⚡ European Energy](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_32)
   - 2020/33 [⚔️ Avatar: The Latest Airbender](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_33)
+  - 2020/34 [🌱 Extinct Plants](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/34](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34) 🌱 Extinct Plants by [IUCN Red List](https://www.iucnredlist.org/)
+
+![./plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone.png)
+![./plots/2020_34/2020_34_ExtinctPlants_1_poster_SouthAmerica_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_1_poster_NorthAmerica_1.png)
 
 ***
 
