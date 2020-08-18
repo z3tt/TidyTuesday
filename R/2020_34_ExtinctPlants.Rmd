@@ -61,7 +61,7 @@ df_iucn_threat <-
   dplyr::select(binomial_name, group, continent, type = threat, id, case = threathened, year_last_seen) %>% 
   unique() %>% 
   complete(nesting(
-    continent, group, binomial_name, country, year_last_seen), 
+    continent, group, binomial_name, year_last_seen), 
     id = seq(7, 14, by = .25), fill = list(case = 0)
   ) %>% 
   mutate(
@@ -78,7 +78,7 @@ df_iucn_action <-
   )  %>% 
   replace_na(list(actioned = 0)) %>% 
   mutate(id = as.numeric(factor(action))) %>%
-  dplyr::select(binomial_name, group, continent, country, type = action, id, case = actioned, year_last_seen) %>% 
+  dplyr::select(binomial_name, group, continent, type = action, id, case = actioned, year_last_seen) %>% 
   unique() %>% 
   complete(nesting(
     continent, binomial_name, group, year_last_seen),
@@ -96,7 +96,7 @@ df_iucn_long <-
     group = factor(group)
   ) %>% 
   group_by(continent, binomial_name, group, year_last_seen, id, type) %>% 
-  summarize(case = max(case), base = max(base), country = unique(country))
+  summarize(case = max(case), base = max(base))
 
 pal <- c("#9FA651", "#799447", "#4F7E35", "#2A6B2A",
          "#4C8B64", "#5C9F8C", "#6BB2B2", "#68696A")
@@ -113,7 +113,7 @@ shapes <- c(
 
 
 ```{r plants-based-on-Jakes-flowers}
-plot_plant <- function(data) {
+plot_plant <- function(data, shape) {
   ggplot(
     data = data,
     aes(
@@ -179,7 +179,7 @@ plot_plant <- function(data) {
     scale_y_continuous(limits = c(0, 1.15), expand = c(0, 0)) +
     scale_color_manual(values = pal) +
     scale_fill_manual(values = pal) +
-    scale_shape_manual(values = s) +
+    scale_shape_manual(values = shape) +
     scale_alpha_manual(values = c(1, .5))
 }
 ```
@@ -197,7 +197,7 @@ flower_facet <- function(cont, h) {
   
   cont_trim <- str_remove(cont, "\\s")
   
-  p <- plot_plant(data = d) +
+  p <- plot_plant(data = d, shape = s) +
     ## plant group indicator
     geom_point(
       aes(
@@ -231,44 +231,6 @@ p6 <- flower_facet("South America", 18.41)
 ## Poster Version with Legend
 
 ```{r legend}
-df <- 
-  df_iucn_long  %>% 
-  filter(binomial_name == "Astragalus nitidiflorus") %>% 
-  mutate(
-    label = case_when(
-      ## actions
-      id == 1 ~ "Education & Awareness",
-      id == 2 ~ "Law & Policy",
-      id == 3 ~ "Land & Water Protection",
-      id == 4 ~ "Research & Monitoring",
-      id == 5 ~ "Species Management",
-      ## threats
-      id == 7.5 ~ "Agriculture & Aquaculture",
-      id == 8 ~ "Biological Resource Use",
-      id == 8.5 ~ "Climate Change",
-      id == 9 ~ "Energy Production & Mining",
-      id == 9.5 ~ "Geological Events",
-      id == 10 ~ "Human Intrusions",
-      id == 10.5 ~ "Invasive Species",
-      id == 11 ~ "Natural System Modifications",
-      id == 11.5 ~ "Pollution",
-      id == 12 ~ "Residential & Commercial Development",
-      id == 12.5 ~ "Transportation Corridor"
-    ),
-    hjust = case_when(
-      id %in% c(1, 2, seq(10.5, 12.5, by = .5)) ~ 1,
-      id %in% c(4, 5, seq(7.5, 9.5, by = .5)) ~ 0,
-      TRUE ~ .5
-    ),
-    nudge = case_when(
-      id %in% c(1:5) ~ .05,
-      id %in% c(9, 11) ~ .05,
-      id %in% c(9.5, 10.5) ~ .09,
-      id == 10 ~ .17,
-      TRUE ~ .02
-    )
-  )
-
 leg_a <-
   tibble(
     x = 0,
@@ -326,8 +288,46 @@ leg_b <-
     scale_y_continuous(limits = c(-.3, 1.3)) +
     scale_shape_manual(values = shapes)
 
+df <- 
+  df_iucn_long  %>% 
+  filter(binomial_name == "Astragalus nitidiflorus") %>% 
+  mutate(
+    label = case_when(
+      ## actions
+      id == 1 ~ "Education & Awareness",
+      id == 2 ~ "Law & Policy",
+      id == 3 ~ "Land & Water Protection",
+      id == 4 ~ "Research & Monitoring",
+      id == 5 ~ "Species Management",
+      ## threats
+      id == 7.5 ~ "Agriculture & Aquaculture",
+      id == 8 ~ "Biological Resource Use",
+      id == 8.5 ~ "Climate Change",
+      id == 9 ~ "Energy Production & Mining",
+      id == 9.5 ~ "Geological Events",
+      id == 10 ~ "Human Intrusions",
+      id == 10.5 ~ "Invasive Species",
+      id == 11 ~ "Natural System Modifications",
+      id == 11.5 ~ "Pollution",
+      id == 12 ~ "Residential & Commercial Development",
+      id == 12.5 ~ "Transportation Corridor"
+    ),
+    hjust = case_when(
+      id %in% c(1, 2, seq(10.5, 12.5, by = .5)) ~ 1,
+      id %in% c(4, 5, seq(7.5, 9.5, by = .5)) ~ 0,
+      TRUE ~ .5
+    ),
+    nudge = case_when(
+      id %in% c(1:5) ~ .05,
+      id %in% c(9, 11) ~ .05,
+      id %in% c(9.5, 10.5) ~ .09,
+      id == 10 ~ .17,
+      TRUE ~ .02
+    )
+  )
+
 leg_c <- 
-  plot_plant(df) +
+  plot_plant(df, shape = 21) +
   geom_text(
     aes(y = base + nudge, label = label, hjust = hjust),
     family = "Playfair Display",
@@ -343,7 +343,7 @@ leg_c <-
     fontface = "bold",
     color = "grey30",
     size = 4.7,
-    vjusdt = 0
+    vjust = 0
   ) +
   scale_y_continuous(limits = c(0, 1.3), expand = c(0, 0))
 
@@ -377,7 +377,7 @@ flower_facet_legend <- function(cont, h, x, y, w) {
   
   cont_trim <- str_remove(cont, "\\s")
   
-  p <- plot_plant(data = d) +
+  p <- plot_plant(data = d, shape = s)) +
     ## plant group indicator
     geom_point(
       aes(
