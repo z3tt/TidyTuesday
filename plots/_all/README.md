@@ -6,6 +6,26 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
+### [2020/34](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34) 🌱 Extinct Plants by [IUCN Red List](https://www.iucnredlist.org/)
+
+## Poster version with legend
+
+![./plots/2020_34/2020_34_ExtinctPlants_2_poster_legend_NorthAmerica_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_2_poster_legend_NorthAmerica_1.png)
+![./plots/2020_34/2020_34_ExtinctPlants_2_poster_legend_Europe_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_2_poster_legend_Europe_1.png)
+![./plots/2020_34/2020_34_ExtinctPlants_2_poster_legend_Oceania_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_2_poster_legend_Oceania_1.png)
+
+## Stand-alone legend
+
+![./plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone.png)
+
+## Alternative version without legend
+
+![./plots/2020_34/2020_34_ExtinctPlants_1_poster_SouthAmerica_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_1_poster_SouthAmerica_1.png)
+![./plots/2020_34/2020_34_ExtinctPlants_1_poster_Africa_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_1_poster_Africa_1.png)
+![./plots/2020_34/2020_34_ExtinctPlants_1_poster_Asia_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_1_poster_Asia_1.png)
+
+***
+
 ### [2020/33](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_33) ⚔️ Avatar: The Latest Airbender by [{appa}](https://github.com/averyrobbins1/appa)
 
 ![./plots/2020_31/2020_33/2020_33_AvatarLastAirbender.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_33/2020_33_AvatarLastAirbender.png)

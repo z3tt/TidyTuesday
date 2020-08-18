@@ -7,6 +7,13 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
+### [2020/34](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34) 🌱 Extinct Plants by [IUCN Red List](https://www.iucnredlist.org/)
+
+![./plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone.png)
+![./plots/2020_34/2020_34_ExtinctPlants_1_poster_SouthAmerica_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_1_poster_NorthAmerica_1.png)
+
+***
+
 ### [2020/33](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_33) ⚔️ Avatar: The Latest Airbender by [{appa}](https://github.com/averyrobbins1/appa)
 
 ![./plots/2020_31/2020_33/2020_33_AvatarLastAirbender.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_33/2020_33_AvatarLastAirbender.png)
