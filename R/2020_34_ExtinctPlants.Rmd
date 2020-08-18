@@ -57,7 +57,10 @@ df_iucn_threat <-
     values_to = "threathened"
   ) %>% 
   replace_na(list(threathened = 0)) %>% 
-  mutate(id = as.numeric(factor(threat)) / 2 + 7) %>%
+  mutate(
+    id = fct_rev(factor(threat)),
+    id = as.numeric(id) / 2 + 7
+  ) %>%
   dplyr::select(binomial_name, group, continent, type = threat, id, case = threathened, year_last_seen) %>% 
   unique() %>% 
   complete(nesting(
@@ -92,14 +95,22 @@ df_iucn_long <-
   mutate(
     type = str_sub(type, 1, 6),
     year_last_seen = if_else(is.na(year_last_seen), "unknown", year_last_seen),
-    year_last_seen = factor(year_last_seen),
+    year_last_seen = fct_relevel(factor(year_last_seen), "Before 1900", after = 0),
     group = factor(group)
   ) %>% 
   group_by(continent, binomial_name, group, year_last_seen, id, type) %>% 
   summarize(case = max(case), base = max(base))
 
-pal <- c("#9FA651", "#799447", "#4F7E35", "#2A6B2A",
-         "#4C8B64", "#5C9F8C", "#6BB2B2", "#68696A")
+pal <- c(
+  "Before 1900" = "#9FA651", 
+  "1900-1919" = "#799447", 
+  "1920-1939" = "#4F7E35", 
+  "1940-1959" = "#2A6B2A",
+  "1960-1979" = "#4C8B64", 
+  "1980-1999" = "#5C9F8C", 
+  "2000-2020" = "#6BB2B2", 
+  "unknown" = "#68696A"
+)
 
 shapes <- c(
   "Algae" = 24, 
@@ -160,8 +171,8 @@ plot_plant <- function(data, shape) {
     geom_linerange(
       aes(
         ymin = 0, ymax = case - .3, 
-        color = year_last_seen, 
-        color =  after_scale(darken(color, .3))
+        color = year_last_seen#, 
+        #color = after_scale(darken(color, .3))
       ), 
       size = .2
     ) +
@@ -235,20 +246,22 @@ leg_a <-
   tibble(
     x = 0,
     y = rev(seq(0, 1, length.out = 8)),
-    id = factor(levels(df_iucn_long$year_last_seen))
+    id = factor(levels(df_iucn_long$year_last_seen), 
+                levels = levels(df_iucn_long$year_last_seen))
   ) %>% 
-  mutate(hjust = if_else(as.numeric(id) %% 2 == 0, 1.5, -.5)) %>% 
+  mutate(hjust = if_else(as.numeric(id) %% 2 == 0, 1, 0), 
+         xlab = if_else(as.numeric(id) %% 2 == 0, -.3, .3)) %>% 
   ggplot(aes(x, y, color = id)) +
     geom_point(size = 15) +
     geom_text(
-      aes(label = str_to_title(id), hjust = hjust),
+      aes(x = xlab, label = str_to_title(id), hjust = hjust),
       family = "Playfair Display",
       color = "grey30",
       size = 3.5,
       fontface = "italic"
     ) +
     annotate(
-      "text", x = .07, y = 1.2, 
+      "text", x = .05, y = 1.2, 
       label = "Year Last Seen",
       family = "Playfair Display",
       color = "grey30",
@@ -277,7 +290,7 @@ leg_b <-
       nudge_x = .2
     ) +
     annotate(
-      "text", x = .25, y = 1.2, 
+      "text", x = .35, y = 1.2, 
       label = "Plant Group",
       family = "Playfair Display",
       color = "grey30",
@@ -300,17 +313,17 @@ df <-
       id == 4 ~ "Research & Monitoring",
       id == 5 ~ "Species Management",
       ## threats
-      id == 7.5 ~ "Agriculture & Aquaculture",
-      id == 8 ~ "Biological Resource Use",
-      id == 8.5 ~ "Climate Change",
-      id == 9 ~ "Energy Production & Mining",
-      id == 9.5 ~ "Geological Events",
+      id == 12.5 ~ "Agriculture & Aquaculture",
+      id == 12 ~ "Biological Resource Use",
+      id == 11.5 ~ "Climate Change",
+      id == 11 ~ "Energy Production & Mining",
+      id == 10.5 ~ "Geological Events",
       id == 10 ~ "Human Intrusions",
-      id == 10.5 ~ "Invasive Species",
-      id == 11 ~ "Natural System Modifications",
-      id == 11.5 ~ "Pollution",
-      id == 12 ~ "Residential & Commercial Development",
-      id == 12.5 ~ "Transportation Corridor"
+      id == 9.5 ~ "Invasive Species",
+      id == 9 ~ "Natural System Modifications",
+      id == 8.5 ~ "Pollution",
+      id == 8 ~ "Residential & Commercial Development",
+      id == 7.5 ~ "Transportation Corridor"
     ),
     hjust = case_when(
       id %in% c(1, 2, seq(10.5, 12.5, by = .5)) ~ 1,
@@ -320,7 +333,7 @@ df <-
     nudge = case_when(
       id %in% c(1:5) ~ .05,
       id %in% c(9, 11) ~ .05,
-      id %in% c(9.5, 10.5) ~ .09,
+      id %in% c(9.5, 10.5) ~ .1,
       id == 10 ~ .17,
       TRUE ~ .02
     )
@@ -351,8 +364,8 @@ path <- here::here("plots", "2020_34", "2020_34_ExtinctPlants_2_legend")
 
 (leg_a + leg_b + leg_c &
   theme(plot.background = element_rect(color = "#F1F5F7", fill = "#F1F5F7"), 
-        plot.margin = margin(rep(0, 4)))) +
-  plot_layout(widths = c(.6, .4, 1)) +
+        plot.margin = margin(0, 20, 0, 0))) +
+  plot_layout(widths = c(.6, .3, 1)) +
   ggsave(glue::glue("{path}.pdf"), width = 10, height = 4, device = cairo_pdf)
 
 ## convert for import
@@ -377,7 +390,7 @@ flower_facet_legend <- function(cont, h, x, y, w) {
   
   cont_trim <- str_remove(cont, "\\s")
   
-  p <- plot_plant(data = d, shape = s)) +
+  p <- plot_plant(data = d, shape = s) +
     ## plant group indicator
     geom_point(
       aes(
@@ -416,7 +429,7 @@ p6 <- flower_facet_legend("South America", 31.9, .8, .07, .33)
 ## standalone legend
 (leg_a + leg_b + leg_c &
   theme(plot.background = element_rect(color = "#F1F5F7", fill = "#F1F5F7"), 
-        plot.margin = margin(15, 15, 5, 15),
+        plot.margin = margin(15, 35, 5, 15),
         plot.title = element_text(size = 30, margin = margin(t = 15, b = 5)),
         plot.subtitle = element_text(size = 15, margin = margin(b = 0)),
         plot.caption = element_text(size = 9, margin = margin(t = 0, b = 15)))) +
