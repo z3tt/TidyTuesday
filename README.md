@@ -95,7 +95,7 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
 
 ### [2020/34](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34) 🌱 Extinct Plants by [IUCN Red List](https://www.iucnredlist.org/)
 
-![./plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone.png)
+![./plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone_1.png)
 ![./plots/2020_34/2020_34_ExtinctPlants_1_poster_SouthAmerica_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_1_poster_NorthAmerica_1.png)
 
 ***

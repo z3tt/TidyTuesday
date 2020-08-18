@@ -6,7 +6,7 @@
 
 ## Stand-alone legend
 
-![./plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone.png)
+![./plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone_1.png)
 
 ## Alternative version without legend
 
