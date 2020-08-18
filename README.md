@@ -85,7 +85,7 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/30 [😿 Australian Animal Outcomes](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_30)
   - 2020/31 [🐧 Palmer Penguins](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_31)
   - 2020/32 [⚡ European Energy](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_32)
-  - 2020/33 [⚔️ Avatar: The Latest Airbender](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_33)
+  - 2020/33 [⚔️ Avatar: The Last Airbender](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_33)
   - 2020/34 [🌱 Extinct Plants](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34)
 <!-- tocstop -->
 
@@ -100,7 +100,7 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
 
 ***
 
-### [2020/33](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_33) ⚔️ Avatar: The Latest Airbender by [{appa}](https://github.com/averyrobbins1/appa)
+### [2020/33](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_33) ⚔️ Avatar: The Last Airbender by [{appa}](https://github.com/averyrobbins1/appa)
 
 ![./plots/2020_31/2020_33/2020_33_AvatarLastAirbender.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_33/2020_33_AvatarLastAirbender.png)
 
