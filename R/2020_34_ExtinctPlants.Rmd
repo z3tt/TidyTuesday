@@ -60,13 +60,14 @@ df_iucn_threat <-
   mutate(id = as.numeric(factor(threat)) / 2 + 7) %>%
   dplyr::select(binomial_name, group, continent, type = threat, id, case = threathened, year_last_seen) %>% 
   unique() %>% 
-  complete(nesting(continent, binomial_name, group, year_last_seen), id = seq(7, 14, by = .25), fill = list(case = 0)) %>% 
+  complete(nesting(
+    continent, group, binomial_name, country, year_last_seen), 
+    id = seq(7, 14, by = .25), fill = list(case = 0)
+  ) %>% 
   mutate(
     base = if_else((id %% .5 == 0 & id %in% seq(7.5, 12.5, by = .5)), .6, 0),
     case = if_else(case == 1, .6, case)
-  ) #%>% 
-  #filter(continent == "North America")
-
+  )
 
 df_iucn_action <-
   df_iucn %>% 
@@ -77,11 +78,13 @@ df_iucn_action <-
   )  %>% 
   replace_na(list(actioned = 0)) %>% 
   mutate(id = as.numeric(factor(action))) %>%
-  dplyr::select(binomial_name, group, continent, type = action, id, case = actioned, year_last_seen) %>% 
+  dplyr::select(binomial_name, group, continent, country, type = action, id, case = actioned, year_last_seen) %>% 
   unique() %>% 
-  complete(nesting(continent, binomial_name, group, year_last_seen), id = seq(0, 6, by = .5), fill = list(case = 0)) %>% 
-  mutate(base = if_else((id %% 1 == 0 & id %in% 1:5), 1, 0)) #%>% 
-  #filter(continent == "North America")
+  complete(nesting(
+    continent, binomial_name, group, year_last_seen),
+    id = seq(0, 6, by = .5), fill = list(case = 0)
+  ) %>% 
+  mutate(base = if_else((id %% 1 == 0 & id %in% 1:5), 1, 0))
 
 df_iucn_long <-
   df_iucn_action %>% 
@@ -93,7 +96,7 @@ df_iucn_long <-
     group = factor(group)
   ) %>% 
   group_by(continent, binomial_name, group, year_last_seen, id, type) %>% 
-  summarize(case = max(case), base = max(base))
+  summarize(case = max(case), base = max(base), country = unique(country))
 
 pal <- c("#9FA651", "#799447", "#4F7E35", "#2A6B2A",
          "#4C8B64", "#5C9F8C", "#6BB2B2", "#68696A")
