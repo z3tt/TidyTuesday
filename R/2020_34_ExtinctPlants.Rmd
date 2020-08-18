@@ -250,7 +250,7 @@ leg_a <-
                 levels = levels(df_iucn_long$year_last_seen))
   ) %>% 
   mutate(hjust = if_else(as.numeric(id) %% 2 == 0, 1, 0), 
-         xlab = if_else(as.numeric(id) %% 2 == 0, -.3, .3)) %>% 
+         xlab = if_else(as.numeric(id) %% 2 == 0, -.4, .4)) %>% 
   ggplot(aes(x, y, color = id)) +
     geom_point(size = 15) +
     geom_text(
@@ -287,10 +287,10 @@ leg_b <-
       size = 3.5, 
       fontface = "italic",
       hjust = 0,
-      nudge_x = .2
+      nudge_x = .3
     ) +
     annotate(
-      "text", x = .35, y = 1.2, 
+      "text", x = .3, y = 1.2, 
       label = "Plant Group",
       family = "Playfair Display",
       color = "grey30",
@@ -349,7 +349,7 @@ leg_c <-
     size = 2.8
   ) +
   geom_text(
-    data = tibble(x = c(3, 10), y = c(1.3, 1), 
+    data = tibble(x = c(3, 10), y = c(1.3, 1.1), 
                   label = c("Current Actions", "Extinction Threats")),
     aes(x, y, label = label), inherit.aes = F,
     family = "Playfair Display",
@@ -365,7 +365,7 @@ path <- here::here("plots", "2020_34", "2020_34_ExtinctPlants_2_legend")
 (leg_a + leg_b + leg_c &
   theme(plot.background = element_rect(color = "#F1F5F7", fill = "#F1F5F7"), 
         plot.margin = margin(0, 20, 0, 0))) +
-  plot_layout(widths = c(.6, .3, 1)) +
+  plot_layout(widths = c(.52, .38, 1)) +
   ggsave(glue::glue("{path}.pdf"), width = 10, height = 4, device = cairo_pdf)
 
 ## convert for import
@@ -435,10 +435,10 @@ p6 <- flower_facet_legend("South America", 31.9, .8, .07, .33)
         plot.caption = element_text(size = 9, margin = margin(t = 0, b = 15)))) +
   plot_annotation(
     title = "Plants in Danger",
-    subtitle = "— Extinct Plant Species across the World —",
+    subtitle = "— Extinct Plant Species Across the World —",
     caption = "Visualization: Cédric Scherer  • Idea: Florent Lavergne  •  Data: IUCN Red List"
   ) +
-  plot_layout(widths = c(.6, .4, 1)) +
+  plot_layout(widths = c(.52, .38, 1)) +
   ggsave(here::here("plots", "2020_34", "2020_34_ExtinctPlants_3_legend_standalone.pdf"), 
          width = 10, height = 5.7, device = cairo_pdf)
 ```
