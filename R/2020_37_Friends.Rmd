@@ -1,0 +1,282 @@
+---
+title: "TidyTuesday 2020/37 - Friends by Emil Hvitfeldt via {friends}"
+author: "Cedric Scherer"
+date: "15th of September 2020"
+output:
+  html_document:
+    theme: paper
+    highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE}
+## packages
+library(tidyverse)
+library(stringr)
+library(ggtext)
+library(colorspace)
+library(ragg)
+library(pdftools)
+
+theme_set(theme_void(base_family = "Overpass", base_size = 16))
+
+theme_update(
+  axis.text.y = element_markdown(color = "grey50", hjust = 0, margin = margin(l = 20)),
+  panel.spacing = unit(0, "lines"),
+  plot.title = element_text(size = 31, color = "black", face = "bold",
+                            hjust = .5, margin = margin(30, 0, 10, 0)),
+  plot.subtitle = element_markdown(size = 19, color = "grey50", face = "italic", 
+                                   hjust = .5, margin = margin(0, 0, 10, 0)),
+  plot.caption = element_markdown(color = "grey60", size = 13, face = "italic", 
+                                  hjust = .5, margin = margin(15, 0, 30, 0)),
+  plot.title.position = "plot",
+  plot.caption.position = "plot",
+  plot.margin = margin(15, 30, 15, 30),
+  plot.background = element_rect(color = "white", fill = "white")
+)
+```
+
+```{r data}
+df_friends <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-08/friends.csv')
+```
+
+```{r data-prep}
+cols <-
+  tibble(
+    key = c("Chandler", "Joey", "Monica", "Monica & Chandler", "Phoebe", "Rachel", "Rachel & Joey", "Ross", "Ross & Rachel"),
+    colors = c("#48508c", "#55331d", "#a64d64", "#774f78", "#5b7233", "#ba2a22", "#882f20", "#f6ab18", "#d86b1d")
+  )
+
+df_friends_relations <-
+  df_friends %>% 
+  mutate(
+    p_80.ross_rachel = grepl("(ross.*rachel|rachel.*ross)", text, ignore.case = T),
+    p_97.ross_carol = grepl("(ross.*carol|carol.*ross)", text, ignore.case = T),
+    p_94.ross_emily = grepl("(ross.*emily|emily.*ross)", text, ignore.case = T),
+    p_95.ross_bonnie = grepl("(ross.*bonnie|bonnie.*ross)", text, ignore.case = T),
+    p_93.ross_elizabeth = grepl("(ross.*elizabeth|elizabeth.*ross)", text, ignore.case = T),
+    p_92.ross_mona = grepl("(ross.*mona|mona.*ross)", text, ignore.case = T),
+    p_91.ross_charlie = grepl("(ross.*charlie|charlie.*ross)", text, ignore.case = T),
+    p_96.ross_julie = grepl("(ross.*julie|julie.*ross)", text, ignore.case = T),
+    p_60.rachel_joey = grepl("(rachel.*joey|joey.*rachel)", text, ignore.case = T),
+    p_75.rachel_barry = grepl("(rachel.*barry|barry.*rachel)", text, ignore.case = T),
+    p_72.rachel_joshua= grepl("(rachel.*joshua|joshua.*rachel)", text, ignore.case = T),
+    p_71.rachel_paul = grepl("(rachel.*paul|paul.*rachel)", text, ignore.case = T),
+    p_74.rachel_paolo = grepl("(rachel.*paolo|paolo.*rachel)", text, ignore.case = T),
+    p_73.rachel_tag = grepl("(rachel.*tag|tag.*rachel)", text, ignore.case = T),
+    p_30.monica_chandler = grepl("(monica.*chandler|chandler.*monica)", text, ignore.case = T),
+    p_42.monica_richard = grepl("(monica.*richard|richard.*monica)", text, ignore.case = T),
+    p_41.monica_pete = grepl("(monica.*pete|pete.*monica)", text, ignore.case = T),
+    p_52.joey_janine = grepl("(joey.*janine|janine.*joey)", text, ignore.case = T),
+    p_53.joey_kathy = grepl("(joey.*kathy|kathy.*joey)", text, ignore.case = T),
+    p_51.joey_charlie = grepl("(joey.*charlie|charlie.*joey)", text, ignore.case = T),
+    p_25.chandler_janice = grepl("(chandler.*janice|janice.*chandler)", text, ignore.case = T),
+    p_24.chandler_kathy = grepl("(chandler.*kathy|kathy.*chandler)", text, ignore.case = T),
+    p_12.phoebe_gary = grepl("(phoebe.*gary|gary.*phoebe)", text, ignore.case = T),
+    p_13.phoebe_david = grepl("(phoebe.*david|david.*phoebe)", text, ignore.case = T),
+    p_11.phoebe_mike = grepl("(phoebe.*mike|mike.*phoebe)", text, ignore.case = T),
+  ) %>% 
+  group_by(season, episode) %>% 
+  summarize(
+    across(starts_with("p_"), sum)
+  ) %>% 
+  ungroup() %>% 
+  arrange(season, episode) %>% 
+  mutate(id = seq(2, 2.5*236, by = 2.5)) %>% 
+  pivot_longer(
+    cols = starts_with("p_"),
+    names_to = "partners",
+    values_to = "mentions",
+    names_prefix = "p_"
+  ) %>% 
+  mutate(
+    partners_num = as.numeric(as.factor(str_extract(partners, "[0-9]+"))) * 15,
+    partners = str_remove(partners, "[0-9]+."),
+    partners = str_replace(partners, "_", " & "),
+    partners = str_to_title(partners),
+    key = if_else(
+      !partners %in% c("Ross & Rachel", "Rachel & Joey", "Monica & Chandler"),
+      word(partners, 1), partners
+    ),
+    key = factor(key, levels = c("Ross", "Ross & Rachel", "Rachel", "Rachel & Joey", "Joey", "Monica", "Monica & Chandler", "Chandler", "Phoebe")),
+    mentions = if_else(mentions == 0, NA_integer_, mentions),
+    mentions_cut = cut(mentions, breaks = c(0, 5, 15, 25, 35)),
+    mentions_cut = as.numeric(as.factor(mentions_cut)),
+    sl = sqrt(mentions) * 2
+  ) %>% 
+  left_join(cols) %>% 
+  mutate(
+    partners = if_else(
+      key %in% c("Ross & Rachel", "Rachel & Joey", "Monica & Chandler"),
+      glue::glue("<b style='color:{colors}'>{partners}</b>"),
+      str_replace(partners, key, glue::glue("<b style='color:{colors}'>{key}</b>"))
+    )
+  )
+
+## annotations episodes with many mentions
+df_labs <-
+  tribble(
+    ~id, ~partners_num, ~text,
+    152, 120+6, "**The One where<br>Monica and Richard<br>Are Just Friends**<br>(S3E13)",
+    180.5, 105+6, "**The One with the<br>Ultimate Fighting<br>Champion**<br>(S3E24)",
+    214.5, 210+5.29, "**The One with<br>Rachel's Crush**<br>(S4E13)",
+    234.5, 270+11.1, "**The One with<br>the Invitation**<br>(S4E21)",
+    242, 330+9.38, "**The One with Ross's<br>Wedding: Part 2**<br>(S4E24)",
+    284.5, 30+7, "**The One with Rachel's<br>Inadvertent Kiss**<br>(S5E17)",
+    324.5, 270+8, "**The One where<br>Ross Got High**<br>(S6E9)",
+    350.5, 315+6, "**The One with<br>Joey's Fridge**<br>(S6E19)",
+    360.5, 195+6, "**The One with<br>the Ring**<br>(S6E23)",
+    417, 90+10.2, "**The One with<br>the Vows**<br>(S7E21)",
+    452, 300+6, "**The One with<br>Joey's Fridge**<br>(S8E11)",
+    472, 180+6.93, "**The One with Ross'<br>Step Forward**<br>(S8E19)",
+    542, 45+6.2, "**The One in Barbados**<br>(S9E23)"
+  )
+
+## labels and lines period of mentions
+df_first <-
+  df_friends_relations %>% 
+  filter(!is.na(mentions)) %>% 
+  group_by(partners) %>% 
+  arrange(id) %>% 
+  slice(1) %>% 
+  mutate(type = "first")
+
+df_last <-
+  df_friends_relations %>% 
+  filter(!is.na(mentions)) %>% 
+  group_by(partners) %>% 
+  arrange(-id) %>% 
+  slice(1) %>% 
+  mutate(type = "last")
+
+df_period <-
+  df_first %>% 
+  bind_rows(df_last) %>% 
+  mutate(colors = lighten(colors, .3)) %>% 
+  mutate(label = glue::glue("<span style='color:{colors}'>S{season}E{episode}</span>"))
+```
+
+```{r plot, fig.width = 25, fig.height = 16}
+ggplot(df_friends_relations, 
+       aes(id, partners_num)) +
+  geom_hline(
+    aes(yintercept = partners_num - 2),
+    size = .4,
+    color = "grey87"
+  ) +
+  geom_linerange(
+    data = df_period %>% 
+      pivot_wider(id_cols = c(partners_num, key), names_from = type, values_from = id),
+    aes(xmin = first, xmax = last, 
+        y = partners_num - 2, 
+        color = key,
+        color = after_scale(lighten(color, .6))), 
+    inherit.aes = F,
+    size = .4
+  ) +
+  geom_segment(
+    data = tibble(
+      x = c(542, 242, 324.5), 
+      y1 = c(16, 91, 91), 
+      y2 = c(46, 331, 271)
+    ),
+    aes(x = x, xend = x, y = y1, yend = y2),
+    inherit.aes = F,
+    linetype = "dashed",
+    color = "grey65"
+  ) +
+  geom_rect(
+    data = df_friends_relations %>% filter(mentions_cut == 4),
+    aes(xmin = id - sl/2, xmax = id + sl/2, 
+        ymin = partners_num, ymax = partners_num + sl,
+        fill = key, fill = after_scale(darken(fill, .1))),
+    color = "white", size = .1
+  ) + 
+  geom_rect(
+    data = df_friends_relations %>% filter(mentions_cut == 3),
+    aes(xmin = id - sl/2, xmax = id + sl/2, 
+        ymin = partners_num, ymax = partners_num + sl,
+        fill = key), 
+    color = "white", size = .1
+  ) + 
+  geom_rect(
+    data = df_friends_relations %>% filter(mentions_cut == 2),
+    aes(xmin = id - sl/2, xmax = id + sl/2, 
+      ymin = partners_num, ymax = partners_num + sl,
+      fill = key, fill = after_scale(lighten(fill, .2))), 
+    color = "white", size = .1
+  ) + 
+  geom_rect(
+    data = df_friends_relations %>% filter(mentions_cut == 1),
+    aes(xmin = id - sl/2, xmax = id + sl/2, 
+        ymin = partners_num, ymax = partners_num + sl,
+        fill = key, fill = after_scale(lighten(fill, .4))), 
+    color = "white", size = .1
+  ) + 
+  geom_richtext(
+    data = df_labs,
+    aes(label = text),
+    family = "Overpass",
+    size = 3.6,
+    lineheight = .9,
+    color = "grey65",
+    vjust = 0,
+    #alpha = .67,
+    label.padding = unit(rep(.1, 4), "lines"),
+    label.color = NA
+  ) +
+  geom_richtext(
+    data = df_period,
+    aes(label = label,
+        hjust = type == "first"),
+    family = "Overpass",
+    size = 2.6,
+    lineheight = .9,
+    vjust = 1,
+    nudge_y = -.5,
+    label.padding = unit(rep(.05, 4), "lines"),
+    label.color = NA
+  ) +
+  coord_equal(clip = "off") +
+  scale_x_continuous(expand = c(.01, .01)) +
+  scale_y_continuous(
+    expand = c(.05, .05),
+    breaks = unique(df_friends_relations$partners_num) + 2, 
+    labels = unique(df_friends_relations$partners),
+    position = "right"
+  ) +
+  scale_color_manual(values = cols$colors, guide = "none") +
+  scale_fill_manual(values = cols$colors, guide = "none") +
+  scale_size_area(guide = "none") +
+  labs(
+    title = "Chats about Friends and their Past, Present, and Future Partners",
+    subtitle = "Mentions of the main characters and their most popular partners in dialogues<sup>*</sup> during the ten seasons of Friends.",
+    caption = "<sup>*</sup> For each of the 67,373 dialogues in 236 episodes it was determined whether the two names occur in the same text.<br>The area and luminence of the squares is mapped to the number of overall mentions of the two names per season.<br><br>Visualization by Cédric Scherer • Data by Emil Hvitfeldt via the {friends} R package"
+  ) #+
+  #ggsave(here::here("dev", glue::glue("2020_37___{format(Sys.time(), '%Y%m%d_%H%M%S')}.pdf")),
+  #       width = 25, height = 16, device = cairo_pdf)
+```
+
+```{r convert-to-png}
+## convert PDFs to PNGs
+path <- here::here("plots", "2020_37", "2020_37_Friends")
+
+ggsave(glue::glue("{path}.pdf"), width = 25, height = 16, device = cairo_pdf)
+
+pdf_convert(pdf = glue::glue("{path}.pdf"), 
+            filenames = glue::glue("{path}.png"),
+            format = "png", dpi = 400)
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
