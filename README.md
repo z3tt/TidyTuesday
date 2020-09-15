@@ -87,9 +87,16 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/32 [⚡ European Energy](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_32)
   - 2020/33 [⚔️ Avatar: The Last Airbender](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_33)
   - 2020/34 [🌱 Extinct Plants](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34)
+  - 2020/37 [👯 F🔴R🟡I🔵E🔴N🟡D🔵S](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_37)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/37](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34) 👯 F🔴R🟡I🔵E🔴N🟡D🔵S by [Emil Hvitfeldt](https://github.com/EmilHvitfeldt/friends)
+
+![./plots/2020_37/2020_37_Friends.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_37/2020_37_Friends.png)
 
 ***
 
