@@ -84,6 +84,7 @@ main <-
   mutate(id = group_indices()) %>% 
   ggplot(aes(chapter_num, book, fill = element, group = element)) +
     stat_halfeye(
+      n = 4000,
       adjust = .12,
       trim = F,
       height = 1.2,
@@ -97,6 +98,7 @@ main <-
         fill = element,
         fill = after_scale(desaturate(darken(fill, .3, space = "combined"), .3))
       ),
+      n = 4000,
       adjust = .12,
       trim = F,
       height = 1.2,
@@ -137,7 +139,7 @@ main <-
     theme(axis.text.y = element_markdown(size = 20, color = pal_axis, 
                                          family = "herculanum", hjust = .8, 
                                          margin = margin(r = 12))) +
-    labs(caption = 'Visualization by Cédric Scherer • "Avatar: The Last Airbender" transcript data via the {appa} R package')
+    labs(caption = 'Visualization by Cédric Scherer • “Avatar: The Last Airbender” transcript data via the {appa} R package')
 ```
 
 ```{r legend}
@@ -147,6 +149,7 @@ legend <-
   mutate(id = group_indices()) %>% 
   ggplot(aes(chapter_num, book, fill = element, group = element)) +
     stat_halfeye(
+      n = 4000,
       adjust = .12,
       trim = F,
       height = .9,
@@ -160,6 +163,7 @@ legend <-
         fill = element,
         fill = after_scale(desaturate(darken(fill, .3, space = "combined"), .3))
       ),
+      n = 4000,
       adjust = .12,
       trim = F,
       height = .9,
