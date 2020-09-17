@@ -167,7 +167,7 @@ ggplot(df_friends_relations,
   geom_hline(
     aes(yintercept = partners_num - 2),
     size = .4,
-    color = "grey87"
+    color = "grey90"
   ) +
   geom_linerange(
     data = df_period %>% 
