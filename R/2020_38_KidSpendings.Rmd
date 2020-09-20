@@ -1,0 +1,197 @@
+---
+title: "TidyTuesday 2020/37 - US Spending on Kids by Urban Institute"
+author: "Cedric Scherer"
+date: "20th of September 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(geojsonio)
+library(broom)
+library(rgeos)
+library(ggtext)
+library(pdftools)
+```
+
+```{r data}
+df_kids <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv')
+```
+
+```{r prep-data}
+df_kids_health <- 
+  df_kids %>%
+  filter(variable == "pubhealth")%>% 
+  group_by(state) %>% 
+  mutate(
+    diff = inf_adj_perchild[which(year == max(year))] - inf_adj_perchild[which(year == min(year))],
+    diff_cat = case_when(
+      diff < -.1 ~ 1,  ## lover
+      diff >= -.1 & diff < 0 ~ 2,  ## stable low
+      diff > 0 & diff < 1 ~ 3,  ## stable high
+      diff >= 1 ~ 4,  ## significantly higher
+    ),
+    diff_cat = factor(diff_cat, levels = 1:4)
+  )
+
+## HEX MAP #####################################################################
+map_hex <- 
+  geojson_read(
+    here::here("data", "2019_38", "us_states_hexgrid.geojson.json"),  
+    what = "sp"
+  )
+
+map_hex@data <-
+  map_hex@data %>%
+  mutate(google_name = gsub(" \\(United States\\)", "", google_name))
+
+map_hex_fortified <- tidy(map_hex, region = "google_name")
+
+## smaller polygons for frame
+map_hex_buffer <-
+  gBuffer(map_hex, width = -.15, byid = T)
+  
+map_hex_buffer_fortified <- tidy(map_hex_buffer, region = "google_name")
+
+## calculate centroids
+centr <- cbind.data.frame(data.frame(gCentroid(map_hex_buffer, byid = T), id = map_hex@data$google_name))
+
+## calculate lines based on centroids
+df_kids_tl <- 
+  df_kids_health %>% 
+  left_join(centr, by = c("state" = "id")) %>% 
+  mutate(
+    year_rel = year - (min(year) + (max(year) - min(year)) / 2),
+    year_x = x + year_rel / 5.5,
+    inf_adj_perchild_rel = inf_adj_perchild - (min(inf_adj_perchild) + (max(inf_adj_perchild) - min(inf_adj_perchild)) / 200) - 1.5,
+    inf_y = y + inf_adj_perchild_rel / 2
+  ) %>% 
+  mutate(base = y + min(inf_adj_perchild_rel) / 2)
+
+## centroids for labels
+df_kids_labels <-
+  df_kids_health %>% 
+  left_join(map_hex@data[,6:7], by = c("state" = "google_name")) %>% 
+  left_join(centr, by = c("state" = "id")) %>% 
+  mutate(
+    y = case_when(
+      iso3166_2 == "ME" ~ y + .3,
+      iso3166_2 == "WY" ~ y + .7,
+      iso3166_2 == "DC" ~ y - .4,
+      iso3166_2 == "HI" ~ y + .4,
+      iso3166_2 == "DE" ~ y + .1,
+      TRUE ~ y
+    )
+  )
+  
+## combine data
+df_kids_hex_buffer <-
+  map_hex_buffer_fortified %>%
+  left_join(df_kids_health, by = c("id" = "state")) 
+```
+
+```{r plot, fig.width = 12, fig.height = 7.402}
+ggplot(data = df_kids_tl,
+       aes(year_x, inf_y, group = state)) +
+  geom_polygon(
+    data = df_kids_hex_buffer,
+    aes(long, lat, 
+        group = id,
+        color = diff_cat), 
+    fill = "grey9", size = 2.4
+  ) +
+  geom_polygon(
+    data = map_hex_fortified,
+    aes(long, lat, 
+        group = id), 
+    color = "grey18", 
+    fill = "transparent", size = 1
+  ) +
+  # geom_linerange(
+  #   data = df_kids_tl %>% filter(year %in% c(1997, 2016)) %>% pivot_wider(id_cols = c(state, base), names_from = year, values_from = year_x),
+  #   aes(xmin = `1997`, xmax = `2016`, y = base),
+  #   color = "grey42",
+  #   linetype = "dashed",
+  #   size = .2
+  # ) +
+  geom_line(
+    color = "grey72", size = .2
+  ) +
+  geom_point(
+    color = "white", 
+    size = .1
+  ) +
+  geom_text(
+    data = df_kids_tl %>% filter(year %in% c(1997, 2016)),
+    aes(label = {format(round(inf_adj_perchild, 2), digits = 2)},
+        hjust = year == 1997),
+    family = "Oswald",
+    color = "grey62",
+    size = 1,
+    nudge_y = .2
+  ) +
+  geom_text(
+    data = df_kids_labels %>% group_by(iso3166_2) %>% slice(1),
+    aes(x, y, label = iso3166_2, color = diff_cat,
+        color = after_scale(colorspace::lighten(color, .2))),
+    family = "Monda",
+    size = 2.4,
+    fontface = "bold"
+  ) +
+  geom_richtext(
+    data = tibble(
+      x = -103.9388, y = 53.8,
+      label = 
+      "<b style='color:#f5f5f5;font-size:14pt;'>Trends in US Spendings on Children Public Health Efforts by State 1997—2016</b><br><br>
+      Each hexagon shows the change in public spending on public health efforts children by state and year per child in 1,000 constant dollars.<br><b style='color:#CBA049;'>Maine</b> and <b style='color:#CBA049;'>Illinois</b> spent considerably less in 2016 compared to 1997 while <b style='color:#4AC59C;'>Vermont</b>, <b style='color:#4AC59C;'>District of Columbia</b>, <b style='color:#4AC59C;'>Wyoming</b>, <b style='color:#4AC59C;'>North Dakota</b>, <b style='color:#4AC59C;'>Arizona</b>,<br><b style='color:#4AC59C;'>Pennsylvania</b>, <b style='color:#4AC59C;'>Delaware</b>, and <b style='color:#4AC59C;'>California</b> increased the aomunt by far. Darker colors indicate <span style='color:#A57C00;'>slightly decreasing</span> and <span style='color:#087155;'>slightly increasing</span> trends."
+    ),
+    aes(x, y, label = label),
+    inherit.aes = F,
+    family = "Monda",
+    size = 2.5,
+    color = "grey72",
+    fill = NA,
+    label.color = NA,
+    hjust = .5
+  ) +
+  coord_map() +
+  scale_color_manual(
+    values = c("#CBA049", "#735501", "#087155", "#4AC59C"), 
+    guide = "none"
+  ) +
+  labs(caption = "Visualization by Cédric Scherer  •  Data: Census Bureau's Annual State and Local Government Finance Survey (Expenditure Variable E32)") +
+  theme_void() +
+  theme(plot.background = element_rect(fill = "grey18", color = NA),
+        plot.caption = element_text(family = "Monda", color = "grey72", 
+                                    size = 6, hjust = .5,
+                                    margin = margin(b = 10, t = 15)))
+```
+
+```{r convert-to-png}
+## convert PDFs to PNGs
+path <- here::here("plots", "2020_38", "2020_38_KidSpendings")
+
+ggsave(glue::glue("{path}.pdf"), width = 12, height = 7.402, device = cairo_pdf)
+
+pdf_convert(pdf = glue::glue("{path}.pdf"), 
+            filenames = glue::glue("{path}.png"),
+            format = "png", dpi = 500)
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
