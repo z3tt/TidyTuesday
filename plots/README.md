@@ -7,7 +7,13 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
-### [2020/37](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34) 👯 F🔴R🟡I🔵E🔴N🟡D🔵S by [Emil Hvitfeldt](https://github.com/EmilHvitfeldt/friends)
+### [2020/38](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_38) 💊 Children Public Health Efforts
+
+![./plots/2020_38/2020_38_KidSpendings.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_38/2020_38_KidSpendings.png)
+
+***
+
+### [2020/37](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34) 👯 FRIENDS by [Emil Hvitfeldt](https://github.com/EmilHvitfeldt/friends)
 
 ![./plots/2020_37/2020_37_Friends.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_37/2020_37_Friends.png)
 
