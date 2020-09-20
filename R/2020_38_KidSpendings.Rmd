@@ -36,12 +36,13 @@ df_kids_health <-
   mutate(
     diff = inf_adj_perchild[which(year == max(year))] - inf_adj_perchild[which(year == min(year))],
     diff_cat = case_when(
-      diff < -.1 ~ 1,  ## lover
-      diff >= -.1 & diff < 0 ~ 2,  ## stable low
-      diff > 0 & diff < 1 ~ 3,  ## stable high
-      diff >= 1 ~ 4,  ## significantly higher
+      diff < -.1 ~ 1,  ## considerably lower
+      diff >= -.1 & diff < 0 ~ 2,  ## slightly lower
+      diff >= 0 & diff <= .1 ~ 3,  ## slightly higher
+      diff > .1 & diff <= 1  ~ 4,  ## considerably higher
+      diff > 1 ~ 5,  ## considerably higher
     ),
-    diff_cat = factor(diff_cat, levels = 1:4)
+    diff_cat = factor(diff_cat, levels = 1:5)
   )
 
 ## HEX MAP #####################################################################
@@ -117,13 +118,6 @@ ggplot(data = df_kids_tl,
     color = "grey18", 
     fill = "transparent", size = 1
   ) +
-  # geom_linerange(
-  #   data = df_kids_tl %>% filter(year %in% c(1997, 2016)) %>% pivot_wider(id_cols = c(state, base), names_from = year, values_from = year_x),
-  #   aes(xmin = `1997`, xmax = `2016`, y = base),
-  #   color = "grey42",
-  #   linetype = "dashed",
-  #   size = .2
-  # ) +
   geom_line(
     color = "grey72", size = .2
   ) +
@@ -152,21 +146,43 @@ ggplot(data = df_kids_tl,
     data = tibble(
       x = -103.9388, y = 53.8,
       label = 
-      "<b style='color:#f5f5f5;font-size:14pt;'>Trends in US Spendings on Children Public Health Efforts by State 1997—2016</b><br><br>
-      Each hexagon shows the change in public spending on public health efforts children by state and year per child in 1,000 constant dollars.<br><b style='color:#CBA049;'>Maine</b> and <b style='color:#CBA049;'>Illinois</b> spent considerably less in 2016 compared to 1997 while <b style='color:#4AC59C;'>Vermont</b>, <b style='color:#4AC59C;'>District of Columbia</b>, <b style='color:#4AC59C;'>Wyoming</b>, <b style='color:#4AC59C;'>North Dakota</b>, <b style='color:#4AC59C;'>Arizona</b>,<br><b style='color:#4AC59C;'>Pennsylvania</b>, <b style='color:#4AC59C;'>Delaware</b>, and <b style='color:#4AC59C;'>California</b> increased the aomunt by far. Darker colors indicate <span style='color:#A57C00;'>slightly decreasing</span> and <span style='color:#087155;'>slightly increasing</span> trends."
+      "<b style='color:#f5f5f5;font-size:15pt;'>Trends in US Spendings on Children Public Health Efforts 1997—2016</b><br><br>
+      Each hexagon shows the change in public spending on public health efforts children by state and year per child in 1,000 constant dollars.<br><b style='color:#CBA049;'>Rhode Island</b>, <b style='color:#CBA049;'>Tennessee </b>, <b style='color:#CBA049;'>Kansas</b>, <b style='color:#CBA049;'>Alabama</b>, and <b style='color:#CBA049;'>Rhode Island</b> spent considerably less in 2016 compared to 1997 while <b style='color:#4AC59C;'>Vermont</b>,<br>the <b style='color:#4AC59C;'>District of Columbia</b>, <b style='color:#4AC59C;'>Wyoming</b>, <b style='color:#4AC59C;'>North Dakota</b>, <b style='color:#4AC59C;'>Arizona</b>, <b style='color:#4AC59C;'>Pennsylvania</b>, <b style='color:#4AC59C;'>Delaware</b>, and <b style='color:#4AC59C;'>California</b> increased the amount by far."
     ),
     aes(x, y, label = label),
     inherit.aes = F,
     family = "Monda",
-    size = 2.5,
+    size = 2.7,
     color = "grey72",
     fill = NA,
     label.color = NA,
     hjust = .5
   ) +
+  geom_richtext(
+    data = tibble(
+      x = -82,
+      y = 30,
+      text = "<b style='font-size:7pt;'>Change in Public Health Efforts<br>from 1997 to 2016 per Child:</b><br><br>
+              <span style='color:#51D2A7;'>• Increase by more than K$1,000</span><br>
+              <span style='color:#067155;'>• Increase by K$100 to K$1,000</span><br>
+              <span style='color:#01402E;'>• Increase by up to K$100</span><br>
+              <span style='color:#7A5C11;'>• Decrease by up to K$100</span><br>
+              <span style='color:#CBA049;'>• Decrease by more than K$100</span>"),
+    aes(x, y, label = text),
+    inherit.aes = F,
+    family = "Monda",
+    color = "grey72",
+    size = 2,
+    fontface = "bold",
+    hjust = 0,
+    fill = "grey12",
+    lineheight = 1.3,
+    label.color = NA,
+    label.padding = unit(rep(.6, 4), "lines")
+  ) +
   coord_map() +
   scale_color_manual(
-    values = c("#CBA049", "#735501", "#087155", "#4AC59C"), 
+    values = c("#CBA049", "#7A5C11", "#01402E", "#067155", "#51D2A7"),
     guide = "none"
   ) +
   labs(caption = "Visualization by Cédric Scherer  •  Data: Census Bureau's Annual State and Local Government Finance Survey (Expenditure Variable E32)") +
@@ -176,6 +192,7 @@ ggplot(data = df_kids_tl,
                                     size = 6, hjust = .5,
                                     margin = margin(b = 10, t = 15)))
 ```
+
 
 ```{r convert-to-png}
 ## convert PDFs to PNGs
