@@ -188,8 +188,13 @@ ggsave(here::here("plots", "2020_02", "2020_02_AustralianFires_global.pdf"),
        plot = map_global, width = 14, height = 8.3, device = cairo_pdf)
 ```
 
-***
-  
-```{r}
+
+<details><summary>Session Info</summary>
+
+```{r sessionInfo, echo = F}
+Sys.time()
+git2r::repository()
 sessionInfo()
 ```
+
+</details>
