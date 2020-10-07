@@ -89,13 +89,20 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/34 [🌱 Extinct Plants](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34)
   - 2020/37 [👯 FRIENDS Transcripts](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_37)
   - 2020/38 [💊 Children Public Health Efforts](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_38)
+  - 2020/41 [🏀 NCAA Women's Basketball](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_41)
 <!-- tocstop -->
 
 </details>
 
 ***
 
-### [2020/38](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_38) 💊 Children Public Health Efforts
+### [2020/41](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_41) 🏀 NCAA Women's Basketball by [FiveThirtyEight](https://fivethirtyeight.com/features/louisiana-tech-was-the-uconn-of-the-80s/)
+
+![./plots/2020_41/2020_41_NCAAWomensBasketball.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_41/2020_41_NCAAWomensBasketball.png)
+
+***
+
+### [2020/38](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_38) 💊 Children Public Health Efforts by [Urban Institute](https://datacatalog.urban.org/dataset/state-state-spending-kids-dataset)
 
 ![./plots/2020_38/2020_38_KidSpendings.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_38/2020_38_KidSpendings.png)
 
