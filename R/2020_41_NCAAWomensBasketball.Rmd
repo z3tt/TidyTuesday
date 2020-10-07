@@ -1,0 +1,269 @@
+---
+title: "TidyTuesday 2020/41 - NCAA Women's Basketball by FiveThirtyEight"
+author: "Cedric Scherer"
+date: "7th of October 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(stringr)
+library(rcartocolor)
+library(ggtext)
+library(ragg)
+library(colorspace)
+library(glue)
+library(pdftools)
+
+theme_set(theme_void(base_family = "Overpass", base_size = 10))
+
+theme_update(
+  axis.text.x = element_text(color = "grey60", margin = margin(t = 2)),
+  panel.spacing.y = unit(0, "lines"),
+  panel.spacing.x = unit(3, "lines"),
+  axis.line.x = element_line(color = "grey60"),
+  axis.ticks.x = element_line(color = "grey60"),
+  axis.ticks.length.x = unit(.4, "lines"),
+  plot.title = element_text(family = "Alegreya Sans SC Light", size = 84, 
+                            color = "grey10", hjust = 0, 
+                            margin = margin(15, 0, 30, 0)),
+  plot.subtitle = element_markdown(family = "Alegreya Sans", size = 25,
+                                   color = "grey30", lineheight = 1.2,
+                                   hjust = 0, margin = margin(0, 0, 30, 0)),
+  plot.caption = element_markdown(family = "Alegreya Sans SC", color = "grey30", 
+                                  size = 19, face = "italic", 
+                                  hjust = .5, margin = margin(60, 0, 0, 0)),
+  plot.title.position = "plot",
+  plot.caption.position = "plot",
+  plot.margin = margin(60, 120, 45, 90),
+  plot.background = element_rect(color = "white", fill = "white"),
+  strip.text = element_blank()
+)
+```
+
+```{r data}
+df_ncaa <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-10-06/tournament.csv')
+```
+
+```{r prep-data}
+## To get the points for each team/tournament season you can multiply the teams 
+## initial seed (1 - 16) by the assigned points as defined in the table of 100 - 0.
+conv <- 
+  tribble(
+    ~seed, ~points,
+    1, 	100,
+    2, 	72.7,
+    3, 	54.5,
+    4,	48.5,
+    5,	33.3,
+    6,	33.3,
+    7,	27.3,
+    8,	21.2,
+    9,	18.2,
+    10,	18.2,
+    11,	18.2,
+    12,	15.2,
+    13,	9.09,
+    14,	6.06,
+    15,	3.03,
+    16,	0
+  )
+
+df_ncaa_cum <-
+  df_ncaa %>% 
+  left_join(conv, by = "seed") %>% 
+  dplyr::select(year, school, seed, points) %>% 
+  group_by(school) %>% 
+  complete(year = full_seq((min(df_ncaa$year, na.rm = TRUE) - 1):(max(df_ncaa$year, na.rm = TRUE) + 1), 1)) %>% 
+  arrange(year) %>%
+  mutate(
+    points_filled = if_else(is.na(points), 0, points),
+    points_na = if_else(is.na(points), 0, NA_real_),
+    cumsum_filled = cumsum(points_filled),
+    cumsum = if_else(is.na(points), NA_real_, cumsum_filled),
+    cumsum_na = if_else(is.na(points), cumsum_filled, NA_real_),
+    cumsum_na = if_else(year == min(year) | year == max(year), NA_real_, cumsum_na)
+  ) %>% 
+  group_by(year) %>% 
+  mutate(
+    exp = (year - 1981) * 50,
+    diff_exp = cumsum_filled - exp,
+    school = if_else(school == "LSU", "Louisiana State", school),
+    school = str_replace(school, "St\\.", "State")
+  ) %>% 
+  ungroup()
+
+df_ncaa_top <-
+  df_ncaa_cum %>% 
+  group_by(school) %>% 
+  filter(sum(!is.na(points)) > 9) %>% 
+  filter(year == 2018) %>% 
+  mutate(latest = cumsum_filled) %>% 
+  ungroup() %>% 
+  arrange(-latest) %>%
+  mutate(id = row_number()) %>% 
+  filter(id <= 30) %>% 
+  dplyr::select(school, latest, id)
+
+df_ncaa_sub <-
+  df_ncaa_cum %>% 
+  filter(school %in% df_ncaa_top$school) %>% 
+  left_join(df_ncaa_top) %>% 
+  mutate(school = fct_reorder(school, id))
+```
+
+```{r plot, fig.width = 33, fig.height = 30.5}
+df_ncaa_sub %>% 
+  ggplot(aes(year, cumsum_filled)) +
+    ## grey shading expected score
+    geom_rect(
+      data = df_ncaa_sub %>% filter(year < max(df_ncaa_sub$year)),
+      aes(xmin = year, xmax = year + 1,
+          ymin = 0, ymax = exp),
+      fill = "grey92"
+    ) +
+    ## color gradient difference cumulative sum <> expected score
+    geom_rect(
+      data = df_ncaa_sub %>% filter(year < max(df_ncaa_sub$year)),
+      aes(xmin = year, xmax = year + 1,
+          ymin = exp, ymax = cumsum_filled,
+          fill = diff_exp), alpha = .8
+    ) +
+    ## line expected score
+    geom_step(
+      data = df_ncaa_sub %>% 
+        mutate(exp = if_else(year == 2019, 1850, exp)),
+      aes(y = exp), 
+      color = "grey62",
+      size = .4
+    ) + 
+    ## line cumulative sum
+    geom_step(
+      color = "black",
+      size = .6
+    ) +
+    ## point cumulative sum conference participation
+    geom_point(
+      aes(y = cumsum), 
+      color = "black", 
+      size = 1.1
+    ) +
+    ## point cumulative sum no participation
+    geom_point(
+      aes(y = cumsum_na), 
+      shape = 21, 
+      color = "black", 
+      fill = "white", 
+      size = 1.3,
+      stroke = .3
+    ) +
+    ## indicator difference 2018
+    geom_linerange(
+      data = df_ncaa_sub %>% 
+        filter(year == max(df_ncaa_sub$year) - 1) %>% 
+        mutate(p = if_else(cumsum_filled > 1850, cumsum_filled - 75, cumsum_filled + 75)),
+      aes(x = 2019.6, ymin = exp, ymax = p, 
+          color = diff_exp, 
+          color = after_scale(darken(color, .25, space = "HLS")))
+    ) +
+    ## label cumulative sum 2018
+    geom_text(
+      data = df_ncaa_sub %>% 
+        filter(year == max(df_ncaa_sub$year)),
+      aes(label = round(cumsum_filled, 0), 
+          color = diff_exp, 
+          color = after_scale(darken(color, .25, space = "HLS"))),
+      family = "Overpass Mono", 
+      fontface = "bold", 
+      size = 4.3, 
+      hjust = 0, 
+      nudge_x = .2
+    ) +
+    ## label difference 2018
+    geom_text(
+      data = df_ncaa_sub %>% 
+        filter(year == max(df_ncaa_sub$year)) %>% 
+        mutate(lab = if_else(diff_exp < 0, 
+                             glue("{round(diff_exp, 0)}"), 
+                             glue("+{round(diff_exp, 0)}"))),
+      aes(y = exp + diff_exp / 2, 
+          label = lab, 
+          color = diff_exp, 
+          color = after_scale(darken(color, .25, space = "HLS"))),
+      family = "Overpass Mono", 
+      size = 3.3, 
+      hjust = 0, 
+      nudge_x = .9
+    ) +
+    ## label school, partcipation + mean score
+    geom_richtext(
+      data = df_ncaa_sub %>% 
+        group_by(school) %>% 
+        mutate(lab = glue("<b style='font-size:27pt;'>{school}</b><br><br><span style='font-size:14pt;font-family:overpass;'>Conferences: {sum(!is.na(points))}<br>Mean score: {round(latest / n() - 2, 1)}</span>")) %>% 
+        filter(cumsum_filled > 1400 | exp > 1400) %>% 
+        slice(1),
+      aes(x = year - 9, 
+          y = 1800, 
+          label = lab, 
+          color = latest - 1850, 
+          color = after_scale(darken(color, .3, space = "HLS"))),
+      family = "Alegreya Sans SC ExtraBold", 
+      size = 1, 
+      lineheight = .9,
+      label.color = NA,
+      fill = NA
+    ) +
+    facet_wrap(~school, scales = "free_x", ncol = 6) +
+    coord_cartesian(clip = "off") +
+    scale_x_continuous(breaks = seq(1980, 2020, by = 5), expand = c(0, 0), limits = c(1980, 2020)) +
+    scale_y_continuous(expand = c(.025, .025)) +
+    scale_color_carto_c(
+      palette = "Geyser", 
+      direction = -1, 
+      limits = c(-1255, 1255), 
+      guide = "none"
+    ) +
+    scale_fill_carto_c(
+      palette = "Geyser", 
+      direction = -1, 
+      limits = c(-1255, 1255), 
+      guide = "none"
+    ) +
+    labs(
+      title = "—  The Rise & Fall of Women’s College Basketball Dynasties  —", 
+      subtitle = "A number of teams that were the titans of the early NCAA women’s basketball tournament have struggled in recent decades. And in their place, a new ruling class of schools has emerged to become the defining programs of<br>the modern age. FiveThirtyEight estimated the team strength over time based on NCAA Tournament seeds as a proxy in the absence of game-level data. To measure this, FiveThirtyEight awarded “seed points” in proportion to<br>a given seed number’s expected wins in the tournament, calibrated to a 100-point scale where the No. 1 seed gets 100 points, No. 2 gets 70 points, and so forth.<br><br>The visualization shows the cumulative sum of awarded seed points on a 100-point scale from the very first women’s NCAA basketball tournaments in 1982 until 2018 in comparison to a hypothetical team that participated in<br>all of the 37 conferences and gained half of the points each time (grey line). The curves highlight the fall of yesterday’s women’s basketball powerhouses such as **Louisiana Tech**, **Long Beach State**, **Southern California**, and **Old**<br>**Dominion** that have been very good throughout the history of the women’s tournament but have experienced big drop-offs in seed points over the last years. At the same time, schools such as **UConn**, **Stanford**, **Notre Dame**,<br>**Baylor**, and **Duke** started slow but picked up steam into the present day. Some teams, such as **Tennessee**, have been relatively consistent throughout the NCAA era gathering always more seed points then an average team.<br>*Shown are the top 30 college teams that participated in at least ten conferences between 1982 and 2018, sorted by the cumulative sum of seed points.*",
+      caption = "Visualization by Cédric Scherer • Data by FiveThirtyEight"
+    ) #+
+    # ggsave(here::here("dev", glue::glue("2020_41___{format(Sys.time(), '%Y%m%d_%H%M%S')}.pdf")),
+    #        width = 33, height = 30.5, device = cairo_pdf)
+```
+
+
+```{r convert-to-png}
+## convert PDFs to PNGs
+path <- here::here("plots", "2020_41", "2020_41_NCAAWomensBasketball")
+
+ggsave(glue::glue("{path}.pdf"), width = 33, height = 30.5, device = cairo_pdf)
+
+pdf_convert(pdf = glue::glue("{path}.pdf"), 
+            filenames = glue::glue("{path}.png"),
+            format = "png", dpi = 150)
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
