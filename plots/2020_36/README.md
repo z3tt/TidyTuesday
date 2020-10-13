@@ -1,6 +1,6 @@
 ### [2020/36](https://github.com/Z3tt/TidyTuesday/tree/master/R/2020_36_GlobalCropYields) 🌾 Global Crop Yields by [Our World in Data](https://ourworldindata.org/crop-yields)
 
-![./plots/2020_36/2020_36_GlobalCropYields.mp4](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_36/2020_36_GlobalCropYields.mp4)
+![./plots/2020_36/2020_36_GlobalCropYields.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_36/2020_36_GlobalCropYields.gif)
 
 🔗 [Shiny App in Action]( https://cedric-scherer.shinyapps.io/TidyTuesday_2020_36_Crop_Yields/)
 
