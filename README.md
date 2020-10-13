@@ -87,12 +87,19 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/32 [⚡ European Energy](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_32)
   - 2020/33 [⚔️ Avatar: The Last Airbender](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_33)
   - 2020/34 [🌱 Extinct Plants](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34)
+  - 2020/36 [ Global Crop Yields](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_36)
   - 2020/37 [👯 FRIENDS Transcripts](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_37)
   - 2020/38 [💊 Children Public Health Efforts](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_38)
   - 2020/41 [🏀 NCAA Women's Basketball](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_41)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/36](https://cedric-scherer.shinyapps.io/TidyTuesday_2020_36_Crop_Yields/) 🌾 Global Crop Yields by [Our World in Data](https://ourworldindata.org/crop-yields)
+
+![./plots/2020_36/2020_36_GlobalCropYields.mp4](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_36/2020_36_GlobalCropYields.mp4)
 
 ***
 

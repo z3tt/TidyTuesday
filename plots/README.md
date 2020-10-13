@@ -7,6 +7,12 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
+### [2020/36](https://cedric-scherer.shinyapps.io/TidyTuesday_2020_36_Crop_Yields/) 🌾 Global Crop Yields by [Our World in Data](https://ourworldindata.org/crop-yields)
+
+![./plots/2020_36/2020_36_GlobalCropYields.mp4](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_36/2020_36_GlobalCropYields.mp4)
+
+***
+
 ### [2020/41](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_41) 🏀 NCAA Women's Basketball by [FiveThirtyEight](https://fivethirtyeight.com/features/louisiana-tech-was-the-uconn-of-the-80s/)
 
 ![./plots/2020_41/2020_41_NCAAWomensBasketball.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_41/2020_41_NCAAWomensBasketball.png)
