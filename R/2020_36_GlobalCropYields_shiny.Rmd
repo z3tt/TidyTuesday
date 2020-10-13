@@ -1,0 +1,84 @@
+library(shiny)
+library(tidyverse)
+library(fullPage)
+
+crops <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-01/key_crop_yields.csv')
+
+ui <- pagePiling(
+    sections.color = c('#ebebeb', '#f1f1f1'),
+    opts = options,
+    menu = c(
+      "Start" = "home",
+      "Introduction" ="intro"
+    ),
+    pageSection(
+      pageContainer(
+    tmapOutput("map")
+      )
+  ),
+  fullPage::pageSection(
+  )
+)
+
+server <- function(input, output, session) {
+  ns <- session$ns 
+ 
+  output$city_select_generated <- renderUI({
+    cns <- xberlin::datenguide %>% 
+      dplyr::distinct(name) %>% 
+      dplyr::pull(name)
+    
+    selectizeInput(
+      ns("city_select"),
+      "Search a city (sorted by population density)",
+      choices = cns,
+      selected = c("Berlin", "München"),
+      multiple = TRUE
+    )
+  })
+  
+  output$trend <- echarts4r::renderEcharts4r({
+    req(input$city_select)
+    
+    echarts4r::e_common(
+      font_family = "Overpass",
+      theme = NULL
+    )
+    
+    # var to color mapping
+    my_colors <- tibble::tibble(
+      name = c("München", "Berlin", "Stuttgart", "Frankfurt am Main", 
+               "Essen", "Düsseldorf", "Köln", "Hamburg", 
+               "Dortmund", "Leipzig", "Bremen", "Dresden"),
+      color = c("#7F3C8D", "#11A579", "#3969AC", "#F2B701",
+                "#E73F74", "#80BA5A", "#E68310", "#008695",
+                "#CF1C90", "#F97B72", "#4B4B8F", "#A5AA99")
+    )
+    
+    # requires a city selected
+    validate(
+      need(length(input$city_select) > 0, message = "Select at least one city")
+    )
+    
+    # filter selected and match with color
+    dat <- xberlin::datenguide %>% 
+      dplyr::filter(name %in% input$city_select) %>%
+      dplyr::left_join(my_colors, by = "name")
+    
+    ## plot
+    dat %>% 
+      dplyr::group_by(name) %>% 
+      echarts4r::e_charts(year) %>% 
+      echarts4r::e_line_(input$value) %>% 
+      echarts4r::e_tooltip(trigger = "axis") %>% 
+      echarts4r::e_mark_point(input$city_select, data = list(type = "max")) %>% 
+      echarts4r::e_legend(type = "scroll") %>% 
+      echarts4r::e_color(unique(dat$color)) %>% 
+      echarts4r::e_toolbox(bottom = 0) %>% 
+      echarts4r::e_toolbox_feature(feature = "dataZoom") %>% 
+      echarts4r::e_toolbox_feature(feature = "dataView") 
+  })
+}	
+
+
+shinyApp(ui, server)
