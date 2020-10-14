@@ -15,7 +15,9 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ### [2020/36](https://cedric-scherer.shinyapps.io/TidyTuesday_2020_36_Crop_Yields/) 🌾 Global Crop Yields by [Our World in Data](https://ourworldindata.org/crop-yields)
 
-![./plots/2020_36/2020_36_GlobalCropYields.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_36/2020_36_GlobalCropYields.gif)
+🔗 Have a look at the [Shiny App in Action!]( https://cedric-scherer.shinyapps.io/TidyTuesday_2020_36_Crop_Yields/)
+
+![./plots/2020_36/2020_36_GlobalCropYields_preview.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_36/2020_36_GlobalCropYields_preview.png)
 
 ***
 
