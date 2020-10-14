@@ -134,7 +134,7 @@ sauR <-
     labs(x = NULL, y = NULL, 
          title = "Same Stats. Different Graphs.",
          subtitle = "<b style='font-size:44pt;'>The Famous Datasaurus (*Anscombosaurus spec.*) Dozen</b><br><br>is a set of 13 different datasets with nigh-identical summary statistics, which could lead one to believe the<br>datasets are quite similar. After visualizing the data, it becomes clear that the datasets are markedly different.<br>It is based on **Anscombe's Quartet** which was developed by F.J. Anscombe in 1973 to demonstrate the importance<br>of data visualization. In 2016, Alberto Cairo created the Datasaurus dataset which urges people to *never trust*<br>*summary statistics alone; always visualize your data*. This dataset was published together with a dozen<br> other datasets with almost the same summary statistics by Justin Matejka & George Fitzmaurice in 2017.",
-         caption = "Idea by Francis Anscombe, Alberto Cairo, Justin Matejka & George Fitzmaurice\nVisualization by Cédric Scherer based on code by Tom Westlake") + #ggsave("test2.jpeg", width = 20, height = 24, type = "cairo")
+         caption = "Idea by Francis Anscombe, Alberto Cairo, Justin Matejka & George Fitzmaurice\nVisualization by Cédric Scherer based on code by Tom Westlake") + 
     transition_states(dataset, 10, 3) + 
     ease_aes('cubic-in-out')
 ```
@@ -148,7 +148,7 @@ anim <-
           width = 1650, height = 2000, device = "jpeg", type = "cairo",
           renderer = ffmpeg_renderer())
           #renderer = magick_renderer())
-          #renderer = file_renderer(dir = here::here("plots", "2020_42"), 
+          #renderer = file_renderer(dir = here::here("plots", "2020_42", "jpeg"), 
           #                         prefix = "2020_42_Datasaurus"))
 
 anim_save(filename = "2020_42_Datasaurus.mpeg", 
