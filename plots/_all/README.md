@@ -6,6 +6,15 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
+### [2020/42](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_42) 🦖 The Datasaurus Dozen by [Alberto Cairo](http://www.thefunctionalart.com/2016/08/download-datasaurus-never-trust-summary.html)
+
+![./plots/2020_42/2020_42_Datasaurus.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_42/2020_42_Datasaurus.gif)
+
+**Alternative version with cyclic rainbow colors:**
+![./plots/2020_42/rainbow-version/2020_42_Datasaurus_rainbow.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_42/rainbow-version/2020_42_Datasaurus_rainbow.gif)
+
+***
+
 ### [2020/36](https://cedric-scherer.shinyapps.io/TidyTuesday_2020_36_Crop_Yields/) 🌾 Global Crop Yields by [Our World in Data](https://ourworldindata.org/crop-yields)
 
 ![./plots/2020_36/2020_36_GlobalCropYields.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_36/2020_36_GlobalCropYields.gif)
@@ -32,17 +41,17 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ### [2020/34](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34) 🌱 Extinct Plants by [IUCN Red List](https://www.iucnredlist.org/)
 
-## Poster version with legend
+### Poster version with legend
 
 ![./plots/2020_34/2020_34_ExtinctPlants_2_poster_legend_NorthAmerica_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_2_poster_legend_NorthAmerica_1.png)
 ![./plots/2020_34/2020_34_ExtinctPlants_2_poster_legend_Europe_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_2_poster_legend_Europe_1.png)
 ![./plots/2020_34/2020_34_ExtinctPlants_2_poster_legend_Oceania_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_2_poster_legend_Oceania_1.png)
 
-## Stand-alone legend
+### Stand-alone legend
 
 ![./plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_3_legend_standalone_1.png)
 
-## Alternative version without legend
+### Alternative version without legend
 
 ![./plots/2020_34/2020_34_ExtinctPlants_1_poster_SouthAmerica_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_1_poster_SouthAmerica_1.png)
 ![./plots/2020_34/2020_34_ExtinctPlants_1_poster_Africa_1.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_34/2020_34_ExtinctPlants_1_poster_Africa_1.png)

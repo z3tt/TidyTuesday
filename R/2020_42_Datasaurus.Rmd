@@ -1,0 +1,164 @@
+---
+title: "TidyTuesday 2020/42 - The Datasaurus Dzoen by Alberto Cairo"
+author: "Cedric Scherer"
+date: "13th of October 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(gganimate)
+library(ragg)
+library(ggtext)
+library(colorspace)
+library(glue)
+
+theme_set(theme_classic(base_family = "Zilla Slab", base_size = 25))
+
+theme_update(
+  axis.text = element_text(family = "Overpass Mono",
+                           color = "grey60", margin = margin(t = 2)),
+  axis.ticks = element_line(color = "grey60"),
+  axis.line.x = element_line(color = "grey60"),
+  axis.line.y = element_line(color = "grey60"),
+  plot.title = element_text(family = "Zilla Slab Highlight", size = 84, 
+                            color = "grey10", hjust = .5,
+                            margin = margin(15, 0, 30, 0)),
+  plot.subtitle = element_markdown(size = 20, color = "grey30", lineheight = 1.6,
+                                   hjust = .5, margin = margin(20, 0, 100, 0)),
+  plot.caption = element_text(color = "grey30", size = 18, face = "italic", 
+                              lineheight = 1.3,
+                              hjust = .5, margin = margin(60, 0, 0, 0)),
+  plot.title.position = "plot",
+  plot.caption.position = "plot",
+  plot.margin = margin(90, 70, 90, 70),
+  plot.background = element_rect(color = "white", fill = "white")
+)
+```
+
+```{r data}
+df_saurus <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-10-13/datasaurus.csv')
+```
+
+## Idea and sources
+
+* DataSaurus - Blog Post by Alberto Cairo: thefunctionalart.com/2016/08/download-datasaurus-never-trust-summary.html
+* Datasaurus Dozen - Paper by Matejka & Fitzmaurice: autodeskresearch.com/publications/samestats
+* Data for R - package by Steph Locke: itsalocke.com/datasaurus/ and github.com/lockedata/datasauRus
+* gganimate code by Tom Westlake: r-mageddon.netlify.com/post/reanimating-the-datasaurus
+* Based on "Anscombe's Quartet": en.wikipedia.org/wiki/Anscombe%27s_quartet
+
+```{r data-prep}
+cols <- c(rcartocolor::carto_pal(12, name = "Prism"), "black")
+#cols <- rainbow(13)
+
+df_saurus_lab <- 
+  df_saurus %>% 
+  group_by(dataset) %>% 
+  ## old code that I would now write with `summarize(across())`
+  mutate(
+    id = cur_group_id(),
+    mean_x = mean(x),
+    mean_y = mean(y),
+    sd_x = sd(x),
+    sd_y = sd(y),
+    cor = cor(x, y, method = "pearson"),
+    label = glue::glue('
+      mean(x)  = {formatC(mean_x, digits = 5, format = "f")}
+      sd(x)    = {formatC(sd_x, digits = 5, format = "f")}
+      
+      mean(y)  = {formatC(mean_y, digits = 5, format = "f")}
+      sd(y)    = {formatC(sd_y, digits = 5, format = "f")}
+      
+      cor(x,y) = {formatC(cor, digits = 5, format = "f")}
+    '),
+    label_short = glue::glue('
+      mean(x)  = {floor(mean_x*100)/100}
+      sd(x)    = {floor((sd_x + 0.00001)*100)/100}
+      
+      mean(y)  = {floor(mean_y*100)/100}
+      sd(y)    = {floor((sd_y + 0.00001)*100)/100}
+      
+      cor(x,y) = {ceiling(cor*100)/100}
+    ')
+  ) %>%
+  nest() %>% 
+  mutate(modelout = map(data, ~ lm(y ~ x, data = .x) %>%
+    broom::tidy() %>% 
+    mutate(term = if_else(term == "(Intercept)", "intercept", "slope")) %>% 
+    dplyr::select(term, estimate) %>% 
+    pivot_wider(
+      names_from = term,
+      values_from = estimate
+    ))) %>%
+  unnest() %>% 
+  ungroup()
+```
+
+
+```{r plot}
+sauR <- 
+  ggplot(data = df_saurus_lab,
+         aes(x = x, y = y,
+             color = dataset, 
+             group = 1)) +
+    geom_abline(data = df_saurus_lab %>% group_by(dataset) %>% slice(1),
+                aes(slope = slope, intercept = intercept, 
+                    group = 1, color = dataset, 
+                    color = after_scale(lighten(color, .5))), 
+                inherit.aes = FALSE,
+                size = 1.5) +  
+    geom_point(size = 5, alpha = 0.8) +
+    geom_text(data = df_saurus_lab %>% group_by(dataset) %>% slice(1),
+              aes(x = 92, y = 100, label = label),
+              family = "Overpass Mono", color = "grey78", 
+              size = 9, hjust = 0, vjust = 1) +
+    geom_text(data = df_saurus_lab %>% group_by(dataset) %>% slice(1),
+              aes(x = 92, y = 100, label = label_short),
+              family = "Overpass Mono", color = "grey60", 
+              size = 9, hjust = 0, vjust = 1) +
+    coord_equal(clip = "off") +
+    scale_x_continuous(limits = c(0, 125), breaks = seq(0, 100, by = 20), expand = c(.01, .01)) +
+    scale_y_continuous(limits = c(0, 101), breaks = seq(0, 100, by = 20), expand = c(.01, .01)) +
+    scale_color_manual(values = cols, guide = "none") +
+    labs(x = NULL, y = NULL, 
+         title = "Same Stats. Different Graphs.",
+         subtitle = "<b style='font-size:44pt;'>The Famous Datasaurus (*Anscombosaurus spec.*) Dozen</b><br><br>is a set of 13 different datasets with nigh-identical summary statistics, which could lead one to believe the<br>datasets are quite similar. After visualizing the data, it becomes clear that the datasets are markedly different.<br>It is based on **Anscombe's Quartet** which was developed by F.J. Anscombe in 1973 to demonstrate the importance<br>of data visualization. In 2016, Alberto Cairo created the Datasaurus dataset which urges people to *never trust*<br>*summary statistics alone; always visualize your data*. This dataset was published together with a dozen<br> other datasets with almost the same summary statistics by Justin Matejka & George Fitzmaurice in 2017.",
+         caption = "Idea by Francis Anscombe, Alberto Cairo, Justin Matejka & George Fitzmaurice\nVisualization by Cédric Scherer based on code by Tom Westlake") + #ggsave("test2.jpeg", width = 20, height = 24, type = "cairo")
+    transition_states(dataset, 10, 3) + 
+    ease_aes('cubic-in-out')
+```
+
+```{r animation}
+## png uoutput has weird spacing (problems ggtext + custom fonts), no problem with jpeg
+## gifski cannot handle jpeg, magick never finished (10min+)
+## solution for now: mpeg video / raw plots and convert manually to gif
+anim <- 
+  animate(sauR, nframes = 100, fps = 5, detail = 5, 
+          width = 1650, height = 2000, device = "jpeg", type = "cairo",
+          renderer = ffmpeg_renderer())
+          #renderer = magick_renderer())
+          #renderer = file_renderer(dir = here::here("plots", "2020_42"), 
+          #                         prefix = "2020_42_Datasaurus"))
+
+anim_save(filename = "2020_42_Datasaurus.mpeg", 
+          path = here::here("plots", "2020_42"))
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```

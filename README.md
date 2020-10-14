@@ -91,9 +91,16 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/37 [👯 FRIENDS Transcripts](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_37)
   - 2020/38 [💊 Children Public Health Efforts](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_38)
   - 2020/41 [🏀 NCAA Women's Basketball](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_41)
+  - 2020/42 [🦖 The Datasaurus Dozen](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_42)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/42](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_42) 🦖 The Datasaurus Dozen by [Alberto Cairo](http://www.thefunctionalart.com/2016/08/download-datasaurus-never-trust-summary.html)
+
+![./plots/2020_42/2020_42_Datasaurus.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_42/2020_42_Datasaurus.gif)
 
 ***
 

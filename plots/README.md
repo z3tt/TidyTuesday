@@ -7,6 +7,12 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
+### [2020/42](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_42) 🦖 The Datasaurus Dozen by [Alberto Cairo](http://www.thefunctionalart.com/2016/08/download-datasaurus-never-trust-summary.html)
+
+![./plots/2020_42/2020_42_Datasaurus.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_42/2020_42_Datasaurus.gif)
+
+***
+
 ### [2020/36](https://cedric-scherer.shinyapps.io/TidyTuesday_2020_36_Crop_Yields/) 🌾 Global Crop Yields by [Our World in Data](https://ourworldindata.org/crop-yields)
 
 ![./plots/2020_36/2020_36_GlobalCropYields.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_36/2020_36_GlobalCropYields.gif)
