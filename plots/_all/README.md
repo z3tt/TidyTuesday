@@ -19,6 +19,10 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ![./plots/2020_36/2020_36_GlobalCropYields.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_36/2020_36_GlobalCropYields.gif)
 
+![./plots/2020_36/2020_36_GlobalCropYields_preview.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_36/2020_36_GlobalCropYields_preview.png)
+
+🔗 [Shiny App in Action]( https://cedric-scherer.shinyapps.io/TidyTuesday_2020_36_Crop_Yields/)
+
 ***
 
 ### [2020/41](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_41) 🏀 NCAA Women's Basketball by [FiveThirtyEight](https://fivethirtyeight.com/features/louisiana-tech-was-the-uconn-of-the-80s/)

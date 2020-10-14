@@ -104,9 +104,11 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
 
 ***
 
-### [2020/36](https://cedric-scherer.shinyapps.io/TidyTuesday_2020_36_Crop_Yields/) 🌾 Global Crop Yields by [Our World in Data](https://ourworldindata.org/crop-yields)
+### [2020/36](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_36) 🌾 Global Crop Yields by [Our World in Data](https://ourworldindata.org/crop-yields)
 
-![./plots/2020_36/2020_36_GlobalCropYields.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_36/2020_36_GlobalCropYields.gif)
+![./plots/2020_36/2020_36_GlobalCropYields_preview.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_36/2020_36_GlobalCropYields_preview.png)
+
+🔗 [Shiny App in Action]( https://cedric-scherer.shinyapps.io/TidyTuesday_2020_36_Crop_Yields/)
 
 ***
 
