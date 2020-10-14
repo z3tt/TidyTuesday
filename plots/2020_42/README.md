@@ -3,4 +3,4 @@
 ![./plots/2020_42/2020_42_Datasaurus.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_42/2020_42_Datasaurus.gif)
 
 **Alternative version with cyclic rainbow colors:**
-![./plots/2020_42/rainbow-version/2020_42_Datasaurus_rainbow.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_42/rainbow-version/2020_42_Datasaurus_rainbow.gif)
+![./plots/2020_42/rainbow-version/2020_42_Datasaurus_rainbow.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_42/2020_42_Datasaurus_rainbow.gif)
