@@ -12,7 +12,7 @@ mod_map_ui <- function(id){
   fullPage::pageContainer(
     pageContainer(
       h3("Global Patterns of Crop Yields 1961–2018"),
-      p("(in tonnes per hectare)"),
+      h4("(in tonnes per hectare)"),
       br(),
       fluidRow(
         column(4),
@@ -20,9 +20,9 @@ mod_map_ui <- function(id){
       ),
       shinycssloaders::withSpinner(echarts4r::echarts4rOutput(ns("map"), height = "50vh")),
       br(), br(),
-      p("Note: Values for the former USSR (1961–2018) have been assigned to Russia.", style = "font-size:9px;font-style:italic;"), 
+      p("Note: Values for the former USSR (1961–2018) have been assigned to Russia.", style = "font-size:.9vw;font-style:italic;"), 
       br(),
-      p("Shiny App: ", tags$a(href="cedricscherer.netlify.com/", "Cédric Scherer", style = "color:#2d896e;font-size:12px;"), "  •  Data Source: ", tags$a(href="https://ourworldindata.org/crop-yields", "Our World in Data", style = "color:#2d896e;font-size:12px;"), style = "font-size:12px;")
+      p("Shiny App: ", tags$a(href="cedricscherer.netlify.com/", "Cédric Scherer"), "  •  Data Source: ", tags$a(href="https://ourworldindata.org/crop-yields", "Our World in Data"))
     )
   )
 }

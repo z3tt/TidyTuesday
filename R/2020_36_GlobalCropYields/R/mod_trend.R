@@ -12,7 +12,7 @@ mod_trend_ui <- function(id){
   fullPage::pageContainer(
     pageContainer(
       h3("Crop Yields over Time"),
-      p("(in tonnes per hectare)"),
+      h4("(in tonnes per hectare)"),
       br(),
       fluidRow(
         column(8, uiOutput(ns("country_select_generated"))),
@@ -20,7 +20,7 @@ mod_trend_ui <- function(id){
       ),
       shinycssloaders::withSpinner(echarts4r::echarts4rOutput(ns("trend"), height = "50vh")),
       br(), br(), br(),
-      p("Shiny App: ", tags$a(href="cedricscherer.netlify.com/", "Cédric Scherer", style = "color:#2d896e;font-size:12px;"), "  •  Data Source: ", tags$a(href="https://ourworldindata.org/crop-yields", "Our World in Data", style = "color:#2d896e;font-size:12px;"), style = "font-size:12px;")
+      p("Shiny App: ", tags$a(href="cedricscherer.netlify.com/", "Cédric Scherer"), "  •  Data Source: ", tags$a(href="https://ourworldindata.org/crop-yields", "Our World in Data"))
     )
   )
 }

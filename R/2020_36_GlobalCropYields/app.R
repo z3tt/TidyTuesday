@@ -22,8 +22,7 @@ app_ui <- function(request) {
   options(spinner.color = "#11a579", spinner.size = 1, spinner.type = 4)
   
   tagList(
-    tags$style(type = "text/css", 
-               "* { font-family: Overpass; color: black;}"),
+    tags$head(includeCSS("www/css.css")),
     fullPage::pagePiling(
       sections.color = c('#dbdbdb', '#efefef', '#dbdbdb'),
       opts = options,

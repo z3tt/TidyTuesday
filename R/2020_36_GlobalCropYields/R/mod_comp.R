@@ -12,7 +12,7 @@ mod_comp_ui <- function(id){
   fullPage::pageContainer(
     pageContainer(
       h3("Comparison of Crop Yields in 2018"),
-      p("(in tonnes per hectare)"),
+      h4("(in tonnes per hectare)"),
       br(),
       fluidRow(
         column(7, uiOutput(ns("crop_select3_generated"))),
@@ -32,7 +32,7 @@ mod_comp_ui <- function(id){
       ),
       shinycssloaders::withSpinner(echarts4r::echarts4rOutput(ns("comp"), height = "50vh")),
       br(), br(), br(),
-      p("Shiny App: ", tags$a(href="cedricscherer.netlify.com/", "Cédric Scherer", style = "color:#2d896e;font-size:12px;"), "  •  Data Source: ", tags$a(href="https://ourworldindata.org/crop-yields", "Our World in Data", style = "color:#2d896e;font-size:12px;"), style = "font-size:12px;")
+      p("Shiny App: ", tags$a(href="cedricscherer.netlify.com/", "Cédric Scherer"), "  •  Data Source: ", tags$a(href="https://ourworldindata.org/crop-yields", "Our World in Data"))
     )
   )
 }

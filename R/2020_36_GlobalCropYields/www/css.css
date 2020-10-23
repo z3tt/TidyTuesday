@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,400;0,700;0,800;1,400&display=swap');
+
+*{
+  font-family: 'Overpass', sans-serif;
+  color: black;
+}
+
+h3{
+  font-size: 2vw;
+  font-weight: 800;
+}
+
+h4{
+  font-size: 1.2vw;
+}
+
+p{
+  font-size: 1vw;
+}
+
+a{
+  font-size:1vw;
+  color:#2d896e;
+}
+
+.control-label{
+  font-size:1.2vw;
+}
+
+.item{
+  font-size:1.2vw;
+}

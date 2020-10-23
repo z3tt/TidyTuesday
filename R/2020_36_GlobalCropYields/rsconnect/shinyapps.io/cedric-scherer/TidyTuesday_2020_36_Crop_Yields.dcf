@@ -5,6 +5,6 @@ account: cedric-scherer
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2998756
-bundleId: 3733781
+bundleId: 3750469
 url: https://cedric-scherer.shinyapps.io/TidyTuesday_2020_36_Crop_Yields/
-when: 1602575674.94229
+when: 1602885483.58521
