@@ -7,7 +7,7 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
-### [2020/44](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_44) :canada: Canadian Wind Turbines by [Government of Canada](https://open.canada.ca/data/en/dataset/79fdad93-9025-49ad-ba16-c26d718cc070)
+### [2020/44](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_44) 🌬️ Canadian Wind Turbines by [Government of Canada](https://open.canada.ca/data/en/dataset/79fdad93-9025-49ad-ba16-c26d718cc070)
 
 ![./plots/2020_44/2020_44_CanadianWindTurbines_h.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_44/2020_44_CanadianWindTurbines_h.png)
 
