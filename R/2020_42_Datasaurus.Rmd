@@ -1,5 +1,5 @@
 ---
-title: "TidyTuesday 2020/42 - The Datasaurus Dzoen by Alberto Cairo"
+title: "TidyTuesday 2020/42 - The Datasaurus Dozen by Alberto Cairo"
 author: "Cedric Scherer"
 date: "13th of October 2020"
 output:
