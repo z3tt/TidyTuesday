@@ -92,9 +92,16 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/38 [💊 Children Public Health Efforts](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_38)
   - 2020/41 [🏀 NCAA Women's Basketball](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_41)
   - 2020/42 [🦖 The Datasaurus Dozen](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_42)
+  - 2020/44 [:canada: Canadian Wind Turbines](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_44)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/44](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_44) :canada: Canadian Wind Turbines by [Government of Canada](https://open.canada.ca/data/en/dataset/79fdad93-9025-49ad-ba16-c26d718cc070)
+
+![./plots/2020_44/2020_44_CanadianWindTurbines_h.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_44/2020_44_CanadianWindTurbines_h.png)
 
 ***
 

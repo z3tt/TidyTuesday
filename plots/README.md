@@ -7,6 +7,12 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
+### [2020/44](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_44) :canada: Canadian Wind Turbines by [Government of Canada](https://open.canada.ca/data/en/dataset/79fdad93-9025-49ad-ba16-c26d718cc070)
+
+![./plots/2020_44/2020_44_CanadianWindTurbines_h.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_44/2020_44_CanadianWindTurbines_h.png)
+
+***
+
 ### [2020/42](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_42) 🦖 The Datasaurus Dozen by [Alberto Cairo](http://www.thefunctionalart.com/2016/08/download-datasaurus-never-trust-summary.html)
 
 ![./plots/2020_42/2020_42_Datasaurus.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_42/2020_42_Datasaurus.gif)
