@@ -1,0 +1,121 @@
+---
+title: "TidyTuesday 2020/43 - Great American Beer Festival by GABF"
+author: "Cedric Scherer"
+date: "1st of November 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(ggtext)
+library(systemfonts)
+library(pdftools)
+
+register_font(
+  "Brandon", 
+  plain = "C:/Users/DataVizard/AppData/Local/Microsoft/Windows/Fonts/Brandon_reg_0.otf",
+  bold = "C:/Users/DataVizard/AppData/Local/Microsoft/Windows/Fonts/Brandon_blk.otf",
+  italic = "C:/Users/DataVizard/AppData/Local/Microsoft/Windows/Fonts/Brandon_reg_it_0.otf"
+)
+
+theme_set(theme_void(base_family = "Brandon Grotesque", base_size = 18))
+
+theme_update(
+  text = element_text(color = "#006A90"),
+  plot.margin = margin(10, 50, 25, 25),
+  panel.grid.major.x = element_line(color = "grey92", size = .3),
+  panel.grid.major.y = element_line(color = "#b0c6ce", size = .6),
+  axis.text = element_text(),
+  axis.text.x = element_text(family = "BrandonGrotesque-Black", size = 12, 
+                             color = "#b0c6ce", margin = margin(t = 12)),
+  axis.text.y = element_text(family = "BrandonGrotesque-Black", size = 22, 
+                             face = "bold", hjust = 0,
+                             margin = margin(r = 5)),
+  plot.title = element_markdown(family = "BrandonGrotesque-Black", size = 26, 
+                                face = "bold", hjust = .5,
+                                margin = margin(b = 50)),
+  plot.caption = element_text(family = "BrandonGrotesque-Regular", size = 12, 
+                              hjust = 1, color = "#b0c6ce",
+                              margin = margin(t = 20)),
+  plot.title.position = "plot",
+  legend.position = "none"
+)
+```
+
+```{r data}
+df_beer <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-10-20/beer_awards.csv')
+
+df_beer_state <- 
+  df_beer %>% 
+  mutate(
+    state = str_to_upper(state),
+    medal_sort = case_when(medal == "Gold" ~ "A", 
+                           medal == "Silver" ~ "B", 
+                           medal == "Bronze" ~ "C")
+  ) %>% 
+  count(state, year, medal, medal_sort) %>% 
+  uncount(n) %>% 
+  arrange(state, year, medal_sort) %>% 
+  group_by(state, year) %>%
+  mutate(id = (row_number() + 1)^2) %>% 
+  group_by(state) %>% 
+  mutate(sum = n()) %>% 
+  ungroup() %>% 
+  filter(sum >= 50) %>% 
+  left_join(tibble(name = datasets::state.name, state = datasets::state.abb)) %>% 
+  mutate(
+    state = glue::glue("{name} <span style='font-size:12pt;color:#b0c6ce;'>({sum})</span>"),
+    state = fct_reorder(state, sum)
+  )
+```
+
+```{r plot, fig.width = 27, fig.height = 19}
+df_beer_state %>% 
+  ggplot(aes(year, state, size = id, color = medal_sort, alpha = medal_sort)) +
+  geom_point(data = df_beer_state %>% group_by(state, year) %>% 
+               summarize(id = max(id) + 70, sum = unique(sum)), 
+             color = "white", alpha = 1) +
+  geom_point(shape = 21, fill = NA, stroke = .3) +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(expand = c(0, 0), breaks = 1987:2020) +
+  scale_y_discrete(expand = c(0, 0)) +
+  scale_color_manual(values = c("#cd8d2a", "grey75", "#a45128")) +
+  scale_alpha_manual(values = c(1, .67, .33)) +
+  scale_size_area(max_size = 30) +
+  labs(
+    title = "<img src='https://tenemu.com/wp-content/uploads/2017/05/GABF-Logo-1280x720.jpeg' width='380'/><br><span style='font-size:34pt;'>T</span>IMELINE OF <span style='font-size:34pt;'>M</span>EDAL <span style='font-size:34pt;'>W</span>INNERS FROM <span style='font-size:34pt;'>A</span>LL <span style='font-size:34pt;'>S</span>TYLES BY <span style='font-size:34pt;'>S</span>TATE WITH <span style='font-size:34pt;'>50+ M</span>EDALS IN <span style='font-size:34pt;'>S</span>UM</span>",
+    caption = "Visualization by Cédric Scherer  •  Data by Great American Beer Festival"
+  ) +
+  theme(axis.text.y = element_markdown()) #+
+  #ggsave(here::here("dev", glue::glue("2020_43___{format(Sys.time(), '%Y%m%d_%H%M%S')}.pdf")),
+  #       width = 27, height = 19, device = cairo_pdf)
+```
+
+```{r convert-to-png}
+## convert PDFs to PNGs
+path <- here::here("plots", "2020_43", "2020_43_AmericanBeerFestival")
+
+ggsave(glue::glue("{path}.pdf"), width = 27, height = 19, device = cairo_pdf)
+
+pdf_convert(pdf = glue::glue("{path}.pdf"), 
+            filenames = glue::glue("{path}.png"),
+            format = "png", dpi = 150)
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
