@@ -87,15 +87,22 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/32 [⚡ European Energy](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_32)
   - 2020/33 [⚔️ Avatar: The Last Airbender](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_33)
   - 2020/34 [🌱 Extinct Plants](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_34)
-  - 2020/36 [ Global Crop Yields (Shiny App)](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_36)
+  - 2020/36 [🌾 Global Crop Yields (Shiny App)](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_36)
   - 2020/37 [👯 FRIENDS Transcripts](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_37)
   - 2020/38 [💊 Children Public Health Efforts](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_38)
   - 2020/41 [🏀 NCAA Women's Basketball](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_41)
   - 2020/42 [🦖 The Datasaurus Dozen](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_42)
+  - 2020/43 [🍻 Great American Beer Festival](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_43)
   - 2020/44 [🌬️ Canadian Wind Turbines](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_44)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/43](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_43) 🍻 Great American Beer Festival by [GABF](https://www.greatamericanbeerfestival.com/the-competition/winners/)
+
+![./plots/2020_43/2020_43_AmericanBeerFestival.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_43/2020_43_AmericanBeerFestival.png)
 
 ***
 
