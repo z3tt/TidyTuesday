@@ -165,9 +165,9 @@ ggplot(
     fill = NA
   ) +
   geom_richtext(
-    data = tibble(year = 1999, mobile_subs = 1650),
+    data = tibble(year = 1998.7, mobile_subs = 1650),
     aes(year, mobile_subs,
-        label = glue::glue("<b style='font-size:20pt;color:black;font-family:rockwell;'>Nowadays, in many regions of the world<br>there are more mobile subscriptions than people</b><br><br><br><span style='font-size:9pt'>In the last decades, the number of mobile devices has grown rapidly across the world.<br>In 2016, in 13 out of 20 regions of the world the number of subscriptions exceeded more than one<br>mobile phone per person, but different countries and regions have had varying rates of adoption.<br><br></span>The stacked area chart shows the **average number of mobile subscriptions per region** over a timperiod of 26 years. Note that<br>consequently the width of all regions together **does not** represent the average number of subscriptions per continent.")),
+        label = glue::glue("<b style='font-size:20pt;color:black;font-family:rockwell;'>Nowadays, in many regions of the world<br>there are more mobile subscriptions than people</b><br><br><br><span style='font-size:9pt'>In the last decades, the number of mobile devices has grown rapidly across the world.<br>In 2016, in 13 out of 20 regions of the world the number of subscriptions exceeded more than one<br>mobile phone per person, but different countries and regions have had varying rates of adoption.<br><br></span>The stacked area chart shows the **average number of mobile subscriptions per region** over a timperiod of 27 years. Note that<br>consequently the width of all regions together **does not** represent the average number of subscriptions per continent.")),
     inherit.aes = FALSE,
     position = "stack",
     family = "Roboto",
