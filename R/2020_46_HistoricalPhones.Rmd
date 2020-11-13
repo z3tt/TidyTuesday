@@ -1,0 +1,220 @@
+---
+title: "TidyTuesday 2020/45 - Historical Phones by OurWorldInData.org"
+author: "Cedric Scherer"
+date: "12th of November 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(rnaturalearth)
+library(systemfonts)
+library(ggtext)
+library(ggsci)
+library(pdftools)
+
+theme_set(theme_void(base_family = "Roboto Condensed", base_size = 9))
+
+theme_update(
+  axis.text.x = element_text(color = "grey60", margin = margin(t = 4)),
+  axis.ticks.x = element_line(color = "grey60"),
+  axis.ticks.length.x = unit(.4, "lines"),
+  legend.position = "none",
+  panel.grid = element_blank(),
+  plot.margin = margin(35, 25, 15, 35),
+  plot.background = element_rect(fill = "grey98", color = "grey98"),
+  plot.caption = element_text(family = "Roboto", color = "grey60", 
+                              size = 8, margin = margin(t = 30, r = 50))
+)
+```
+
+```{r data}
+df_mobile <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-11-10/mobile.csv')
+```
+
+```{r prep-data}
+df_countries <- 
+  ne_countries(scale = 110, returnclass = "sf") %>% 
+  as_tibble()
+
+df_mobile_sub <-
+  df_mobile %>% 
+  filter(year < max(year)) %>% 
+  left_join(df_countries, by = c("code" = "iso_a3")) %>% 
+  group_by(entity, year) %>% 
+  slice(1) %>%
+  ungroup %>% 
+  add_count(entity) %>% 
+  filter(n == max(n), !is.na(subregion)) %>% 
+  dplyr::select(entity, year, mobile_subs, continent.x, continent.y, subregion, n) %>% 
+  group_by(continent.x, subregion, year) %>% 
+  summarize(mobile_subs = mean(mobile_subs, na.rm = TRUE)) %>% 
+  arrange(year, continent.x, subregion) %>% 
+  group_by(continent.x, year) %>% 
+  mutate(
+    id = row_number(), 
+    alpha = id / max(id),
+    subregion = str_replace(subregion, "\\band\\b", "&")
+  ) %>% 
+  ungroup
+
+df_mobile_end <-
+  df_mobile_sub %>% 
+  filter(year == max(year)) %>% 
+  group_by(continent.x) %>% 
+  mutate(end_cont = mean(mobile_subs[which(year == 2016)])) %>% 
+  group_by(subregion) %>% 
+  mutate(end_sub = mobile_subs[which(year == 2016)]) %>% 
+  arrange(-end_cont, -end_sub) %>% 
+  ungroup %>% 
+  mutate(id_sort = row_number()) %>% 
+  dplyr::select(subregion, id_sort, end_cont, end_sub)
+
+df_mobile_fct <-
+  df_mobile_sub %>% 
+  left_join(df_mobile_end, by = c("subregion")) %>% 
+  mutate(
+    continent.x = fct_reorder(continent.x, -end_cont),
+    subregion = fct_reorder(subregion, id_sort),
+    continent_rev = fct_rev(continent.x)
+  )
+```
+
+
+```{r plot, fig.width = 12, fig.height = 9.5}
+ggplot(
+  df_mobile_fct,
+  aes(year, mobile_subs, 
+      group = subregion, 
+      alpha = -alpha)
+  ) +
+  geom_area(aes(
+      fill = continent.x#,
+      #color = after_scale(fill),#colorspace::lighten(fill, .4))
+    ),
+    position = "stack",
+    size = 0
+  ) +
+  geom_area(
+    data = df_mobile_fct %>% group_by(continent.x, year) %>% 
+      summarize(mobile_subs = sum(mobile_subs)),
+    aes(
+      year, mobile_subs,
+      group = continent.x,
+      color = continent.x,
+      color = after_scale(colorspace::darken(color, .2, space = "HLS"))
+    ),
+    inherit.aes = FALSE,
+    position = "stack",
+    fill = "transparent",
+    size = .9
+  ) +
+  annotate(
+    geom = "rect", 
+    xmin = 2016, xmax = Inf, 
+    ymin = -Inf, ymax = Inf,
+    fill = "grey98",
+    size = 0
+  ) +
+  geom_richtext(
+    data = df_mobile_fct %>% filter(year == 2014) %>% 
+      group_by(continent_rev, year) %>% 
+      summarize(mobile_subs = sum(mobile_subs)),
+    aes(year, mobile_subs, 
+        label = continent_rev,
+        vjust = mobile_subs / 130),
+    inherit.aes = FALSE,
+    position = "stack",
+    family = "Rockwell",
+    size = 6.5,
+    fontface = "bold",
+    color = "white",
+    label.colour = NA,
+    fill = NA
+  ) +
+  annotate(
+    "text", x = 2014, y = 1830,
+    label = "Regions of:",
+    color = "grey85",
+    size = 3.5,
+    family = "Rockwell"
+  ) +
+  geom_richtext(
+    data = df_mobile_fct %>% filter(year == 2016),
+    aes(year, mobile_subs, group = subregion,
+        label = glue::glue("<b style='font-size:9pt;'>{subregion}</b><br>{round(mobile_subs, 1)} per 100 persons"),
+        color = continent.x,
+        nudge_x = 1,
+        hjust = 0,
+        vjust = .9),
+    inherit.aes = FALSE,
+    position = "stack",
+    family = "Roboto Condensed",
+    size = 2.3,
+    label.colour = NA,
+    fill = NA
+  ) +
+  geom_richtext(
+    data = tibble(year = 1999, mobile_subs = 1650),
+    aes(year, mobile_subs,
+        label = glue::glue("<b style='font-size:20pt;color:black;font-family:rockwell;'>Nowadays, in many regions of the world<br>there are more mobile subscriptions than people</b><br><br><br><span style='font-size:9pt'>In the last decades, the number of mobile devices has grown rapidly across the world.<br>In 2016, in 13 out of 20 regions of the world the number of subscriptions exceeded more than one<br>mobile phone per person, but different countries and regions have had varying rates of adoption.<br><br></span>The stacked area chart shows the **average number of mobile subscriptions per region** over a timperiod of 26 years. Note that<br>consequently the width of all regions together **does not** represent the average number of subscriptions per continent.")),
+    inherit.aes = FALSE,
+    position = "stack",
+    family = "Roboto",
+    size = 2.8,
+    color = "grey40",
+    label.colour = NA,
+    fill = NA,
+    lineheight = 1.6
+  ) +
+  # geom_vline(
+  #   data = tibble(x = 1991:2015),
+  #   aes(xintercept = x), 
+  #   inherit.aes = FALSE,
+  #   color = "white",
+  #   #linetype = "dotted",
+  #   size = .2
+  # ) +
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(
+    expand = c(0, 0),
+    limits = c(1990, 2019.5),
+    breaks = 1990:2016
+  ) +
+  scale_y_continuous(
+    expand = c(.007, .007)
+  ) +
+  scale_color_uchicago() +
+  scale_fill_uchicago() +
+  scale_alpha(range = c(.5, 1)) +
+  labs(caption = "Visualization by Cédric Scherer  •  Data by OurWorldInData.org")
+```
+
+```{r convert-to-png}
+## convert PDF to PNG
+path <- here::here("plots", "2020_46", "2020_46_HistoricalPhones")
+
+ggsave(glue::glue("{path}.pdf"), width = 12, height = 9.5, device = cairo_pdf)
+
+pdf_convert(pdf = glue::glue("{path}.pdf"), 
+            filenames = glue::glue("{path}.png"),
+            format = "png", dpi = 750)
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
