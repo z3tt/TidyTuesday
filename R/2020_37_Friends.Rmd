@@ -122,7 +122,7 @@ df_friends_relations <-
 df_labs <-
   tribble(
     ~id, ~partners_num, ~text,
-    152, 120+6, "**The One where<br>Monica and Richard<br>Are Just Friends**<br>(S3E13)",
+    152, 120+6, "**The One where<br>Monica & Richard<br>Are Just Friends**<br>(S3E13)",
     180.5, 105+6, "**The One with the<br>Ultimate Fighting<br>Champion**<br>(S3E24)",
     214.5, 210+5.29, "**The One with<br>Rachel's Crush**<br>(S4E13)",
     234.5, 270+11.1, "**The One with<br>the Invitation**<br>(S4E21)",
@@ -132,8 +132,8 @@ df_labs <-
     350.5, 315+6, "**The One with<br>Joey's Fridge**<br>(S6E19)",
     360.5, 195+6, "**The One with<br>the Ring**<br>(S6E23)",
     417, 90+10.2, "**The One with<br>the Vows**<br>(S7E21)",
-    452, 300+6, "**The One with<br>Joey's Fridge**<br>(S8E11)",
-    472, 180+6.93, "**The One with Ross'<br>Step Forward**<br>(S8E19)",
+    452, 300+6, "**The One with<br>Ross' Step Forward**<br>(S8E11)",
+    472, 180+6.93, "**The One with<br>Joey's Interview**<br>(S8E19)",
     542, 45+6.2, "**The One in Barbados**<br>(S9E23)"
   )
 
