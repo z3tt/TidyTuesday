@@ -95,9 +95,16 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/43 [🍻 Great American Beer Festival](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_43)
   - 2020/44 [🌬️ Canadian Wind Turbines](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_44)
   - 2020/46 [📱 Historical Phones](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_46)
+  - 2020/48 [🥾 Washington Trails](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_48)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/48](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_48) 🥾 Washington Trails by [WAT](https://www.wta.org/go-outside/hikes?b_start:int=1)
+
+![./plots/2020_48/2020_48_WashingtonTrails.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_48/2020_48_WashingtonTrails.png)
 
 ***
 
