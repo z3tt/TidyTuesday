@@ -1,0 +1,250 @@
+---
+title: "TidyTuesday 2020/48 - Washington Trails by WTA"
+author: "Cedric Scherer"
+date: "30th of November 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(ggdist)
+library(systemfonts)
+library(ggtext)
+library(pdftools)
+#library(camcorder)
+
+# gg_record(
+#   dir = here::here("dev"),
+#   device = "pdf",
+#   width = 15, 
+#   height = 10
+# )
+
+theme_set(theme_minimal(base_family = "Avenir Next Condensed", base_size = 16))
+
+theme_update(
+  axis.text.x = element_markdown(margin = margin(rep(0, 4))),
+  axis.text.x.top = element_markdown(margin = margin(rep(0, 4))),
+  axis.text.y = element_text(family = "Lora", face = "bold", 
+                             size = 14, vjust = 0),
+  axis.ticks = element_blank(),
+  #axis.ticks.length.x = unit(.4, "lines"),
+  axis.title = element_blank(),
+  legend.position = "none",
+  panel.grid = element_blank(),
+  plot.margin = margin(20, 40, 20, 40),
+  plot.background = element_rect(fill = "#f0f4eb", color = "#f0f4eb"),
+  panel.background = element_rect(fill = "#f0f4eb", color = "#f0f4eb"),
+  plot.title = element_text(family = "Lora", color = "#365e25", 
+                            size = 28, face = "bold",
+                            margin = margin(t = 15)),
+  plot.subtitle = element_markdown(color = "#365e25", size = 14,
+                                   lineheight = 1.35,
+                                   margin = margin(t = 15, b = 30)),
+  plot.title.position = "plot",
+  plot.caption = element_text(color = "#56963c", size = 10,
+                              margin = margin(t = 25))
+)
+```
+
+```{r data}
+df_trails <- readr::read_rds(url('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-11-24/hike_data.rds'))
+```
+
+```{r prep-data}
+df_trails_feat <-
+  df_trails %>% 
+  unnest(features) %>% 
+  mutate(
+    rating = as.numeric(rating),
+    features = str_to_title(features),
+    features = str_replace(features, " For ", " for "),
+    features = str_replace(features, " On ", " on "),
+    features = str_replace(features, "/", " & ")
+  ) %>% 
+  group_by(features) %>% 
+  mutate(med = median(rating, na.rm = TRUE)) %>% 
+  ungroup %>% 
+  #mutate(features = fct_rev(fct_infreq(features)))
+  mutate(features = fct_reorder(features, med))
+```
+
+```{r plot, fig.width = 17, fig.height = 12.5}
+ggplot(df_trails_feat, 
+       aes(rating, features, 
+           color = med, 
+           fill = med)) +
+  ## density plots
+  stat_halfeye(
+    aes(
+      fill = med,
+      fill = after_scale(colorspace::darken(fill, .25)),
+      thickness = stat(f * n)
+    ),
+    alpha = .6,
+    n = 10000,
+    adjust = .1, 
+    trim = FALSE,
+    color = NA,
+    height = 1.5,
+    justification = -.05
+  ) +
+  ## grid lines x
+  geom_vline(
+    xintercept = 0:5,
+    color = "#bfc8bb",
+    size = .2,
+    linetype = "dashed"
+  ) +
+  ## grey "rest" bar
+  stat_summary(
+    aes(xend = Inf, yend = features),
+    orientation = "y",
+    fun = median,
+    geom = "segment",
+    color = "#c4c8c3",
+    size = 1.3
+  ) +
+  ## colored bar for lollipop
+  stat_summary(
+    aes(xend = -Inf, yend = features),
+    orientation = "y",
+    fun = median,
+    geom = "segment",
+    size = 1.3
+  ) +
+  ## point mean rating
+  stat_summary(
+    orientation = "y",
+    fun = mean,
+    geom = "point", 
+    size = 2.8,
+    shape = 21,
+    stroke = .8,
+    fill = "white"
+  ) +
+  ## diamond median rating
+  stat_summary(
+    orientation = "y",
+    fun = median,
+    geom = "point", 
+    size = 5,
+    shape = 23,
+    stroke = 1,
+    color = "black"
+  ) +
+  ## labels median rating
+  geom_text(
+    aes(x = med, 
+        label = format(round(med, 2), nsmall = 2)),
+    stat = "unique",
+    family = "Avenir Next Condensed",
+    fontface = "bold",
+    size = 4,
+    nudge_x = .05,
+    nudge_y = -.2,
+    hjust = 0
+  ) +
+  ## annotation mean rating
+  annotate(
+    "text", x = 3.3, y = 16.2,
+    label = "Mean rating\nper feature",
+    family = "Avenir Next Condensed",
+    size = 3.3, 
+    color = "grey55",
+    fontface = "bold.italic", 
+    lineheight = .85
+  ) +
+  annotate(
+    "curve", x = 3.3, xend = 3.43,
+    y = 15.9, yend = 15.08,
+    curvature = .25,
+    color = "grey55",
+    size = .6,
+    arrow = arrow(length = unit(0.09, "inches"),
+                  type = "closed")
+  ) +
+  ## annotation median rating
+  annotate(
+    "text", x = 3.7, y = 16.2,
+    label = "Median rating\nper feature",
+    family = "Avenir Next Condensed",
+    size = 3.3, 
+    color = "grey55",
+    fontface = "bold.italic", 
+    lineheight = .85
+  ) +
+  annotate(
+    "curve", x = 3.84, xend = 3.84,
+    y = 16.1, yend = 15.12,
+    curvature = -.7,
+    color = "grey55",
+    size = .6,
+    arrow = arrow(length = unit(0.09, "inches"),
+                  type = "closed")
+  ) +
+  ## annotation zero ratings
+  annotate(
+    "text", x = .25, y = 15.85,
+    label = "All these haters...",
+    family = "Avenir Next Condensed",
+    size = 3.3, 
+    color = "grey55",
+    fontface = "bold.italic"
+  )+
+  annotate(
+    "curve", x = .25, xend = .035,
+    y = 15.73, yend = 15.18,
+    curvature = -.3,
+    color = "grey55",
+    size = .6,
+    arrow = arrow(length = unit(0.09, "inches"),
+                  type = "closed")
+  ) +
+  ## coord + scales
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(
+    expand = c(0, 0), 
+    limits = c(-.1, 5.1),
+    sec.axis = dup_axis(name = NULL),
+    breaks = c(0:5, 2.5),
+    labels = c("0", "1", "2", "3", "4", "5", "**Rating**")
+  ) +
+  scale_y_discrete(expand = c(0, 0)) +
+  scale_color_gradient(low = "#93cb7c", high = "#365e25") +
+  scale_fill_gradient(low = "#93cb7c", high = "#365e25") +
+  labs(
+    title = "Hiking in Washington: Waterfalls are great—Wildlife and dogs rather not",
+    subtitle = "The **Washington Trait Association (WTA)** offers a hiking guide that claims top be *“the most comprehensive database of hikes in Washington”*. It comprises content written by local hiking experts and user submitted information<br>such as ratings for each trail and specification of certain features. The plot shows the overall rating of 1,924 Washington trails listed in the WTA database grouped by its features and ordered by the highest median rating.",
+    caption = "Visualization by Cédric Scherer  •  Data by WTA"
+  ) 
+```
+
+```{r convert-to-png}
+## convert PDF to PNG
+path <- here::here("plots", "2020_48", "2020_48_WashingtonTrails")
+
+ggsave(glue::glue("{path}.pdf"), width = 17, height = 12.5, device = cairo_pdf)
+
+pdf_convert(pdf = glue::glue("{path}.pdf"), 
+            filenames = glue::glue("{path}.png"),
+            format = "png", dpi = 400)
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
