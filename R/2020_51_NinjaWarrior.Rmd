@@ -1,0 +1,221 @@
+---
+title: "TidyTuesday 2020/51 - Ninja Warrior by Data.World"
+author: "Cedric Scherer"
+date: "22nd of December 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(systemfonts)
+library(tidytext)
+library(widyr)
+library(tidygraph)
+library(ggraph)
+library(igraph)
+library(graphlayouts)
+library(ggtext)
+library(patchwork)
+library(pdftools)
+#library(camcorder)
+
+# gg_record(
+#   dir = here::here("dev"),
+#   device = "pdf",
+#   width = 15, 
+#   height = 10
+# )
+
+theme_set(theme_void(base_family = "Avenir Next Condensed"))
+
+theme_update(
+  plot.margin = margin(20, 20, 5, 20),
+  plot.background = element_rect(fill = "grey18", color = "grey18"),
+  plot.title = element_markdown(family = "Playfair Display", 
+                                color = "grey40",
+                                size = 32, 
+                                face = "bold",
+                                hjust = .5,
+                                margin = margin(t = 15)),
+  plot.subtitle = element_text(color = "grey40", 
+                               size = 26,
+                               hjust = .5,
+                               margin = margin(t = 15, b = 5)),
+  plot.caption = element_text(color = "grey40", size = 12,
+                              margin = margin(t = 25)),
+  plot.title.position = "plot",
+  legend.title = element_text(color = "grey40", size = 20),
+  legend.text = element_text(color = "grey40", size = 14)
+)
+```
+
+```{r data}
+df_ninja <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-12-15/ninja_warrior.csv')
+```
+
+```{r prep-data}
+## similarity of obstacles
+df_ninja_similarity <-
+  df_ninja %>% 
+  group_by(location, round_stage, season) %>% 
+  filter(n() > 3) %>% 
+  filter(season > 3) %>% 
+  ungroup() %>% 
+  pivot_wider(
+    names_from = obstacle_order,
+    values_from = obstacle_name,
+    names_prefix = "obstacle_no_"
+  ) %>% 
+  unite(
+    "obstacles", 
+    starts_with("obstacle_no_"),
+    sep = " – "
+  ) %>% 
+  mutate(
+    obstacles = str_remove_all(obstacles, "–\\sNA"),
+    obstacles = str_squish(obstacles),
+    id = row_number(),
+    name = glue::glue("S{season}|{round_stage}")
+  ) %>%
+  unnest_tokens(word, obstacles) %>%
+  anti_join(stop_words, by = "word") %>%
+  count(name, word) %>% 
+  pairwise_similarity(name, word, n, upper = FALSE, sort = TRUE)
+
+graph_tbl <- 
+  df_ninja_similarity %>%
+  as_tbl_graph() 
+```
+
+```{r main-plot}
+set.seed(1)
+
+main <-
+  ggraph(graph_tbl, layout = "star") +
+    geom_edge_link(
+      aes(edge_alpha = ..index..),
+      #    edge_color = similarity), 
+      edge_colour = "grey65",
+      show.legend = FALSE
+    )+
+    coord_fixed(clip = "off") +
+    labs(
+      title = "<i style='color:lightgrey'>“Often, while exploring data, something beautiful is created.”</i>&nbsp;&nbsp;~&nbsp;&nbsp;Giovanni Magni",
+      subtitle = "These graphs are a tribute to the early stages of data visualization design."
+    )
+```
+
+```{r function-seasons}
+draw_net <- function(s) {
+  ## similarity of obstacles
+  dfs <-
+    df_ninja %>% 
+    group_by(location, round_stage, season) %>% 
+    filter(n() > 3) %>% 
+    ungroup() %>% 
+    pivot_wider(
+      names_from = obstacle_order,
+      values_from = obstacle_name,
+      names_prefix = "obstacle_no_"
+    ) %>% 
+    unite(
+      "obstacles", 
+      starts_with("obstacle_no_"),
+      sep = " – "
+    ) %>% 
+    mutate(
+      obstacles = str_remove_all(obstacles, "–\\sNA"),
+      obstacles = str_squish(obstacles),
+      id = row_number(),
+      name = glue::glue("S{season}|{round_stage}\n({location})")
+    ) %>% 
+    filter(season == s) %>%
+    unnest_tokens(word, obstacles) %>%
+    anti_join(stop_words, by = "word") %>%
+    count(name, word) %>% 
+    pairwise_similarity(name, word, n, upper = FALSE, sort = TRUE)
+    
+  graph_tbl <- 
+    dfs %>%
+    as_tbl_graph() 
+    
+  set.seed(1)
+    
+  p <-
+    ggraph(graph_tbl, layout = "star") +
+      #geom_text(aes(x = 0, y = 0, label = s), size = 100, color = "grey20", stat = "unique", family = "Ultra") +
+      geom_text(
+        aes(x = .7, y = -.9, label = glue::glue("Season {s}")), 
+        size = 6, 
+        color = "grey40", 
+        stat = "unique", 
+        family = "Avenir Next Condensed",
+        #fontface = "bold",
+        hjust = 0
+      ) +
+      geom_edge_link(
+        aes(edge_color = similarity)
+     ) +
+     scale_y_continuous(limits = c(-1.2, 1.5)) +
+     scale_edge_colour_gradientn(
+       colors = scico::scico(100, palette = "lisbon"),
+       name = NULL,
+       limits = c(0, 1.01),
+       breaks = 0:10 / 10,
+       labels = glue::glue("{0:10 * 10}%")
+     ) +
+     coord_fixed(clip = "off") +
+     theme(plot.background = element_rect(fill = "transparent", color = "transparent"),
+           panel.background = element_rect(fill = "transparent", color = "transparent"),
+           plot.margin = margin(0, 25, 20, 25),
+           plot.subtitle = element_markdown(size = 18, margin = margin(t = 15, b = 30)))
+  
+  if(s == 7) {
+    p <- p + 
+      labs(
+        subtitle = "The graphs show the **similarity of obstacle courses in Ninja Warrior** by season and round. Since season four is referred to as “the modern era of Ninja Warrior”, the networks only show season 4 to 10.",
+        caption = "Visualization by Cédric Scherer  •  Data by Data.World"
+      ) +
+      theme(legend.position = "top", 
+            legend.key.height = unit(.6, "lines"),
+            legend.key.width = unit(18, "lines")) + 
+      guides(edge_color = guide_edge_colorbar(ticks = FALSE, 
+                                              label.position = "bottom"))
+  } else {
+    p <- p + theme(legend.position = "none")
+  }
+}
+```
+
+```{r full-panel, fig.width=20, fig.height=25}
+main / (draw_net(4) + draw_net(5) + draw_net(6) + draw_net(7) + draw_net(8) + draw_net(9) + draw_net(10) + plot_layout(nrow = 1)) + plot_layout(heights = c(8, 1)) 
+```
+
+```{r convert-to-png}
+## convert PDF to PNG
+path <- here::here("plots", "2020_51", "2020_51_NinjaWarrior")
+
+ggsave(glue::glue("{path}.pdf"), width = 20, height = 27, device = cairo_pdf)
+
+pdf_convert(pdf = glue::glue("{path}.pdf"), 
+            filenames = glue::glue("{path}.png"),
+            format = "png", dpi = 120)
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
