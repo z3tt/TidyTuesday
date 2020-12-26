@@ -96,9 +96,16 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/44 [🌬️ Canadian Wind Turbines](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_44)
   - 2020/46 [📱 Historical Phones](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_46)
   - 2020/48 [🥾 Washington Trails](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_48)
+  - 2020/51 [🏋️ Ninja Warrior](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_51)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/51](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_51) 🏋️ Ninja Warrior by [Data.World](https://data.world/ninja/anw-obstacle-history)
+
+![./plots/2020_51/2020_51_NinjaWarrior.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_51/2020_51_NinjaWarrior.png)
 
 ***
 

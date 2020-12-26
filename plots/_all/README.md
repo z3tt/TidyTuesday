@@ -6,6 +6,12 @@ Feedback is very welcome via [@CedScherer](https://twitter.com/cedscherer) or [c
 
 ***
 
+### [2020/51](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_51) 🏋️ Ninja Warrior by [Data.World](https://data.world/ninja/anw-obstacle-history)
+
+![./plots/2020_51/2020_51_NinjaWarrior.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_51/2020_51_NinjaWarrior.png)
+
+***
+
 ### [2020/48](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_48) 🥾 Washington Trails by [WAT](https://www.wta.org/go-outside/hikes?b_start:int=1)
 
 ![./plots/2020_48/2020_48_WashingtonTrails.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_48/2020_48_WashingtonTrails.png)
