@@ -7,6 +7,14 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
+### [2020/52](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_52) 🍔️ Big Mac Index by [The Economist](https://github.com/TheEconomist/big-mac-data)
+
+![./plots/2020_52/2020_52_BigMacIndex.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_52/2020_52_BigMacIndex.png)
+
+[Animated Version](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_52/2020_52_BigMacIndex.gif)
+
+***
+
 ### [2020/51](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_51) 🏋️ Ninja Warrior by [Data.World](https://data.world/ninja/anw-obstacle-history)
 
 ![./plots/2020_51/2020_51_NinjaWarrior.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_51/2020_51_NinjaWarrior.png)

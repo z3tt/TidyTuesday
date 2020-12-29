@@ -97,9 +97,18 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/46 [📱 Historical Phones](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_46)
   - 2020/48 [🥾 Washington Trails](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_48)
   - 2020/51 [🏋️ Ninja Warrior](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_51)
+  - 2020/52 [🍔️ Big Mac Index](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_52)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2020/52](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_52) 🍔️ Big Mac Index by [The Economist](https://github.com/TheEconomist/big-mac-data)
+
+![./plots/2020_52/2020_52_BigMacIndex.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_52/2020_52_BigMacIndex.png)
+
+[Animated Version](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_52/2020_52_BigMacIndex.gif)
 
 ***
 
