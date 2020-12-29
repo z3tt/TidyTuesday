@@ -1,0 +1,358 @@
+---
+title: "TidyTuesday 2020/52 - Big Mac Index by The Economist"
+author: "Cedric Scherer"
+date: "28th of December 2020"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(ggrepel)
+library(ggtext)
+library(systemfonts)
+library(gganimate)
+library(pdftools)
+#library(camcorder)
+
+# gg_record(
+#   dir = here::here("dev"),
+#   device = "pdf",
+#   width = 15, 
+#   height = 10
+# )
+
+theme_set(theme_minimal(base_family = "Avenir Next Condensed"))
+
+theme_update(
+  axis.title = element_blank(),
+  axis.text = element_text(color = "grey40"),
+  axis.text.x = element_text(size = 20, margin = margin(t = 5)),
+  axis.text.y = element_text(size = 17, margin = margin(r = 5)),
+  axis.ticks = element_line(color = "grey91", size = .5),
+  axis.ticks.length.x = unit(1.3, "lines"),
+  axis.ticks.length.y = unit(.7, "lines"),
+  panel.grid = element_blank(),
+  plot.margin = margin(20, 40, 20, 40),
+  plot.background = element_rect(fill = "grey98", color = "grey98"),
+  panel.background = element_rect(fill = "grey98", color = "grey98"),
+  plot.title = element_text(color = "grey10", size = 32, face = "bold",
+                            margin = margin(t = 15)),
+  plot.subtitle = element_markdown(color = "grey30", size = 17, 
+                                   lineheight = 1.35,
+                                   margin = margin(t = 15, b = 40)),
+  plot.title.position = "plot",
+  plot.caption.position = "plot",
+  plot.caption = element_text(color = "grey30", size = 15,
+                              lineheight = 1.2, hjust = 0, 
+                              margin = margin(t = 40)),
+  legend.position = "none"
+)
+```
+
+## Data Preparation
+
+```{r data}
+df_mac_raw <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-12-22/big-mac.csv')
+```
+
+```{r prep-data}
+df_mac <- 
+  df_mac_raw %>% 
+  mutate(year = lubridate::year(date)) %>% 
+  dplyr::select(date, year, iso_a3, currency_code, name, dollar_price) %>% 
+  group_by(iso_a3, name, year) %>% 
+  summarize(price = mean(dollar_price)) %>% 
+  group_by(iso_a3) %>% 
+  filter(n() == 21)
+
+highlights <- c("EUZ", "CHE", "DNK", "SWE", "BRA", "ARG", "GBR", "USA")
+n <- length(highlights)
+```
+
+
+## Animation
+
+```{r prep-index-plots-animation}
+index_it <- function(y) {
+  countries <- 
+    df_mac %>% 
+    filter(year == y) %>% 
+    pull(iso_a3)
+  
+  df_mac_indexed <- 
+    df_mac %>% 
+    group_by(iso_a3) %>%
+    filter(iso_a3 %in% countries) %>% 
+    mutate(
+      ref_year = y,
+      price_index = price[which(year == y)],
+      price_rel = price - price_index,
+      group = if_else(iso_a3 %in% highlights, iso_a3, "other"),
+      group = as.factor(group)
+    ) %>% 
+    mutate(
+      group = fct_relevel(group, "other", after = Inf),
+      name_lab = if_else(year == 2020, name, NA_character_)
+    ) %>% 
+    ungroup()
+}
+
+df_mac_index_refs <- map_df(2000:2019, ~ index_it(.x))
+```
+
+```{r plot-and-animation}
+index_plots <- 
+  ggplot(df_mac_index_refs %>% filter(group != "other"), 
+         aes(year, price_rel, group = iso_a3)) + 
+  ## geometric annotations
+  geom_vline(
+    xintercept = seq(2000, 2020, by = 5),
+    color = "grey91", 
+    size = .6
+  ) +
+  geom_segment(
+    data = tibble(y = seq(-6, 6, by = 2), x1 = 2000, x2 = 2020),
+    aes(x = x1, xend = x2, y = y, yend = y),
+    inherit.aes = FALSE,
+    color = "grey91",
+    size = .6
+  ) +
+  geom_segment(
+    data = tibble(y = 0, x1 = 2000, x2 = 2020),
+    aes(x = x1, xend = x2, y = y, yend = y),
+    inherit.aes = FALSE,
+    color = "grey40",
+    size = .5
+  ) +
+  geom_vline(
+    aes(xintercept = ref_year), 
+    color = "grey40",
+    linetype = "dotted"
+  ) +
+  ## grey lines
+  geom_line(
+    data = df_mac_index_refs %>% filter(group == "other"),
+    color = "grey70",
+    size = .6,
+    alpha = .5
+  ) +
+  ## colored lines
+  geom_line(
+    aes(color = group),
+    size = .9
+  ) +
+  ## text annotations
+  geom_text(
+    aes(x = ref_year, y = 5.2, 
+        label = as.character(ref_year)),
+    stat = "unique",
+    family = "Avenir Next Condensed",
+    size = 8,
+    color = "grey60",
+    hjust = 0,
+    nudge_x = .3
+  ) +
+  geom_text_repel(
+    aes(color = group,
+        label = name_lab),
+    family = "Avenir Next Condensed",
+    fontface = "bold",
+    size = 6.7,
+    direction = "y",
+    xlim = c(2020.6, NA),
+    hjust = 0,
+    #segment.color = "transparent",
+    segment.size = .7,
+    segment.alpha = .5,
+    segment.linetype = "dotted",
+    #box.padding = .8,
+    segment.curvature = -0.1,
+    segment.ncp = 3,
+    segment.angle = 20
+  ) +
+  ## coordinate system + scales
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(
+    expand = c(0, 0),
+    limits = c(2000, 2023.5), 
+    breaks = seq(2000, 2020, by = 5)
+  ) +
+  scale_y_continuous(
+    expand = c(0, 0),
+    limits = c(-6, 6),
+    breaks = seq(-6, 6, by = 2),
+    labels = glue::glue("{format(seq(-6, 6, by = 2), nsmall = 2)}$")
+  ) +
+  scale_color_manual(
+    values = c(rcartocolor::carto_pal(n = n, name = "Bold")[1:n-1], "grey50")
+  ) +
+  labs(
+    #title = "How much did Big Mac prices differ compared to <b style='font-family:zilla slab highlight;'>{closest_state}</b> ?"
+    title = "Compared to {closest_state}, how much more or less do you have to pay for a Big Mac today?",
+    subtitle = "The animated series of <i>index chart</i> visualizes the price changes (in USD) of a Big Mac based on a selected index year. The <b>Big Mac Index</b> is published by The Economist as an informal<br>way to provide a test of the extent to which market exchange rates result in goods costing the same in different countries. It <i>seeks to make exchange-rate theory a bit more digestible</i><br>and takes its name from the Big Mac, a hamburger sold at McDonald's restaurants.",
+    caption = "The index chart shows the 27 countries that provide Big mac prices for all years from 2000 to 2020. In case a country was reported twice per year, the mean value was visualized.\nVisualization by Cédric Scherer  •  Data by The Economist"
+  ) +
+  ## animation settings
+  transition_states(ref_year, 5, 25, wrap = FALSE) +
+  ease_aes('quadratic-in-out')
+
+index_anim <- 
+  animate(index_plots, nframes = 150, 
+          fps = 5, detail = 5, end_pause = 25,
+          width = 1150, height = 740, 
+          device = "jpeg", type = "cairo", 
+          renderer = ffmpeg_renderer(options = list(q = 1)))
+          #file_renderer())
+
+anim_save(filename = "2020_52_BigMacIndex.mpeg", 
+          path = here::here("plots", "2020_52"))
+```
+
+
+## Static Plot
+
+```{r static-index-plot, fig.width=20, fig.height=12}
+countries <- 
+  df_mac %>% 
+  filter(year == 2008) %>% 
+  pull(iso_a3)
+  
+df_mac_indexed_2008 <- 
+  df_mac %>% 
+  group_by(iso_a3) %>%
+  filter(iso_a3 %in% countries) %>% 
+  mutate(
+    ref_year = 2008,
+    price_index = price[which(year == 2008)],
+    price_rel = price - price_index,
+    group = if_else(iso_a3 %in% highlights, iso_a3, "other"),
+    group = as.factor(group)
+  ) %>% 
+  mutate(
+    group = fct_relevel(group, "other", after = Inf),
+    name_lab = if_else(year == 2020, name, NA_character_)
+  ) %>% 
+  ungroup()
+
+ggplot(df_mac_indexed_2008 %>% filter(group != "other"), 
+       aes(year, price_rel, group = iso_a3)) + 
+  ## geometric annotations
+  geom_vline(
+    xintercept = seq(2000, 2020, by = 5),
+    color = "grey91", 
+    size = .6
+  ) +
+  geom_segment(
+    data = tibble(y = seq(-4, 3, by = 1), x1 = 2000, x2 = 2020),
+    aes(x = x1, xend = x2, y = y, yend = y),
+    inherit.aes = FALSE,
+    color = "grey91",
+    size = .6
+  ) +
+  geom_segment(
+    data = tibble(y = 0, x1 = 2000, x2 = 2020),
+    aes(x = x1, xend = x2, y = y, yend = y),
+    inherit.aes = FALSE,
+    color = "grey60",
+    size = .8
+  ) +
+  geom_vline(
+    aes(xintercept = ref_year), 
+    color = "grey40",
+    linetype = "dotted",
+    size = .8
+  ) +
+  ## grey lines
+  geom_line(
+    data = df_mac_indexed_2008 %>% filter(group == "other"),
+    color = "grey75",
+    size = .6,
+    alpha = .5
+  ) +
+  ## colored lines
+  geom_line(
+    aes(color = group),
+    size = .9
+  ) +
+  ## text annotations
+  annotate(
+    "text", x = 2008.15, y = -3.35, 
+    label = "2008",
+    family = "Avenir Next Condensed",
+    size = 8,
+    color = "grey40",
+    hjust = 0
+  ) +
+  geom_text_repel(
+    aes(color = group,
+        label = name_lab),
+    family = "Avenir Next Condensed",
+    fontface = "bold",
+    size = 8,
+    direction = "y",
+    xlim = c(2020.8, NA),
+    hjust = 0,
+    #segment.color = "grey70",
+    segment.size = .7,
+    segment.alpha = .5,
+    segment.linetype = "dotted",
+    #box.padding = .8,
+    segment.curvature = -0.1,
+    segment.ncp = 3,
+    segment.angle = 20
+  ) +
+  ## coordinate system + scales
+  coord_cartesian(
+    clip = "off",
+    ylim = c(-4, 3)
+  ) +
+  scale_x_continuous(
+    expand = c(0, 0),
+    limits = c(2000, 2023.5), 
+    breaks = seq(2000, 2020, by = 5)
+  ) +
+  scale_y_continuous(
+    expand = c(0, 0),
+    breaks = seq(-4, 3, by = 1),
+    labels = glue::glue("{format(seq(-4, 3, by = 1), nsmall = 2)}$")
+  ) +
+  scale_color_manual(
+    values = c(rcartocolor::carto_pal(n = n, name = "Bold")[1:n-1], "grey50")
+  ) +
+  labs(
+    title = "Compared to the financial crisis in 2008, how much more or less do you have to pay for a Big Mac today?",
+    subtitle = "The <i>index chart</i> visualizes the price changes (in USD) of a Big Mac based on a 2008 as index year. The <b>Big Mac Index</b> is published by The Economist as an informal way to provide a test of the<br>extent to which market exchange rates result in goods costing the same in different countries. It <i>seeks to make exchange-rate theory a bit more digestible</i> and takes its name from the Big Mac,<br>a hamburger sold at McDonald's restaurants.",
+    caption = "Visualization by Cédric Scherer  •  Data by The Economist  •  The index chart shows the 27 countries that provide Big mac prices for all years from 2000 to 2020. In case a country was reported twice per year, the mean value was visualized."
+  ) +
+  theme(plot.subtitle = element_markdown(size = 20))
+```
+
+```{r convert-to-png}
+## convert PDF to PNG
+path <- here::here("plots", "2020_52", "2020_52_BigMacIndex")
+
+ggsave(glue::glue("{path}.pdf"), width = 20, height = 12, device = cairo_pdf)
+
+pdf_convert(pdf = glue::glue("{path}.pdf"), 
+            filenames = glue::glue("{path}.png"),
+            format = "png", dpi = 230)
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
+
