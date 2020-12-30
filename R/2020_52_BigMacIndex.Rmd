@@ -167,11 +167,11 @@ index_plots <-
         label = name_lab),
     family = "Avenir Next Condensed",
     fontface = "bold",
+    max.overlaps = 20,
     size = 6.7,
     direction = "y",
-    xlim = c(2020.6, NA),
+    xlim = c(2020.8, NA),
     hjust = 0,
-    #segment.color = "transparent",
     segment.size = .7,
     segment.alpha = .5,
     segment.linetype = "dotted",
@@ -181,15 +181,17 @@ index_plots <-
     segment.angle = 20
   ) +
   ## coordinate system + scales
-  coord_cartesian(clip = "off") +
+  coord_cartesian(
+    clip = "off",
+    xlim = c(2000, 2026), 
+    ylim = c(-6, 6)
+  ) +
   scale_x_continuous(
     expand = c(0, 0),
-    limits = c(2000, 2023.5), 
     breaks = seq(2000, 2020, by = 5)
   ) +
   scale_y_continuous(
     expand = c(0, 0),
-    limits = c(-6, 6),
     breaks = seq(-6, 6, by = 2),
     labels = glue::glue("{format(seq(-6, 6, by = 2), nsmall = 2)}$")
   ) +
@@ -197,7 +199,6 @@ index_plots <-
     values = c(rcartocolor::carto_pal(n = n, name = "Bold")[1:n-1], "grey50")
   ) +
   labs(
-    #title = "How much did Big Mac prices differ compared to <b style='font-family:zilla slab highlight;'>{closest_state}</b> ?"
     title = "Compared to {closest_state}, how much more or less do you have to pay for a Big Mac today?",
     subtitle = "The animated series of <i>index chart</i> visualizes the price changes (in USD) of a Big Mac based on a selected index year. The <b>Big Mac Index</b> is published by The Economist as an informal<br>way to provide a test of the extent to which market exchange rates result in goods costing the same in different countries. It <i>seeks to make exchange-rate theory a bit more digestible</i><br>and takes its name from the Big Mac, a hamburger sold at McDonald's restaurants.",
     caption = "The index chart shows the 27 countries that provide Big mac prices for all years from 2000 to 2020. In case a country was reported twice per year, the mean value was visualized.\nVisualization by Cédric Scherer  •  Data by The Economist"
@@ -207,12 +208,11 @@ index_plots <-
   ease_aes('quadratic-in-out')
 
 index_anim <- 
-  animate(index_plots, nframes = 150, 
+  animate(index_plots, nframes = 50, 
           fps = 5, detail = 5, end_pause = 25,
           width = 1150, height = 740, 
           device = "jpeg", type = "cairo", 
           renderer = ffmpeg_renderer(options = list(q = 1)))
-          #file_renderer())
 
 anim_save(filename = "2020_52_BigMacIndex.mpeg", 
           path = here::here("plots", "2020_52"))
