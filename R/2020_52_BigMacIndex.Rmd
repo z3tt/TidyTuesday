@@ -175,7 +175,7 @@ index_plots <-
     segment.size = .7,
     segment.alpha = .5,
     segment.linetype = "dotted",
-    #box.padding = .8,
+    box.padding = .4,
     segment.curvature = -0.1,
     segment.ncp = 3,
     segment.angle = 20
@@ -208,7 +208,7 @@ index_plots <-
   ease_aes('quadratic-in-out')
 
 index_anim <- 
-  animate(index_plots, nframes = 50, 
+  animate(index_plots, nframes = 150, 
           fps = 5, detail = 5, end_pause = 25,
           width = 1150, height = 740, 
           device = "jpeg", type = "cairo", 
@@ -302,11 +302,10 @@ ggplot(df_mac_indexed_2008 %>% filter(group != "other"),
     direction = "y",
     xlim = c(2020.8, NA),
     hjust = 0,
-    #segment.color = "grey70",
     segment.size = .7,
     segment.alpha = .5,
     segment.linetype = "dotted",
-    #box.padding = .8,
+    box.padding = .4,
     segment.curvature = -0.1,
     segment.ncp = 3,
     segment.angle = 20
