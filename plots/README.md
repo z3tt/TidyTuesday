@@ -7,6 +7,12 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
+### [2021/02](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_02) 🚇 Transit-Infrastructure Costs by [Transit Costs Project](https://transitcosts.com/)
+
+![./plots/2021_02/2021_02_TransitCosts.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2021_02/2021_02_TransitCosts.png)
+
+***
+
 ### [2020/52](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_52) 🍔️ Big Mac Index by [The Economist](https://github.com/TheEconomist/big-mac-data)
 
 ![./plots/2020_52/2020_52_BigMacIndex.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_52/2020_52_BigMacIndex.png)
