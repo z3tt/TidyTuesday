@@ -48,17 +48,14 @@ df_transit_ranking <-
   df_transit %>% 
   filter(!is.na(stations), stations > 0, real_cost > 0, end_year < 2021) %>% 
   mutate(
-    duration = end_year - start_year,
-    duration_per_km = duration * 12 / length,
     cost_per_station = real_cost / stations,
-    country = case_when(
-      country == "UK" ~ "GB",
-      TRUE ~ country
-    )
+    country = case_when(country == "UK" ~ "GB",
+                        TRUE ~ country)
   ) %>% 
   group_by(country) %>% 
   filter(n() > 1) %>% 
-  summarize(across(c(length, stations, real_cost, cost_km_millions, cost_per_station, duration, duration_per_km), ~mean(.x, na.rm = TRUE))) %>% 
+  summarize(across(c(length, stations, real_cost, cost_km_millions, cost_per_station), 
+                   ~mean(.x, na.rm = TRUE))) %>% 
   left_join(countrycode::codelist %>% dplyr::select(country.name.en, ecb), by = c("country" = "ecb")) %>% 
   mutate(
     rank_km = rank(cost_km_millions, ties.method = "random"),
