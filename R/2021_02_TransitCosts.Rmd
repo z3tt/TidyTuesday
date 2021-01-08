@@ -1,0 +1,282 @@
+---
+title: "TidyTuesday 2021/02 - Transit Costs by Transit Cost Project"
+author: "Cedric Scherer"
+date: "7th of January 2021"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(ggbump)
+library(BBmisc)
+library(ggtext)
+library(systemfonts)
+library(pdftools)
+#library(camcorder)
+
+# gg_record(
+#   dir = here::here("dev"),
+#   device = "pdf",
+#   width = 15, 
+#   height = 10
+# )
+
+theme_set(theme_void(base_family = "Roboto Condensed"))
+
+theme_update(
+  legend.position = "none",
+  plot.margin = margin(25, 35, 15, 35),
+  plot.background = element_rect(fill = "#171717"),
+  plot.title = element_markdown(color = "grey70", size = 24, 
+                                family = "Roboto Black", face = "bold",
+                                lineheight = 1.2),
+  plot.subtitle = element_markdown(color = "grey50", size = 13,
+                                   lineheight = 1.2, 
+                                   margin = margin(t = 15, b = 35)),
+  plot.caption = element_text(color = "grey50")
+)
+```
+
+```{r data}
+df_transit <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-05/transit_cost.csv', col_types = list(real_cost = col_double(), start_year = col_double(), end_year = col_double()))
+```
+
+```{r prep-data}
+df_transit_country <-
+  df_transit %>% 
+  filter(!is.na(stations), stations > 0, real_cost > 0, end_year < 2021) %>% 
+  mutate(
+    duration = end_year - start_year,
+    duration_per_km = duration * 12 / length,
+    cost_per_station = real_cost / stations,
+    country = case_when(
+      country == "UK" ~ "GB",
+      TRUE ~ country
+    )
+  ) %>% 
+  group_by(country) %>% 
+  filter(n() > 1) %>% 
+  summarize(across(c(length, stations, real_cost, cost_km_millions, cost_per_station, duration, duration_per_km), ~mean(.x, na.rm = TRUE))) %>% 
+  left_join(countrycode::codelist %>% dplyr::select(continent, country.name.en, ecb), by = c("country" = "ecb"))
+
+## bit cumbersome but developed as a left-over from theggbump-map approach:
+## https://github.com/davidsjoberg/tidytuesday/blob/master/2020w17/2020w17_skript.R
+ranking <- 
+  tibble(
+    country = df_transit_country$country.name.en,
+    code = df_transit_country$country,
+    rank_km = normalize(
+      rank(df_transit_country$cost_km_millions, ties.method = "random"), 
+      range = c(0, 100), method = "range"
+    ),
+    rank_st = normalize(
+      rank(df_transit_country$cost_per_station, ties.method = "random"), 
+      range = c(0, 100), method = "range"
+    ),
+    start_km = -40,
+    start_st = 40,
+    bar_km = start_km - normalize(
+      df_transit_country$cost_km_millions, 
+      range = range(df_transit_country$cost_km_millions / 14), 
+      method = "range"
+    ),
+    bar_st = start_st + normalize(
+      df_transit_country$cost_per_station, 
+      range = range(df_transit_country$cost_per_station / 14), 
+      method = "range"
+    ),
+    lab_km = if_else(
+      country == "United States", 
+      glue::glue("**${format(df_transit_country$cost_km_millions, digits = 0, nsmall = 1)}M**"),
+      ## black M to add spacing (nbsp doesn't work)
+      glue::glue(" {format(df_transit_country$cost_km_millions, digits = 0, nsmall = 1)}<span style='color:#171717;'>M</span>")
+    ),
+    lab_st = if_else(
+      country == "United States", 
+      glue::glue("**${format(df_transit_country$cost_per_station, digits = 0, nsmall = 1)}M**"),
+      glue::glue(" {format(df_transit_country$cost_per_station, digits = 0, nsmall = 1)}<span style='color:#171717;'>M</span>")
+    )
+    
+  ) %>% 
+  mutate(country = case_when(
+    country == "United Arab Emirates" ~ "Emirates",
+    country == "United States" ~ "<b style='color:#7f7f7f;'>United States</b>",
+    TRUE ~ country
+  ))
+
+x <- c(seq(-150, -40, by = 10), seq(40, 150, by = 10))
+y <- c(unique(ranking$rank_km), 103.448276)
+lines <- crossing(x, y)
+```
+
+```{r sigmoid-slope, fig.width=16.3, fig.height=9.5}
+ggplot(ranking) + 
+  geom_sigmoid(
+    aes(x = -25, xend = 25, 
+        y = rank_km, yend = rank_st, 
+        group = country,
+        color = rank_km,
+        color = after_scale(colorspace::lighten(color, .4))), 
+    alpha = .45, smooth = 8, size = 1.2
+  ) + 
+  
+  ## start-end points connections
+  geom_point(
+    aes(x = -25, y = rank_km,
+        color = rank_km,
+        color = after_scale(colorspace::desaturate(colorspace::lighten(color, .2), .2))), 
+    size = 4,
+    shape = "|"
+  ) + 
+  geom_point(
+    aes(x = 25, y = rank_st,
+        color = rank_km,
+        color = after_scale(colorspace::desaturate(colorspace::lighten(color, .2), .2))), 
+    size = 4,
+    shape = "|"
+  ) + 
+  
+  ## rounded bar plots
+  geom_segment(
+    ## make bars a bit shorter because of rounded lineends
+    aes(x = start_km - 1.1, xend = bar_km + 1.1, 
+        y = rank_km, yend = rank_km, 
+        color = rank_km,
+        color = after_scale(colorspace::lighten(color, .2))), 
+    size = 4, 
+    lineend = "round"
+  ) + 
+  geom_segment(
+    aes(x = start_st + 1.1, xend = bar_st - 1.1, 
+        y = rank_st, yend = rank_st, 
+        color = rank_km,
+        color = after_scale(colorspace::lighten(color, .2))), 
+    size = 4, 
+    lineend = "round"
+  ) + 
+  
+  ## add wagon separators
+  geom_linerange(
+    data = lines,
+    aes(x = x, ymin = y - .5, ymax = y - 3),
+    inherit.aes = FALSE,
+    color = "#171717",
+    size = .3
+  ) +
+  
+  ## label costs
+  geom_richtext(
+    aes(x = -26, y = rank_km, 
+        label = lab_km), 
+    hjust = 1, 
+    color = "grey50",
+    size = 3.5,
+    family = "Roboto Condensed",
+    fill = NA, 
+    label.color = NA
+  ) +
+  geom_richtext(
+    aes(x = 39, y = rank_st, 
+        label = lab_st), 
+    hjust = 1, 
+    color = "grey50",
+    size = 3.5,
+    family = "Roboto Condensed",
+    fill = NA, 
+    label.color = NA
+  ) +
+  
+  ## labels countries
+  geom_richtext(
+    aes(x = bar_km, y = rank_km,
+        label = country),
+    hjust = 1,
+    color = "grey35",
+    size = 3.5,
+    family = "Roboto Condensed",
+    nudge_x = -2,
+    fill = NA, 
+    label.color = NA
+  ) +
+  geom_text(
+    data = filter(ranking, code != "US"),
+    aes(x = bar_st, y = rank_st, 
+        label = country), 
+    hjust = 0, 
+    color = "grey35",
+    size = 3.5,
+    family = "Roboto Condensed",
+    nudge_x = 2.5
+  ) +
+  
+  ## annotate axis costs per km
+  annotate(
+    "errorbar", 
+    xmin = -70, xmax = -60, y = 102.7,
+    color = "grey50", size = .4
+  ) +
+  annotate(
+    "text", x = -65, y = 105.2,
+    label = "$50M / km",
+    family = "Roboto Condensed",
+    fontface = "bold",
+    color = "grey50",
+    size = 2.9
+  ) +
+  
+  ## annotate axis costs per stations
+  annotate(
+    "errorbar", 
+    xmin = 60, xmax = 70, y = 102.7,
+    color = "grey50", size = .4
+  ) +
+  annotate(
+    "text", x = 65, y = 105.2,
+    label = "$50M / station",
+    family = "Roboto Condensed",
+    fontface = "bold",
+    color = "grey50",
+    size = 2.9
+  ) +
+  
+  ## coord + scales
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(expand = c(.01, .01), limits = c(-140, NA)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  scico::scale_color_scico(palette = "tofino") +
+  scico::scale_fill_scico(palette = "tofino") +
+  
+  ## title & co
+  labs(title = "The <b style='color:#E0EBA1;'>United States</b> spend by far the most improving the state of public transit-infrastructure not only<br>when it comes to transit length but also costs per station.",
+       subtitle = "Based on a database that spans more than 50 countries provided by the Transit Costs Project, the graphic shows the costs for urban rail projects that have been finished since the late 1990s. Each *wagon* represents<br>a cost of 50 million USD per km (left) and per station (right), each ranked by highest costs. The *connections* highlight the changes in the ranking with the United States holding the first place in both categories.",
+       caption = "Visualization by Cédric Scherer  •  Data by Transit Costs Project") 
+```
+
+```{r convert-to-png}
+## convert PDF to PNG
+path <- here::here("plots", "2021_02", "2021_02_TransitCosts")
+
+ggsave(glue::glue("{path}.pdf"), width = 16.3, height = 9.5, device = cairo_pdf)
+
+pdf_convert(pdf = glue::glue("{path}.pdf"), 
+            filenames = glue::glue("{path}.png"),
+            format = "png", dpi = 350)
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
