@@ -18,18 +18,9 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina
 ## packages
 library(tidyverse)
 library(ggbump)
-library(BBmisc)
 library(ggtext)
 library(systemfonts)
 library(pdftools)
-#library(camcorder)
-
-# gg_record(
-#   dir = here::here("dev"),
-#   device = "pdf",
-#   width = 15, 
-#   height = 10
-# )
 
 theme_set(theme_void(base_family = "Roboto Condensed"))
 
@@ -43,7 +34,8 @@ theme_update(
   plot.subtitle = element_markdown(color = "grey50", size = 13,
                                    lineheight = 1.2, 
                                    margin = margin(t = 15, b = 35)),
-  plot.caption = element_text(color = "grey50")
+  plot.caption = element_text(color = "grey35", size = 10,
+                              margin = margin(t = 0))
 )
 ```
 
@@ -52,7 +44,7 @@ df_transit <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience
 ```
 
 ```{r prep-data}
-df_transit_country <-
+df_transit_ranking <-
   df_transit %>% 
   filter(!is.na(stations), stations > 0, real_cost > 0, end_year < 2021) %>% 
   mutate(
@@ -67,64 +59,43 @@ df_transit_country <-
   group_by(country) %>% 
   filter(n() > 1) %>% 
   summarize(across(c(length, stations, real_cost, cost_km_millions, cost_per_station, duration, duration_per_km), ~mean(.x, na.rm = TRUE))) %>% 
-  left_join(countrycode::codelist %>% dplyr::select(continent, country.name.en, ecb), by = c("country" = "ecb"))
-
-## bit cumbersome but developed as a left-over from theggbump-map approach:
-## https://github.com/davidsjoberg/tidytuesday/blob/master/2020w17/2020w17_skript.R
-ranking <- 
-  tibble(
-    country = df_transit_country$country.name.en,
-    code = df_transit_country$country,
-    rank_km = normalize(
-      rank(df_transit_country$cost_km_millions, ties.method = "random"), 
-      range = c(0, 100), method = "range"
-    ),
-    rank_st = normalize(
-      rank(df_transit_country$cost_per_station, ties.method = "random"), 
-      range = c(0, 100), method = "range"
-    ),
+  left_join(countrycode::codelist %>% dplyr::select(country.name.en, ecb), by = c("country" = "ecb")) %>% 
+  mutate(
+    rank_km = rank(cost_km_millions, ties.method = "random"),
+    rank_st = rank(cost_per_station, ties.method = "random"),
     start_km = -40,
     start_st = 40,
-    bar_km = start_km - normalize(
-      df_transit_country$cost_km_millions, 
-      range = range(df_transit_country$cost_km_millions / 14), 
-      method = "range"
-    ),
-    bar_st = start_st + normalize(
-      df_transit_country$cost_per_station, 
-      range = range(df_transit_country$cost_per_station / 14), 
-      method = "range"
-    ),
+    end_km = start_km - cost_km_millions / 14,
+    end_st = start_st + cost_per_station / 14,
     lab_km = if_else(
-      country == "United States", 
-      glue::glue("**${format(df_transit_country$cost_km_millions, digits = 0, nsmall = 1)}M**"),
+      country.name.en == "United States", 
+      glue::glue("**${format(cost_km_millions, digits = 0, nsmall = 1)}M**"),
       ## black M to add spacing (nbsp doesn't work)
-      glue::glue(" {format(df_transit_country$cost_km_millions, digits = 0, nsmall = 1)}<span style='color:#171717;'>M</span>")
+      glue::glue(" {format(cost_km_millions, digits = 0, nsmall = 1)}<span style='color:#171717;'>M</span>")
     ),
     lab_st = if_else(
-      country == "United States", 
-      glue::glue("**${format(df_transit_country$cost_per_station, digits = 0, nsmall = 1)}M**"),
-      glue::glue(" {format(df_transit_country$cost_per_station, digits = 0, nsmall = 1)}<span style='color:#171717;'>M</span>")
+      country.name.en == "United States", 
+      glue::glue("**${format(cost_per_station, digits = 0, nsmall = 1)}M**"),
+      glue::glue(" {format(cost_per_station, digits = 0, nsmall = 1)}<span style='color:#171717;'>M</span>")
+    ),
+    country.name.en = case_when(
+      country.name.en == "United Arab Emirates" ~ "Emirates",
+      country.name.en == "United States" ~ "<b style='color:#7f7f7f;'>United States</b>",
+      TRUE ~ country.name.en
     )
-    
-  ) %>% 
-  mutate(country = case_when(
-    country == "United Arab Emirates" ~ "Emirates",
-    country == "United States" ~ "<b style='color:#7f7f7f;'>United States</b>",
-    TRUE ~ country
-  ))
+  )
 
 x <- c(seq(-150, -40, by = 10), seq(40, 150, by = 10))
-y <- c(unique(ranking$rank_km), 103.448276)
+y <- 1:(n_distinct(df_transit_ranking$rank_km) + 1)
 lines <- crossing(x, y)
 ```
 
 ```{r sigmoid-slope, fig.width=16.3, fig.height=9.5}
-ggplot(ranking) + 
+ggplot(df_transit_ranking) + 
   geom_sigmoid(
     aes(x = -25, xend = 25, 
         y = rank_km, yend = rank_st, 
-        group = country,
+        group = country.name.en,
         color = rank_km,
         color = after_scale(colorspace::lighten(color, .4))), 
     alpha = .45, smooth = 8, size = 1.2
@@ -149,7 +120,7 @@ ggplot(ranking) +
   ## rounded bar plots
   geom_segment(
     ## make bars a bit shorter because of rounded lineends
-    aes(x = start_km - 1.1, xend = bar_km + 1.1, 
+    aes(x = start_km - 1.1, xend = end_km + 1.1, 
         y = rank_km, yend = rank_km, 
         color = rank_km,
         color = after_scale(colorspace::lighten(color, .2))), 
@@ -157,7 +128,7 @@ ggplot(ranking) +
     lineend = "round"
   ) + 
   geom_segment(
-    aes(x = start_st + 1.1, xend = bar_st - 1.1, 
+    aes(x = start_st + 1.1, xend = end_st - 1.1, 
         y = rank_st, yend = rank_st, 
         color = rank_km,
         color = after_scale(colorspace::lighten(color, .2))), 
@@ -168,7 +139,7 @@ ggplot(ranking) +
   ## add wagon separators
   geom_linerange(
     data = lines,
-    aes(x = x, ymin = y - .5, ymax = y - 3),
+    aes(x = x, ymin = y - .85, ymax = y - .15),
     inherit.aes = FALSE,
     color = "#171717",
     size = .3
@@ -198,8 +169,8 @@ ggplot(ranking) +
   
   ## labels countries
   geom_richtext(
-    aes(x = bar_km, y = rank_km,
-        label = country),
+    aes(x = end_km, y = rank_km,
+        label = country.name.en),
     hjust = 1,
     color = "grey35",
     size = 3.5,
@@ -209,9 +180,9 @@ ggplot(ranking) +
     label.color = NA
   ) +
   geom_text(
-    data = filter(ranking, code != "US"),
-    aes(x = bar_st, y = rank_st, 
-        label = country), 
+    data = filter(df_transit_ranking, country != "US"),
+    aes(x = end_st, y = rank_st, 
+        label = country.name.en), 
     hjust = 0, 
     color = "grey35",
     size = 3.5,
@@ -222,11 +193,11 @@ ggplot(ranking) +
   ## annotate axis costs per km
   annotate(
     "errorbar", 
-    xmin = -70, xmax = -60, y = 102.7,
-    color = "grey50", size = .4
+    xmin = -70, xmax = -60, y = 29.8,
+    color = "grey50", size = .4, width = .4
   ) +
   annotate(
-    "text", x = -65, y = 105.2,
+    "text", x = -65, y = 30.4,
     label = "$50M / km",
     family = "Roboto Condensed",
     fontface = "bold",
@@ -237,11 +208,11 @@ ggplot(ranking) +
   ## annotate axis costs per stations
   annotate(
     "errorbar", 
-    xmin = 60, xmax = 70, y = 102.7,
-    color = "grey50", size = .4
+    xmin = 60, xmax = 70, y = 29.8,
+    color = "grey50", size = .4, width = .4
   ) +
   annotate(
-    "text", x = 65, y = 105.2,
+    "text", x = 65, y = 30.4,
     label = "$50M / station",
     family = "Roboto Condensed",
     fontface = "bold",
@@ -254,7 +225,6 @@ ggplot(ranking) +
   scale_x_continuous(expand = c(.01, .01), limits = c(-140, NA)) +
   scale_y_continuous(expand = c(0, 0)) +
   scico::scale_color_scico(palette = "tofino") +
-  scico::scale_fill_scico(palette = "tofino") +
   
   ## title & co
   labs(title = "The <b style='color:#E0EBA1;'>United States</b> spend by far the most improving the state of public transit-infrastructure not only<br>when it comes to transit length but also costs per station.",
