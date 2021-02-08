@@ -1,0 +1,249 @@
+---
+title: "TidyTuesday 2021/01 - Usage of geom's & Co by me"
+author: "Cedric Scherer"
+date: "11th of January 2021"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(textreadr)
+library(ggforce)
+library(glue)
+library(systemfonts)
+library(ggtext)
+library(pdftools)
+
+theme_set(theme_light(base_family = "Roboto Condensed", base_size = 20))
+
+theme_update(
+  axis.title = element_blank(),
+  axis.text.x = element_text(color = "grey70", size = 18, face = "bold", hjust = .15),
+  axis.text.y = element_markdown(margin = margin(r = 10)), 
+  axis.ticks.x.top = element_line(
+    size = .6,
+    arrow = arrow(length = unit(.4, "lines"), ends = "first", type = "closed")
+  ),
+  axis.ticks.x.bottom = element_line(
+    size = .6,
+    arrow = arrow(length = unit(.4, "lines"), ends = "last", type = "closed")
+  ),
+  axis.ticks.y = element_blank(),
+  axis.ticks.length.x = unit(1.3, "lines"),
+  panel.grid = element_blank(),
+  panel.border = element_rect(fill = NA, color = NA),
+  legend.position = "none",
+  plot.caption = element_markdown(color = "grey70", size = 14, lineheight = 1.15,
+                                  margin = margin(t = 20)),
+  plot.margin = margin(30, 45, 12, 45)
+)
+```
+
+```{r data}
+rds <- here::here("data", "2021_01", "geoms_stats.Rds")
+
+if(!file.exists(rds)) {
+  df_geoms <- 
+    read_dir(path = here::here("R"), pattern = "\\.Rmd$") %>% 
+    mutate(
+      year = as.numeric(str_sub(document, 1, 4)),
+      geom = str_extract(content, "geom_\\w+"), # assumes one geom per line
+      stat = str_extract(content, "stat_\\w+")
+    ) %>% 
+    pivot_longer(
+      cols = c(geom, stat),
+      names_to = "group",
+      values_to = "name"
+    ) %>% 
+    filter(!is.na(name))
+  
+  saveRDS(df_geoms, rds)
+} else {
+  df_geoms <- readRDS(rds)
+}
+
+df_geoms <- 
+  df_geoms %>% 
+  ## only 2019 and 2020
+  filter(year %in% 2019:2020) %>%
+  mutate(
+    ## group some geoms together
+    name = case_when(
+      str_detect(name, "geom_treemap") ~ "geom\\_treemap\\_*",
+      str_detect(name, "geom_mark") ~ "geom\\_mark\\_*",
+      str_detect(name, "geom_node") ~ "geom\\_node\\_*",
+      TRUE ~ name
+    )
+  ) %>% 
+  group_by(year) %>% 
+  mutate(scripts_year = n_distinct(document)) %>% 
+  count(year, group, name, scripts_year) %>% 
+  mutate(freq_year = n / scripts_year) %>% 
+  pivot_wider(
+    id_cols = c(group, name),
+    names_from = year,
+    values_from = freq_year,
+    names_prefix = "freq_"
+  ) %>% 
+  mutate(
+    ## set frequency to zero if not used
+    freq_2019 = if_else(is.na(freq_2019), 0, freq_2019),
+    freq_2020 = if_else(is.na(freq_2020), 0, freq_2020),
+    ## add namespace and font formatting y labels
+    name = case_when(
+      name %in% c("geom_richtext", "geom_textbox") ~ glue("<b style='color:#d2b48c;'><i>ggtext</i>::{name}</b>"),
+      name %in% c("stat_halfeye", "stat_interval", "stat_dots") ~ glue("<b style='color:#d2b48c;'><i>ggdist</i>::{name}</b>"),
+      name %in% c("geom_mark_circle", "geom_link", "geom_mark_hull", "geom_mark_ellipse", "geom\\_mark\\_*") ~ glue("<b style='color:#d2b48c;'><i>ggforce</i>::{name}</b>"),
+      name %in% c("geom_moon") ~ glue("<b style='color:#d2b48c;'><i>gggibbous</i>::{name}</b>"),
+      name %in% c("geom_stream") ~ glue("<b style='color:#d2b48c;'><i>ggstream</i>::{name}</b>"),
+      name %in% c("geom_text_repel") ~ glue("<b style='color:#d2b48c;'><i>ggrepel</i>::{name}</b>"),
+      name %in% c("geom_point_blur") ~ glue("<b style='color:#d2b48c;'><i>ggblur</i>::{name}</b>"),
+      name %in% c("geom_treemap_text", "geom_treemap", "geom_treemap_subgroup_text", "geom\\_treemap\\_*") ~ glue("<b style='color:#d2b48c;'><i>treemapify</i>::{name}</b>"),
+      name %in% c("geom_text_wordcloud") ~ glue("<b style='color:#d2b48c;'><i>ggwordcloud</i>::{name}</b>"),
+      name %in% c("geom_node_text", "geom_node_point", "geom_edge_link", "geom\\_node\\_*") ~ glue("<b style='color:#d2b48c;'><i>ggraph</i>::{name}</b>"),
+      name %in% c("geom_bump") ~ glue("<b style='color:#d2b48c;'><i>ggbump</i>::{name}</b>"),
+      name %in% c("geom_stratum", "geom_alluvium") ~ glue("<b style='color:#d2b48c;'><i>ggalluvial</i>::{name}</b>"),
+      name %in% c("geom_pointdensity") ~ glue("<b style='color:#d2b48c;'><i>ggpointdensity</i>::{name}</b>"),
+      name %in% c("geom_image") ~ glue("<b style='color:#d2b48c;'><i>ggimage</i>::{name}</b>"),
+      name %in% c("geom_emoji") ~ glue("<b style='color:#d2b48c;'><i>emojifont</i>::{name}</b>"),
+      name %in% c("geom_beeswarm") ~ glue("<b style='color:#d2b48c;'><i>ggbeeswarm</i>::{name}</b>"),
+      TRUE ~ glue("<span style='color:#808080;'>{name}</span>")
+    )
+  ) %>%
+  arrange(-freq_2020, -freq_2019) %>% 
+  mutate(
+    ## add ranking
+    name = fct_inorder(name),
+    rank = row_number(),
+    ## grouping based on difference for color
+    diff = case_when(
+      freq_2020 > freq_2019 ~ "A",
+      freq_2020 < freq_2019 ~ "B",
+      freq_2020 == freq_2019 ~ "C"
+    ),
+    ## here we assign the line_positions
+    line_positions = as.numeric(factor(name, levels = unique(name))), 
+    line_positions = line_positions + .5
+  ) 
+```
+
+
+```{r plot, fig.width = 24, fig.height = 16}
+ggplot(df_geoms) +
+  
+  ## grid lines
+  geom_hline(aes(yintercept = line_positions), color = "grey90", size = .4) + 
+  geom_hline(yintercept = .5, color = "grey90", size = .4) + 
+  
+  ## comets
+  geom_link(
+    aes(x = freq_2019, y = rank, 
+        xend = freq_2020, yend = rank, 
+        color = diff, 
+        size = stat(index)),
+    n = 1000
+  ) +
+  geom_point(
+    data = filter(df_geoms, freq_2020 > 0),
+    aes(freq_2020, rank, color = diff),
+    shape = 21,
+    fill = "white",
+    size = 5,
+    stroke = 1.5
+  ) +
+  geom_point(
+    data = filter(df_geoms, freq_2020 == 0),
+    aes(freq_2020, rank, color = diff),
+    shape = 21,
+    fill = "grey85",
+    size = 5,
+    stroke = 1.5
+  ) +
+  
+  ## text box
+  geom_richtext(
+    aes(x = 1.5, y = 24.5,
+        label = "<b style='font-size:32pt;'>More Text Labels, Less Bar Charts.</b><br><span style='font-size:15pt;'><span style='color:#28A87D;'>— More often used in 2020</span> <span style='color:#E99C66;'>— More often used in 2019</span><br><br><span style='font-family:roboto;'>Compared to 2019, I used more geom's to add text labels in my #TidyTuesday scripts in 2020<sup>†</sup><br>while the number of bar charts per script decreased tremendously. Besides text labelling, points<br>were by far the most used geometry (even though less used than in 2019). The most used extension<br>packages were {ggtext} and {ggforce} but also {ggdist}, {ggstream}, and {gggibbous} played an impor–<br>tant role for the first time in 2020.Interestingly, I did not use as many tiles and not any beeswarms at all. </span><br><br><br><b style='font-size:13pt;'>Visualization: Cédric Scherer  •  Data: My 66 #TidyTuesday Scripts from 2019 and 2020<sup>†</sup></b>"), 
+    inherit.aes = FALSE,
+    color = "grey60",
+    family = "Roboto Slab",
+    size = 6.5,
+    label.padding = unit(3, "lines"),
+    label.r = unit(0, "lines"),
+    label.size = 2,
+    label.color = "grey70"
+  ) +
+  
+  ## labels
+  geom_richtext(
+    data = tibble(x = 0, y = c(2, 3),
+                  label = c("<b style='color:#808080;'><b style='font-family:arial;'>←</b> from the ggplot2 package</b>", "<b style='color:#d2b48c;'><b style='font-family:arial;'>←</b> from an extension package</b>")),
+    aes(x, y, label = label),
+    family = "Roboto Slab",
+    size = 4.3, 
+    hjust = .07,
+    fill = NA, 
+    label.color = NA,
+    label.padding = unit(0, "lines")
+  ) +
+  geom_richtext(
+    data = tibble(
+      x = c(1.47, 2.27), y = 1.03, h = c(0, 1),
+      label = c("Frequency in 2019 <b style='font-family:arial;'>→</b>", "<b style='font-family:arial;'>←</b> 2020")
+    ),
+    aes(x, y, label = label, hjust = h),
+    family = "Roboto Slab",
+    fontface = "bold",
+    size = 4.5, 
+    color = "grey50",
+    fill = NA, 
+    label.color = NA
+  ) +
+  
+  ## coord + scales
+  coord_cartesian(clip = "off") +
+  scale_x_continuous(
+    expand = c(0, 0), 
+    limits = c(0, 2.28), 
+    sec.axis = dup_axis(),
+    breaks = 0:4 / 2,
+    labels = c("Never", "0.5x per script", "1x", "1.5x", "2x")
+  ) +
+  scale_y_reverse(
+    expand = c(.005, .005), 
+    breaks = 1:nrow(df_geoms), 
+    labels = levels(df_geoms$name)
+  ) +
+  scale_color_manual(values = c("#28A87D", "#E99C66", "#B3B3B3")) +
+  scale_size(range = c(.3, 4.3)) +
+  labs(caption = "<sup>†</sup> I extracted all functions starting with <i>geom_</i> or <i>stat_</i> from my Rmd files containing the code for all my #TidyTuesday contributions (thanks Georgios for the idea and script).<br>For the contributions from 2019 (n = 26) and 2020 (n = 40) I calculated the frequency of usage per year for each geom|stat as times used divided by the number of contributions.<br>Note that some geom's which usually appear together (e.g. <i>treemapify::geom_treemap_*</i> functions) or behave very similarly (e.g. <i>ggforce::geom_mark_*</i> functions) were grouped together.")
+```
+
+```{r convert-to-png}
+## convert PDF to PNG
+path <- here::here("plots", "2021_01", "2021_01_geomUsage")
+
+ggsave(glue::glue("{path}.pdf"), width = 24, height = 16, device = cairo_pdf)
+
+pdf_convert(pdf = glue::glue("{path}.pdf"), 
+            filenames = glue::glue("{path}.png"),
+            format = "png", dpi = 270)
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
