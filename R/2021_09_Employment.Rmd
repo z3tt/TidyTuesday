@@ -92,7 +92,7 @@ df_employed_2020_total <-
 ```
 
 ```{r function-k-plot}
-k_plot_div <- function(group, annotation) {
+k_plot_div <- function(group, pos = .6, annotation) {
   df <- df_employed_2020 %>% 
     filter(race_gender == group) %>% 
     group_by(industry) %>% 
@@ -138,7 +138,7 @@ k_plot_div <- function(group, annotation) {
     dplyr::select(ind = rank, industry, perc, end) %>% 
     mutate(rank = 17, mid = end - perc / 2) 
   
-  lab <- tibble(x = 12.3, y = .6, text = annotation)
+  lab <- tibble(x = 12.3, y = pos, text = annotation)
   
   g <- ggplot(df, aes(rank, employ_stand)) +
     geom_rect(
@@ -287,7 +287,7 @@ for(i in 1:25) {
 ## loop to find combination since ggrepel segments are sometimes too long
 ## even with fixed xlim and seed — no clue why ¯\_(ツ)_/¯
 for(i in 1:25) {
-  k_black <- k_plot_div("Black and African American", annotation = "**22.3 million persons (12.3%)** of the surveyed U.S. civilian noninstitutionalized population identiefied themselves as **Black or African American** and consequently accounted for nearly 1 out of 8 people in the labor force. Most persons work in <b style='color:#637939'>education and health services (22.7%, +4.6%)</b>, followed by the <b style='color:#393B79'>wholesale and/or rental trade industry (20.2%, ±0%)</b>, and <b style='color:#8C6D31'>professional and business services (8.4%, –1.6%)</b>. Compared to the overall population, the proportion of Black and African American persons is 2.8 percent points lower in the <b style='color:#8CA252'>construction industry (2.9%)</b> as well as 1.9 and 1.7 percent points higher in the sectors <b style='color:#6B6ECF'>public administration (6.6%)</b> and <b style='color:#A55194'>transportation and utilities sector (5.9%)</b>, respectively.")
+  k_black <- k_plot_div("Black and African American", pos = .55, annotation = "**22.3 million persons (12.3%)** of the surveyed U.S. civilian noninstitutionalized population identiefied themselves as **Black or African American** and consequently accounted for nearly 1 out of 8 people in the labor force. Most persons work in <b style='color:#637939'>education and health services (22.7%, +4.6%)</b>, followed by the <b style='color:#393B79'>wholesale and/or rental trade industry (20.2%, ±0%)</b>, and <b style='color:#8C6D31'>professional and business services (8.4%, –1.6%)</b>. Compared to the overall population, the proportion of Black and African American persons is 2.8 percent points lower in the <b style='color:#8CA252'>construction industry (2.9%)</b> as well as 1.9 and 1.7 percent points higher in the sectors <b style='color:#6B6ECF'>public administration (6.6%)</b> and <b style='color:#A55194'>transportation and utilities sector (5.9%)</b>, respectively.")
 
   k_black_single <- k_black +
     labs(title = "Employed Black and African American Persons in the United States of America by Industry (2020)",
