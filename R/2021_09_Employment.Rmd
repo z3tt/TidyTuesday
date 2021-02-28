@@ -1,0 +1,363 @@
+---
+title: "TidyTuesday 2021/09 - U.S. Employments by BLS"
+author: "Cedric Scherer"
+date: "7th of January 2021"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(ggtext)
+library(here)
+library(glue)
+library(systemfonts)
+library(pdftools)
+library(patchwork)
+
+theme_set(theme_void(base_family = "Roboto Condensed"))
+
+theme_update(
+  axis.text.x = element_text(size = 9, color = "grey25", vjust = 1,
+                             margin = margin(t = -10)),
+  legend.position = "none",
+  panel.grid.major.y = element_line("grey92", size = .9),
+  plot.margin = margin(27, 25, 5, 25),
+  plot.background = element_rect(fill = "white", color = NA),
+  plot.subtitle = ggtext::element_textbox_simple(
+    color = "grey25", size = 14, lineheight = 1.2, margin = margin(t = 15, b = 0)
+  ),
+  plot.caption = element_text(color = "grey25", size = 9, hjust = .5,
+                              face = "italic", margin = margin(t = 12, b = 5))
+)
+
+theme_patchwork <- 
+  theme(
+    plot.title = element_text(color = "grey10", size = 24,
+                              family = "Roboto Black", face = "bold",
+                              margin = margin(t = 10, b = 0))
+  )
+```
+
+## Data
+
+```{r data}
+df_employed <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-23/employed.csv')
+#df_earnings <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-23/earn.csv')
+```
+
+```{r prep-data}
+df_employed_2020 <-
+  df_employed %>% 
+  filter(year == 2020, !is.na(industry),
+         !industry %in% c("Men", "Women", "White", "Black or African American", "Asian")) %>% 
+  mutate(
+    industry = if_else(industry == "Other services, except private households", 
+                       "Other services", industry),
+    industry = if_else(str_detect(industry, "trade"), 
+                       "Wholesale and retail trade", industry),
+    race_gender = str_replace(race_gender, " or ", " and ")
+  )
+```
+
+# Employments per Industry
+
+## Total Sumary (for Bar Sorting)
+
+```{r prep-data-total}
+df_employed_2020_total <-
+  df_employed_2020 %>% 
+  filter(race_gender == "TOTAL") %>% 
+  group_by(industry) %>% 
+  summarize(employ_n = sum(employ_n, na.rm = TRUE)) %>% 
+  mutate(total = sum(employ_n)) %>% 
+  group_by(industry) %>% 
+  mutate(perc = employ_n / total) %>% 
+  ungroup() %>% 
+  arrange(-employ_n) %>% 
+  add_row(industry = "SUM") %>% 
+  mutate(
+    industry = fct_reorder(industry, -employ_n),
+    rank = row_number()
+  )
+```
+
+```{r function-k-plot}
+k_plot_div <- function(group, annotation) {
+  df <- df_employed_2020 %>% 
+    filter(race_gender == group) %>% 
+    group_by(industry) %>% 
+    summarize(employ_n = sum(employ_n, na.rm = TRUE)) %>% 
+    mutate(total = sum(employ_n)) %>% 
+    group_by(industry) %>% 
+    mutate(perc = employ_n / total) %>% 
+    ungroup() %>% 
+    mutate(
+      employ_stand = employ_n / max(employ_n),
+      employ_lab = case_when(
+        employ_n > 1000000 ~ paste0(format(employ_n / 1000000, big.mark = ",", digits = 1, trim = TRUE), "M"),
+        employ_n > 1000 ~ paste0(format(employ_n / 1000, big.mark = ",", trim = TRUE), "K"),
+        TRUE ~ paste0(employ_n)
+      )
+    ) %>% 
+    left_join(df_employed_2020_total %>% dplyr::select(industry, rank)) %>% 
+    arrange(rank) %>% 
+    mutate(
+      lag = lag(perc),
+      end = cumsum(perc),
+      end = if_else(!is.na(lag), end, perc), 
+      start = end - perc,
+      img = glue("{here()}/img/industries/{industry}.png")
+    ) %>% 
+    add_row(
+      industry = "SUM", rank = 17,
+      img = glue("{here()}/img/industries/Sum.png")
+    ) %>% 
+    mutate(
+      industry = factor(industry, levels = df_employed_2020_total$industry),
+      industry_lab = str_wrap(industry, 15),
+      industry_lab = if_else(str_detect(industry_lab, "Mining"), 
+                             "Mining, quarrying,\noil and gas", industry_lab),
+      industry_lab = case_when(
+        str_detect(industry_lab, "Mining") ~ "Mining, quarrying\nand oil/gas\nextraction", 
+        str_detect(industry_lab, "Agriculture") ~ "Agriculture\nand related", 
+        TRUE ~ industry_lab
+      )
+    )
+  
+  df_sum <- df %>% 
+    dplyr::select(ind = rank, industry, perc, end) %>% 
+    mutate(rank = 17, mid = end - perc / 2) 
+  
+  lab <- tibble(x = 12.3, y = .6, text = annotation)
+  
+  g <- ggplot(df, aes(rank, employ_stand)) +
+    geom_rect(
+      data = tibble(a = c(.6, Inf), b = c(-Inf, 17.4), c = -Inf, d = Inf),
+      aes(xmin = a, xmax = b, ymin = c, ymax = d),
+      stat = "unique", inherit.aes = FALSE,
+      fill = "white", color = NA
+    ) +
+    ## bars total
+    geom_col(width = .8, fill = "grey65") +
+    ## colored waterfall bars
+    geom_rect(
+      aes(xmin = rank - .393, xmax = rank + .393,
+          ymin = start, ymax = end, fill = industry,
+          fill = after_scale(colorspace::lighten(fill, .2)),
+          color = industry), size = .4
+    ) +
+    ## colored end bar total
+    geom_linerange(
+      aes(xmin = rank - .4, xmax = rank + .4, color = industry),
+          #color = after_scale(colorspace::lighten(color, .2))),
+      size = 2
+    ) +
+    ## connections waterfall bars
+    geom_linerange(
+      aes(xmin = rank + .408, xmax = rank + .6, y = end),
+      size = .4, color = "grey65", linetype = "22"
+    ) +
+    ## labels bar total
+    geom_text(
+      aes(label = employ_lab),
+      nudge_y = .0165,
+      family = "Roboto Condensed",
+      size = 3.5,
+      hjust = .5
+    )  +
+    ## summary bar
+    geom_col(
+      data = df_sum,
+      aes(rank, perc, group = rev(ind)),
+      fill = "grey85", width = .8
+    ) +
+    ## separator stacks summary bar
+    geom_linerange(
+      data = df_sum,
+      aes(xmin = rank - .4, xmax = rank + .4, y = end, color = industry),
+      size = .6#, color = "grey65"
+    ) +
+    ## labels percentages
+    ggrepel::geom_text_repel(
+      data = df_sum,
+      ggplot2::aes(x = 17.4, y = mid, color = industry,
+                   label = scales::percent(perc, accuracy = .1)),
+      xlim  = 17.905,
+      family = "Roboto Condensed", size = 3.4, fontface = "bold", hjust = 1,
+      direction = "y", force = .5, min.segment.length = 0, segment.size = .5,
+      segment.curvature = -0.15, segment.ncp = 3, segment.angle = 90,
+      segment.inflect = FALSE, box.padding = .025
+    ) +
+    ## icons
+    ggimage::geom_image(aes(y = -.04, image = img), 
+                        stat = "unique", by = "width", 
+                        size = .026, asp = 1.7) +
+    coord_cartesian(clip = "off") +
+    scale_x_continuous(expand = c(0, 0), 
+                       limits = c(.45, 18.1), breaks = 1:17, 
+                       labels = unique(df$industry_lab)) +
+    scale_y_continuous(breaks = 0:5 / 5, limits = c(-.05, NA)) +
+    ggsci::scale_fill_d3(palette = "category20b") +
+    ggsci::scale_color_d3(palette = "category20b") +
+    labs(title = glue("{group} Citizens")) +
+    ## turn title into textbox
+    theme(
+      plot.title = ggtext::element_textbox_simple( 
+        family = "Roboto Black", face = "bold", size = 20,
+        color = "grey25", box.color = "grey65", fill = "white", linetype = 1,
+        r = grid::unit(3, "pt"), padding = margin(14, 10, 10, 17)
+      )
+    )
+  
+  if (!is.na(annotation)) {
+    g <- g +
+    ## annotation box
+    ggtext::geom_textbox(
+      data = lab, aes(x = x, y = y, label = text),
+      inherit.aes = FALSE,
+      family = "Roboto Condensed", size = 3.9,
+      color = "grey25", lineheight = 1.25,
+      box.color = "grey85", width = unit(6.45, "inch"),
+      box.padding = unit(c(10, 10, 10, 10), "pt")
+    )
+  }
+  
+  return(g)
+}
+```
+
+```{r, labels}
+subtitle <- "The **Current Population Survey (CPS)** is a monthly survey of households conducted by the **U.S. Bureau of Census for the Bureau of Labor Statistics**. It provides a comprehensive body of data on the labor force, employment, unemployment, persons not in the labor force, hours of work, earnings, and other demographic and labor force characteristics. The following visualizations show the overall number (grey bars) and distribution (colored bars) per industry in 2020. The industries are sorted by the number of employed persons overall."
+
+caption <- "Visualization: Cédric Scherer  •  Data:  Labor Force Statistics from the Current Population Survey (2020), U.S. Bureau of Labor Statistics (BLS)"
+```
+
+## Total Population
+
+```{r, k-plot-white}
+## loop to find combination since ggrepel segments are sometimes too long
+## even with fixed xlim and seed — no clue why ¯\_(ツ)_/¯
+for(i in 1:25) {
+  k_total <- k_plot_div("TOTAL", annotation = NA) +
+    labs(title = "Employed Persons in the United States of America by Industry (2020)",
+         subtitle = subtitle,
+         caption = caption) +
+    theme(plot.margin = margin(25, 25, 10, 25),
+          plot.caption = element_text(margin = margin(t = 20, b = 5)))
+
+  ggsave(here("plots", "2021_09", glue("2021_09_Employment_Total_{i}.pdf")),
+         width = 16, height = 11.2, device = cairo_pdf)
+}
+```
+
+## White Population
+
+```{r, k-plot-white}
+## loop to find combination since ggrepel segments are sometimes too long
+## even with fixed xlim and seed — no clue why ¯\_(ツ)_/¯
+for(i in 1:25) {
+  k_white <- k_plot_div("White", annotation = "The largest group—**147.1 million persons (81.1%)**—identified themselves as **White**. Consequently, the ranking of the industries in 2020 follows again almost the overall pattern. Most persons (37.8%) work in the <b style='color:#393B79'>wholesale and/or rental trade industry (20.3%, +0.1%)</b> or in <b style='color:#637939'>education and health services (17.5%, –0.2%)</b>.")
+  
+  k_white_single <- k_white +
+    labs(title = "Employed White Persons in the United States of America by Industry (2020)",
+         subtitle = subtitle,
+         caption = caption) +
+    theme_title + 
+    theme(plot.margin = margin(25, 25, 10, 25),
+          plot.caption = element_text(margin = margin(t = 20, b = 5)))
+  
+  ggsave(here("plots", "2021_09", glue("2021_09_Employment_White_{i}.pdf")),
+         width = 16, height = 11.2, device = cairo_pdf)
+}
+```
+
+## Black or African American Population
+
+```{r, k-plot-black}
+## loop to find combination since ggrepel segments are sometimes too long
+## even with fixed xlim and seed — no clue why ¯\_(ツ)_/¯
+for(i in 1:25) {
+  k_black <- k_plot_div("Black and African American", annotation = "**22.3 million persons (12.3%)** of the surveyed U.S. civilian noninstitutionalized population identiefied themselves as **Black or African American** and consequently accounted for nearly 1 out of 8 people in the labor force. Most persons work in <b style='color:#637939'>education and health services (22.7%, +4.6%)</b>, followed by the <b style='color:#393B79'>wholesale and/or rental trade industry (20.2%, ±0%)</b>, and <b style='color:#8C6D31'>professional and business services (8.4%, –1.6%)</b>. Compared to the overall population, the proportion of Black and African American persons is 2.8 percent points lower in the <b style='color:#8CA252'>construction industry (2.9%)</b> as well as 1.9 and 1.7 percent points higher in the sectors <b style='color:#6B6ECF'>public administration (6.6%)</b> and <b style='color:#A55194'>transportation and utilities sector (5.9%)</b>, respectively.")
+
+  k_black_single <- k_black +
+    labs(title = "Employed Black and African American Persons in the United States of America by Industry (2020)",
+         subtitle = subtitle,
+         caption = caption) +
+    theme_title + 
+    theme(plot.margin = margin(25, 25, 10, 25),
+          plot.caption = element_text(margin = margin(t = 20, b = 5)))
+  
+  ggsave(here("plots", "2021_09", glue("2021_09_Employment_Black_{i}.pdf")),
+         width = 16, height = 11.2, device = cairo_pdf)
+}
+```
+
+## Asian Population
+
+```{r, k-plot-asian}
+## loop to find combination since ggrepel segments are sometimes too long
+## even with fixed xlim and seed — no clue why ¯\_(ツ)_/¯
+for(i in 1:25) {
+  k_asian <- k_plot_div("Asian", annotation = "The least common race group—**12 million persons (6.6%)**—in the working force  identified themselves as **Asian**. In 2020, most of them were employed in the two most common industries as well: in the <b style='color:#393B79'>trading industry (17.9%, –2.3%)</b> and <b style='color:#637939'>education and health services (17.7%, –0.4%)</b>. Notably, the proportion of workers in the <b style='color:#8CA252'>construction industry (1.8%)</b> is 3.9 percent points lower than overall while it is 4.8 percent points higher in <b style='color:#8C6D31'>business services (14.8%)</b> and 1.2% higher in </b> and <b style='color:#BD9E39'>financial activities (6.9%)</b>.")
+
+  k_asian_single <- k_asian +
+    labs(title = "Employed Asian Persons in the United States of America by Industry (2020)",
+         subtitle = subtitle,
+         caption = caption) +
+    theme_title + 
+    theme(plot.margin = margin(25, 25, 10, 25),
+          plot.caption = element_text(margin = margin(t = 20, b = 5)))
+  
+  ggsave(here("plots", "2021_09", glue("2021_09_Employment_Asian_{i}.pdf")),
+         width = 16, height = 11.2, device = cairo_pdf)
+}
+```
+
+## Combine
+
+```{r full-panel}
+## loop to find combination with equally long ggrepel segments which vary
+## randomly, no clue why it changes even with fixed xlim and seed ¯\_(ツ)_/¯
+for(i in 1:25) {
+  panel <- k_white / k_black / k_asian +
+      plot_annotation(
+          title = "Employed Persons in the United States of America by Industry and Race (2020)",
+          subtitle = "The **Current Population Survey (CPS)** is a monthly survey of households conducted by the **U.S. Bureau of Census for the Bureau of Labor Statistics**. It provides a comprehensive body of data on the labor force, employment, unemployment, persons not in the labor force, hours of work, earnings, and other demographic and labor force characteristics. The following visualizations show the overall number (grey bars) and distribution (colored bars) per industry and race in 2020. The industries are sorted by the number of employed persons overall.",
+          caption = caption,
+          theme = theme_patchwork
+      )
+
+  ggsave(here("plots", "2021_09", glue("2021_09_Employment_{i}.pdf")), 
+         width = 16, height = 30.5, device = cairo_pdf)
+}
+```
+
+## Aftermath
+
+```{r convert-to-png}
+## convert PDF to PNG
+pdfs <- list.files(here("plots", "2021_09"), pattern = "*.pdf", full.names = TRUE)
+for(pdf in pdfs) {
+  pdf_convert(pdf = glue("{pdf}"), 
+              filenames = glue("{str_remove(pdf, '.pdf')}.png"),
+              format = "png", dpi = 500)
+}
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
