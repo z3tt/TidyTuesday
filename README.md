@@ -98,6 +98,8 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2020/48 [🥾 Washington Trails](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_48)
   - 2020/51 [🏋️ Ninja Warrior](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_51)
   - 2020/52 [🍔️ Big Mac Index](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_52)
+* **Challenges 2021**
+  - 2021/01 [🚇 Bring Your Own Data: My `geom` + `stat` Usage](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_01)
   - 2021/02 [🚇 Transit-Infrastructure Costs](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_02)
   - 2021/09 [👩 U.S. Employment](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_09)
 <!-- tocstop -->
@@ -114,6 +116,12 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
 ### [2021/02](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_02) 🚇 Transit-Infrastructure Costs by [Transit Costs Project](https://transitcosts.com/)
 
 ![./plots/2021_02/2021_02_TransitCosts.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2021_02/2021_02_TransitCosts.png)
+
+***
+
+### [2021/01](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_01) 📈 Usage of `geom` & `stat` Functions by [me](https://github.com/Z3tt/TidyTuesday/tree/master/R)
+
+![./plots/2021_01/2021_01_geomUsage.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2021_01/2021_01_geomUsage.png)
 
 ***
 

@@ -18,6 +18,12 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
+### [2021/01](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_01) 📈 Usage of geom & stat Functions by [me](https://github.com/Z3tt/TidyTuesday/tree/master/R)
+
+![./plots/2021_01/2021_01_geomUsage.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2021_01/2021_01_geomUsage.png)
+
+***
+
 ### [2020/52](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2020_52) 🍔️ Big Mac Index by [The Economist](https://github.com/TheEconomist/big-mac-data)
 
 ![./plots/2020_52/2020_52_BigMacIndex.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_52/2020_52_BigMacIndex.png)
