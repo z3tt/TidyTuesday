@@ -121,7 +121,7 @@ p <-
     geom_textbox(
       data = tibble(
         id = 685, hours = 20600,
-        label = "<b style='font-size:38pt;'>Travelling to Outer Space</b><br><br>Cumulative time in outer space for all 565 cosmonauts and astronauts who participated in space missions between April 23, 1961 an January 15, 2020, sorted by the year of their first mission.<br>"
+        label = "<b style='font-size:38pt;'>Travelling to Outer Space</b><br><br>Cumulative time in outer space for all 565 cosmonauts and astronauts who participated in space missions between April 23, 1961 and January 15, 2020, sorted by the year of their first mission.<br>"
       ),
       aes(
         x = id,
