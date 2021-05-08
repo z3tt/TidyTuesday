@@ -1,0 +1,242 @@
+---
+title: "TidyTuesday 2021/19 - Water Access Points by WPDX"
+author: "Cedric Scherer"
+date: "6th of may 2021"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina = 1)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(sf)
+library(ggvoronoi)
+library(ggfx)
+library(ggtext)
+library(here)
+library(systemfonts)
+library(patchwork)
+library(pdftools)
+library(camcorder)
+
+theme_set(theme_void(base_family = "Bitter"))
+
+theme_update(
+  plot.margin = margin(0, 25, 0, 25),
+  plot.background = element_rect(fill = "transparent", color = "transparent")
+)
+
+#gg_record(dir = here::here("dev"), device = "png", width = 15, height = 10)
+```
+
+## Data
+
+```{r data}
+df_water_full <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-05-04/water.csv') %>%
+  mutate(
+    label = case_when(
+      str_detect(country_name, "Dominic") ~ "Dominican Rep.", 
+      str_detect(country_name, "Congo") ~ "Congo",
+      country_name == "Central African Republic" ~ "CAR",
+      TRUE ~ country_name
+    ),
+    country_name = case_when(
+      str_detect(country_name, "Congo") ~ "Democratic Republic of the Congo",
+      country_name == "Swaziland" ~ "Eswatini",
+      country_name == "Tanzania" ~ "United Republic of Tanzania",
+      country_name == "Timor-Leste" ~ "East Timor",
+      TRUE ~ country_name
+    )
+  )
+```
+
+```{r prep-data}
+df_water <-
+  df_water_full %>% 
+  filter(!is.na(country_name)) %>% 
+  count(lat_deg, lon_deg, country_name, label) %>% 
+  mutate(row_id = row_number())
+```
+
+```{r voronoi-plot-function}
+draw_voronoi <- function(country, version = "ggfx") {
+  
+  map_sp <- rnaturalearth::ne_countries(scale = 10, country = country, returnclass = "sp")
+  ## remove island of South Africa
+  map_sp <- raster::crop(map_sp, raster::extent(-180, 180, -40, 80))
+  
+  map_sf <- map_sp %>% st_as_sf()
+  centroid <- map_sf %>% st_centroid()
+  
+  df_country <- filter(df_water, country_name == country)
+  
+  df_dist <- 
+    df_country %>% 
+    st_as_sf(coords = c("lon_deg", "lat_deg"), crs = 4326) %>%
+    st_transform(crs = st_crs(map_sf)) %>% 
+    st_intersection(map_sf) %>% 
+    mutate(dist = st_distance(., centroid)) %>% 
+    st_drop_geometry() %>% 
+    as_tibble %>% 
+    mutate(dist = as.numeric(dist)) %>% 
+    dplyr::select(row_id, dist) 
+  
+  ## trial to color by area, would make much more sense than distance
+  ## unfortunaly, the area doesn't correspond to the plotted areas plus some are NA
+  # df_deldir <- deldir(df_country$lon_deg, df_country$lat_deg)$summary
+  # df_deldir <- df_deldir[,c(1:2, 9)]
+  # names(df_deldir) <- c("lon_deg", "lat_deg", "area")
+  
+  df_country_dist <- 
+    df_dist %>% 
+    inner_join(df_country) %>% 
+    #left_join(df_deldir) %>% 
+    mutate(lon_deg = if_else(lon_deg > 180, lon_deg - 360, lon_deg))
+  
+  intensity <- df_water_full %>% 
+    filter(country_name == country, str_detect(facility_type, "proved")) %>% 
+    summarize(intensity = (1 - sum(facility_type == "Improved") / n()) * 2) %>% 
+    pull(intensity)
+  
+  ## color for "water point" based on proportion improved vs unimproved water points
+  if (version == "ggfx") {
+    water_color <- colorspace::desaturate(colorspace::lighten(viridis::mako(n = 1, begin = .4), intensity), intensity/2)
+  } else {
+    water_color <- colorspace::desaturate(colorspace::lighten("#0472cb", intensity), intensity/2) #0077be
+  }
+  
+  if (is.nan(intensity)) water_color <- "grey75"
+  
+  ## data for plotting the large "water point" in the background
+  df_centroid <- tibble(x = st_coordinates(centroid)[,1], y = st_coordinates(centroid)[,2])
+  
+  ## distance for coordinate scaling so centroid is placed in the middle
+  distance_south <- distance <- as.numeric(st_distance(map_sf, centroid, which = "Hausdorff"))
+  
+  if (country %in% c("Peru", "Kenya", "Eswatini")) distance  <- distance + .2
+  if (country %in% c("Mauritania", "Mozambique", "Ghana")) distance <- distance_south <- distance + .5
+  if (country %in% c("Chad")) distance <- distance_south <- distance + 1
+  if (country %in% c("Madagascar")) distance <- distance + 1
+  if (country %in% c("Burundi")) distance <- distance + .03
+  if (country %in% c("Madagascar", "Namibia", "Angola", "South Africa")) distance_south <- distance - .3
+  if (country %in% c("Ethiopia", "Zimbabwe", "Nigeria")) distance <- distance_south <- distance - .3
+  
+  g <- df_country_dist %>% 
+    ggplot(aes(x = lon_deg, y = lat_deg)) +
+    geom_point(data = df_centroid, aes(x, y), stat = "unique", size = 345, color = "grey25") +
+    geom_point(data = df_centroid, aes(x, y), stat = "unique", shape = 21, 
+               size = 325, color = "white", fill = water_color, stroke = 2.5) +
+    ## some countries create artifacts so I use 3x geom_voronoi... 
+    #geom_polygon(data = map_sp, aes(long, lat), color = "grey20", size = 12) +
+    #geom_polygon(data = map_sp, aes(long, lat), color = "white", size = 10) +
+    geom_voronoi(fill = "white", color = "grey25", size = 13.5, outline = map_sp) +
+    geom_voronoi(fill = "white", color = "white", size = 10, outline = map_sp) +
+    geom_voronoi(aes(fill = dist, color = dist), size = 0.3, outline = map_sp) +
+    coord_map(clip = "off") +
+    scale_x_continuous(limits = c(df_centroid$x - distance, df_centroid$x + distance), expand = c(0, 0)) +
+    scale_y_continuous(limits = c(df_centroid$y - distance_south, df_centroid$y + distance), expand = c(0, 0)) +
+    scale_fill_gradientn(colours = viridis::mako(n = 100, begin = .18), guide = "none") +
+    scale_color_gradientn(colours = viridis::mako(n = 100, begin = .05, end = .9), guide = "none")
+  
+  if (version == "basic") {
+    text <- ggplot(tibble(x = .5, y = .5), aes(x, y)) +
+      geom_text(aes(label = unique(df_country$label)),
+                family = "Frijole", size = 32, 
+                color = colorspace::darken(water_color, .075, space = "HLS")) +
+      coord_cartesian(xlim = c(0, 1), ylim = c(.4, .6), clip = 'off') +
+      theme(plot.margin = margin(60, 5, 0, 5))
+  }
+  
+  if (version == "ggfx") {
+    text <- ggplot() +
+      as_reference(
+        geom_text(aes(.5, .5, label = unique(df_country$label)), 
+                  size = 32, family = "Frijole"),
+        id = "text"
+      ) +
+      with_blend(
+        geom_density_2d_filled(aes(rnorm(7*1e4, 0.7, 0.2), rnorm(7*1e4, 0.5, 0.2))),
+        bg_layer = "text",
+        blend_type = "in"
+      ) +
+      scale_color_manual(values = viridis::mako(n = 10, end = .9), guide = "none") +
+      scale_fill_manual(values = viridis::mako(n = 10, end = .9), guide = "none") +
+      coord_cartesian(xlim = c(0, 1), ylim = c(.4, .6), clip = 'off') +
+      theme(plot.margin = margin(60, 5, 0, 5))
+  }
+  
+  ## better control of arrangement when adding the caption as a separate plot
+  caption <- ggplot(tibble(x = 1, y = 1), aes(x, y)) +
+    labs(caption = "The voronoi map shows water points monitored over time by governments and development partners. The data is collected by the <b>Water Point Data Exchange (WPDx)</b> which aims to unlock the potential of water point data to improve decision-making and increase rural water access. Voronoi maps are based on the minimal distance needed to reach a landmark—<i>here reported water points</i>—by using tessellation techniques that partition a plane into regions closest to these points. The darker the color of the region, the closer it is to the country's middle point. The coloring of the circle indicates the proportion of improved versus unimproved water sources: the more intense the blue, the more improved water points; grey means no information).<br><br><i>Visualization: Cédric Scherer • Data: Water Point Data Exchange (WPDx), May 2021") +
+    theme(plot.caption = element_textbox_simple(color = "#999999", size = 13.4,
+                                                lineheight = 1.35, 
+                                                margin = margin(t = 0, b = 0)),
+          plot.margin = margin(0, 25, 25, 25))
+
+  panel <- text / g / caption + plot_layout(heights = c(.03, 1, .0)) 
+    #& theme(plot.background = element_rect(color = "black"))
+  
+  ggsave(here("plots", "2021_19", glue::glue("{version}/{unique(df_country$label)}_{version}.pdf")),
+         width = 15, height = 17, device = cairo_pdf)
+  
+  ## better control of arrangement when adding the caption as a separate plot
+  caption <- ggplot(tibble(x = 1, y = 1), aes(x, y)) +
+    labs(caption = "Visualization: Cédric Scherer • Data: Water Point Data Exchange (WPDx), May 2021") +
+    theme_set(theme_void(base_family = "Bitter")) +
+    theme(plot.margin = margin(0, 25, 25, 25),
+          plot.background = element_rect(fill = "transparent", color = "transparent"),
+          plot.caption = element_text(color = "#999999", size = 13.4, hjust = .5,
+                                      margin = margin(t = 0, b = 0)))
+
+  panel <- text / g / caption + plot_layout(heights = c(.03, 1, .0)) 
+    #& theme(plot.background = element_rect(color = "black"))
+  
+  ggsave(here("plots", "2021_19", glue::glue("{version}/clean/{unique(df_country$label)}_{version}_clean.pdf")),
+         width = 15, height = 15.5, device = cairo_pdf)
+  
+}
+```
+
+
+```{r create-maps}
+country_list <- 
+  df_water_full %>% 
+  filter(
+    !is.na(country_name), 
+    !country_name %in% c("Uganda", "Sierra Leone")
+  ) %>% 
+  count(country_name, sort = TRUE) %>% 
+  pull(country_name)
+
+walk(rev(country_list), ~draw_voronoi(.x, "basic"))
+walk(rev(country_list), ~draw_voronoi(.x, "ggfx"))
+
+## convert PDFs to PNGs
+pdfs <- list.files(here("plots", "2021_19"), pattern = ".*pdf", 
+                   recursive = TRUE, full.names = TRUE)
+
+for(pdf in pdfs) {
+  pdf_convert(pdf = pdf, 
+              filenames = glue::glue("{str_remove(pdf, '.pdf')}.png"),
+              format = "png", dpi = 120)
+  pdf_convert(pdf = pdf, 
+              filenames = glue::glue("{str_remove(pdf, '.pdf')}_hq.png"),
+              format = "png", dpi = 350)
+}
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
