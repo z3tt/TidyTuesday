@@ -17,12 +17,17 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, fig.showtext = T, fig.retina
 ```{r prep, message=FALSE, warning=FALSE}
 ## packages
 library(tidyverse)
+library(rnaturalearth)
 library(sf)
+library(raster)
 library(ggvoronoi)
 library(ggfx)
 library(ggtext)
+library(viridis)
+library(colorspace)
 library(here)
-library(systemfonts)
+library(glue)
+library(ragg)
 library(patchwork)
 library(pdftools)
 library(camcorder)
@@ -69,9 +74,11 @@ df_water <-
 ```{r voronoi-plot-function}
 draw_voronoi <- function(country, version = "ggfx") {
   
-  map_sp <- rnaturalearth::ne_countries(scale = 10, country = country, returnclass = "sp")
+  print(country)
+  
+  map_sp <- ne_countries(scale = 10, country = country, returnclass = "sp")
   ## remove island of South Africa
-  map_sp <- raster::crop(map_sp, raster::extent(-180, 180, -40, 80))
+  map_sp <- crop(map_sp, extent(-180, 180, -40, 80))
   
   map_sf <- map_sp %>% st_as_sf()
   centroid <- map_sf %>% st_centroid()
@@ -91,7 +98,7 @@ draw_voronoi <- function(country, version = "ggfx") {
   
   ## trial to color by area, would make much more sense than distance
   ## unfortunaly, the area doesn't correspond to the plotted areas plus some are NA
-  # df_deldir <- deldir(df_country$lon_deg, df_country$lat_deg)$summary
+  # df_deldir <- deldir::deldir(df_country$lon_deg, df_country$lat_deg)$summary
   # df_deldir <- df_deldir[,c(1:2, 9)]
   # names(df_deldir) <- c("lon_deg", "lat_deg", "area")
   
@@ -107,11 +114,11 @@ draw_voronoi <- function(country, version = "ggfx") {
     pull(intensity)
   
   ## color for "water point" based on proportion improved vs unimproved water points
-  if (version == "ggfx") {
-    water_color <- colorspace::desaturate(colorspace::lighten(viridis::mako(n = 1, begin = .4), intensity), intensity/2)
-  } else {
-    water_color <- colorspace::desaturate(colorspace::lighten("#0472cb", intensity), intensity/2) #0077be
-  }
+  # if (version == "ggfx") {
+  #   water_color <- desaturate(lighten(mako(n = 1, begin = .4), intensity), intensity/2)
+  # } else {
+    water_color <- desaturate(lighten("#0472cb", intensity), intensity/2) #0077be
+  # }
   
   if (is.nan(intensity)) water_color <- "grey75"
   
@@ -143,14 +150,14 @@ draw_voronoi <- function(country, version = "ggfx") {
     coord_map(clip = "off") +
     scale_x_continuous(limits = c(df_centroid$x - distance, df_centroid$x + distance), expand = c(0, 0)) +
     scale_y_continuous(limits = c(df_centroid$y - distance_south, df_centroid$y + distance), expand = c(0, 0)) +
-    scale_fill_gradientn(colours = viridis::mako(n = 100, begin = .18), guide = "none") +
-    scale_color_gradientn(colours = viridis::mako(n = 100, begin = .05, end = .9), guide = "none")
+    scale_fill_gradientn(colours = mako(n = 100, begin = .18), guide = "none") +
+    scale_color_gradientn(colours = mako(n = 100, begin = .05, end = .9), guide = "none")
   
   if (version == "basic") {
     text <- ggplot(tibble(x = .5, y = .5), aes(x, y)) +
       geom_text(aes(label = unique(df_country$label)),
                 family = "Frijole", size = 32, 
-                color = colorspace::darken(water_color, .075, space = "HLS")) +
+                color = darken(water_color, .075, space = "HLS")) +
       coord_cartesian(xlim = c(0, 1), ylim = c(.4, .6), clip = 'off') +
       theme(plot.margin = margin(60, 5, 0, 5))
   }
@@ -167,8 +174,8 @@ draw_voronoi <- function(country, version = "ggfx") {
         bg_layer = "text",
         blend_type = "in"
       ) +
-      scale_color_manual(values = viridis::mako(n = 10, end = .9), guide = "none") +
-      scale_fill_manual(values = viridis::mako(n = 10, end = .9), guide = "none") +
+      scale_color_manual(values = mako(n = 10, end = .9), guide = "none") +
+      scale_fill_manual(values = mako(n = 10, end = .9), guide = "none") +
       coord_cartesian(xlim = c(0, 1), ylim = c(.4, .6), clip = 'off') +
       theme(plot.margin = margin(60, 5, 0, 5))
   }
@@ -181,27 +188,41 @@ draw_voronoi <- function(country, version = "ggfx") {
                                                 margin = margin(t = 0, b = 0)),
           plot.margin = margin(0, 25, 25, 25))
 
-  panel <- text / g / caption + plot_layout(heights = c(.03, 1, .0)) 
-    #& theme(plot.background = element_rect(color = "black"))
-  
-  ggsave(here("plots", "2021_19", glue::glue("{version}/{unique(df_country$label)}_{version}.pdf")),
+  ## FULL ######################################################################
+  panel <- text / g / caption + plot_layout(heights = c(.03, 1, .0))
+
+  ggsave(here("plots", "2021_19",
+              glue("{version}/{unique(df_country$label)}_{version}.pdf")),
          width = 15, height = 17, device = cairo_pdf)
-  
-  ## better control of arrangement when adding the caption as a separate plot
-  caption <- ggplot(tibble(x = 1, y = 1), aes(x, y)) +
+
+  ggsave(here("plots", "2021_19",
+              glue("{version}/{unique(df_country$label)}_{version}.png")),
+         width = 3000, height = 3000, res = 200, device = agg_png, limitsize = FALSE)
+
+  ## version with reduced caption
+  caption <- caption +
     labs(caption = "Visualization: Cédric Scherer • Data: Water Point Data Exchange (WPDx), May 2021") +
-    theme_set(theme_void(base_family = "Bitter")) +
+    theme_void(base_family = "Bitter") +
     theme(plot.margin = margin(0, 25, 25, 25),
           plot.background = element_rect(fill = "transparent", color = "transparent"),
           plot.caption = element_text(color = "#999999", size = 13.4, hjust = .5,
                                       margin = margin(t = 0, b = 0)))
 
-  panel <- text / g / caption + plot_layout(heights = c(.03, 1, .0)) 
-    #& theme(plot.background = element_rect(color = "black"))
-  
-  ggsave(here("plots", "2021_19", glue::glue("{version}/clean/{unique(df_country$label)}_{version}_clean.pdf")),
+  panel <- text / g / caption + plot_layout(heights = c(.03, 1, .0))
+
+  ggsave(here("plots", "2021_19",
+              glue("{version}/minimal/{unique(df_country$label)}_{version}_minimal.pdf")),
          width = 15, height = 15.5, device = cairo_pdf)
-  
+
+  ggsave(here("plots", "2021_19",
+              glue("{version}/minimal/{unique(df_country$label)}_{version}_minimal.png")),
+         width = 3000, height = 3000, res = 200, device = agg_png, limitsize = FALSE)
+
+  panel <- text / g + plot_layout(heights = c(.03, 1))
+
+  ggsave(here("plots", "2021_19",
+              glue("{version}/clean/{unique(df_country$label)}_{version}_clean.png")),
+         width = 3000, height = 3000, res = 200, device = agg_png, limitsize = FALSE)
 }
 ```
 
@@ -216,21 +237,8 @@ country_list <-
   count(country_name, sort = TRUE) %>% 
   pull(country_name)
 
-walk(rev(country_list), ~draw_voronoi(.x, "basic"))
 walk(rev(country_list), ~draw_voronoi(.x, "ggfx"))
-
-## convert PDFs to PNGs
-pdfs <- list.files(here("plots", "2021_19"), pattern = ".*pdf", 
-                   recursive = TRUE, full.names = TRUE)
-
-for(pdf in pdfs) {
-  pdf_convert(pdf = pdf, 
-              filenames = glue::glue("{str_remove(pdf, '.pdf')}.png"),
-              format = "png", dpi = 120)
-  pdf_convert(pdf = pdf, 
-              filenames = glue::glue("{str_remove(pdf, '.pdf')}_hq.png"),
-              format = "png", dpi = 350)
-}
+walk(rev(country_list), ~draw_voronoi(.x, "basic"))
 ```
 
 ***
