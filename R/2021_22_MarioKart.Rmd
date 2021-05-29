@@ -36,7 +36,7 @@ theme_update(
   axis.text.y = element_blank(),
   axis.title = element_blank(),
   axis.ticks = element_blank(),
-  legend.position = c(.07, .29), 
+  legend.position = c(.07, .31), 
   legend.title = element_text(color = "grey40", family = "Overpass", angle = 90, hjust = .5),
   legend.text = element_text(color = "grey40", family = "Hydrophilia Iced", size = 12),
   legend.box = "horizontal",
