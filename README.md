@@ -103,9 +103,15 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2021/02 [🚇 Transit-Infrastructure Costs](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_02)
   - 2021/09 [👩 U.S. Employment](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_09)
   - 2021/19 [🚰 Water Access Points](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_19)
+  - 2021/22 [🍄 Mario Kart 64 World Records](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_22)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2021/22](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_22) 🍄 Mario Kart 64 World Records by [mkwrs.com](https://mkwrs.com/mk64/)
+![./plots/2021_22/2021_22_MarioKart.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2021_22/2021_22_MarioKart.png)
 
 ***
 

@@ -7,6 +7,11 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
+### [2021/22](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_22) 🍄 Mario Kart 64 World Records by [mkwrs.com](https://mkwrs.com/mk64/)
+![./plots/2021_22/2021_22_MarioKart.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2021_22/2021_22_MarioKart.png)
+
+***
+
 ### [2021/19](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_19) ‍🚰 Water Access Points by [WPDx](https://www.waterpointdata.org/)
 ![./plots/2021_19/2021_19_WaterPoints_collage_ggfx.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2021_19/2021_19_WaterPoints_collage_ggfx.png)
 
