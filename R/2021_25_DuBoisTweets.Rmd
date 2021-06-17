@@ -1,0 +1,184 @@
+---
+title: "TidyTuesday 2021/25 - #DuBoisChallenge Tweets by Anthony Starks, Allen Hillery & Sekou Tyler"
+author: "Cedric Scherer"
+date: "16th of June 2021"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
+                      dev = "ragg_png", res = 500, retina = 1)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(sf)
+library(spData)
+library(ggpattern)
+library(here)
+```
+
+## Data
+
+```{r data}
+df_tweets <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-06-15/tweets.csv')
+```
+
+```{r prep-data}
+## projections
+proj_wgs <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+proj_new <- "+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 +b=6370997 +units=m +no_defs"
+
+## US map
+sf_map_us <- st_as_sf(spData::us_states) %>% 
+  st_transform(crs = proj_new)
+
+## tweet locations as geovectors
+sf_tweets <- 
+  df_tweets %>% 
+  filter(!is.na(long), !is.na(lat)) %>% 
+  st_as_sf(coords = c("long", "lat"), crs = proj_wgs) %>% 
+  st_transform(crs = proj_new)
+
+## prepare data for DuBois map
+sf_dubois <- 
+  sf_map_us %>% 
+  mutate(
+    ## count number of tweets per state for choropleth filling
+    count = as.character(lengths(st_intersects(., sf_tweets))),
+    ## add same colors as in DuBois' map
+    color = case_when(
+      NAME %in% c("Washington", "Texas", "Iowa", "Kentucky",
+                  "New Hampshire", "New Jersey") ~ "#dbcab9", #warm-grey
+      NAME %in% c("Oregon", "Colorado", "Arkansas", "Pennsylvania", 
+                  "Rhode Island") ~ "#cf2e49", #red
+      NAME %in% c("Nevada", "Nebraska", "Minnesota", "Louisiana", 
+                  "North Carolina", "Indiana", "Vermont") ~ "#E97E7E", #pale-red
+      NAME %in% c("California", "Wyoming", "Oklahoma", "Illinois", "Florida", 
+                  "Maryland", "Connecticut", "Maine") ~ "#efb441", #orange
+      NAME %in% c("Idaho", "Arizona", "Missouri", "Wisconsin", "South Carolina", 
+                  "New York") ~ "#5f6faa", #blue
+      NAME %in% c("Montana", "Kansas", "Alabama", "Virginia", 
+                  "District of Columbia") ~ "#5f705d", #dark-green
+      NAME %in% c("New Mexico", "Mississippi", "North Dakota", "Ohio", 
+                  "Massachusetts", "Delaware") ~ "#d4c0a1", #light-brown
+      NAME %in% c("Utah", "South Dakota", "Michigan", "Tennessee", 
+                  "West Virginia") ~ "#6c452f", #dark-brown
+      NAME == "Georgia" ~ "black"
+    )
+  )
+
+## second spatial data set containing centroids, labels, and label settings
+sf_centroids <- st_centroid(sf_dubois)
+sf_centroids$label <- ifelse(sf_centroids$count == "0", "", sf_centroids$count)
+sf_centroids$label <- ifelse(sf_centroids$NAME == "Georgia", "NO TWEETS\nAT ALL", sf_centroids$label)
+sf_centroids$color <- ifelse(sf_centroids$NAME == "Georgia", "white", "black")
+sf_centroids$size <- ifelse(sf_centroids$NAME == "Georgia", 4.5, 5.5)
+
+st_geometry(sf_centroids)[which(sf_centroids$NAME == "District of Columbia")] <- st_geometry(sf_centroids)[which(sf_centroids$NAME == "District of Columbia")] + c(250000, -28000)
+
+st_geometry(sf_centroids)[which(sf_centroids$NAME == "Delaware")] <- st_geometry(sf_centroids)[which(sf_centroids$NAME == "Delaware")] + c(140000, 0)
+
+st_geometry(sf_centroids)[which(sf_centroids$NAME == "Florida")] <- st_geometry(sf_centroids)[which(sf_centroids$NAME == "Florida")] + c(70000, 0)
+
+st_geometry(sf_centroids)[which(sf_centroids$NAME == "New Jersey")] <- st_geometry(sf_centroids)[which(sf_centroids$NAME == "New Jersey")] + c(10000, -50000)
+
+st_geometry(sf_centroids)[which(sf_centroids$NAME == "Maryland")] <- st_geometry(sf_centroids)[which(sf_centroids$NAME == "Maryland")] + c(-10000, 40000)
+
+st_geometry(sf_centroids)[which(sf_centroids$NAME == "Louisiana")] <- st_geometry(sf_centroids)[which(sf_centroids$NAME == "Louisiana")] + c(-30000, 0)
+
+st_geometry(sf_centroids)[which(sf_centroids$NAME == "California")] <- st_geometry(sf_centroids)[which(sf_centroids$NAME == "California")] + c(100000, -240000)
+
+st_geometry(sf_centroids)[which(sf_centroids$NAME == "Massachusetts")] <- st_geometry(sf_centroids)[which(sf_centroids$NAME == "Massachusetts")] + c(35000, 26000)
+
+sf_labs <- tibble(
+    label = c("TWEETS OF #DUBOISCHALLENGE .\n2021 .",
+              "VISUALIZATION: CÉDRIC SCHERER | DATA: ANTHONY STARKS, ALLEN HILLERY AND SEKOU TYLER"),
+    x = c(250000, 250000),
+    y = c(900000, -2400000),
+    size = c(12, 5)
+  ) %>% 
+  st_as_sf(coords = c("x", "y"), crs = st_crs(sf_map_us))
+```
+
+## Plot
+
+```{r plot, fig.width=16, fig.height=11}
+ggplot(sf_dubois) +
+  ## background
+  geom_rect(
+    aes(xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf),
+    inherit.aes = FALSE,
+    stat = "unique",
+    fill = "#dbc4b0",
+    alpha = 1,
+    color = "transparent"
+  ) +
+  ggpattern::geom_rect_pattern(
+    aes(xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf),
+    inherit.aes = FALSE,
+    stat = "unique",
+    fill = "#dbc4b0", pattern_fill = "transparent",
+    pattern = 'plasma',
+    pattern_alpha = .3,
+    colour = "transparent"
+  ) +
+  ## map
+  ggpattern::geom_sf_pattern(
+    aes(fill = color, pattern_fill = color),
+    fill = "black",
+    pattern = 'plasma',
+    pattern_angle = 0,
+    pattern_density = .8,
+    colour = 'black'
+  ) +
+  geom_sf(
+    aes(fill = color),
+    alpha = .4,
+    size = .85,
+    color = "grey15"
+  ) +
+  ## labels
+  geom_sf_text(
+    data = sf_centroids,
+    aes(label = label, color = color, size = size),
+    family = "Karantina", lineheight = .8
+  ) +
+  geom_sf_text(
+    data = sf_labs, aes(label = label, size = size),
+    family = "Jefferies", lineheight = .8
+  ) +
+  scale_x_continuous(expand = c(.1, .1)) +
+  scale_y_continuous(expand = c(.12, .12)) +
+  scale_color_identity() +
+  scale_fill_identity() +
+  scale_size_identity() +
+  theme_void()
+```
+
+```{r save-and-convert}
+## convert PDF to PNG
+path <- here::here("plots", "2021_25", "2021_25_DuBoisChallenge")
+
+ggsave(glue::glue("{path}.pdf"), width = 12, height = 9, device = cairo_pdf)
+ggsave(glue::glue("{path}.svg"), width = 12, height = 9)
+
+pdftools::pdf_convert(pdf = glue::glue("{path}.pdf"), 
+                      filenames = glue::glue("{path}.png"),
+                      format = "png", dpi = 350)
+```
+
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
