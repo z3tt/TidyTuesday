@@ -104,9 +104,16 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2021/09 [👩 U.S. Employment](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_09)
   - 2021/19 [🚰 Water Access Points](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_19)
   - 2021/22 [🍄 Mario Kart 64 World Records](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_22)
+  - 2021/25 [✊🏾 #DuBoisChallenge Tweets](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_25)
 <!-- tocstop -->
 
 </details>
+
+***
+
+### [2021/25](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_25) ✊🏾 #DuBoisChallenge Tweets by [Anthony Starks, Allen Hillery & Sekou Tyler](https://public.tableau.com/app/profile/sekou.tyler/viz/DuBoisChalllenge2021TwitterMetrics/DuBoisChallenge2021TwitterActivity)
+
+![./plots/2021_25/2021_25_DuBoisChallenge_mod.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2021_25/2021_25_DuBoisChallenge_mod.png)
 
 ***
 
