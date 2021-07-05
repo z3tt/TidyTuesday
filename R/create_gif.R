@@ -5,7 +5,7 @@ library(glue)
 library(magick)
 
 ## convert pdf's to png's
-pdfs <- list.files(here("dev"), pattern = "2021_22.*pdf", full.names = TRUE)
+pdfs <- list.files(here("dev"), pattern = "2021_25.*pdf", full.names = TRUE)
 
 for(pdf in pdfs) {
   pdf_convert(pdf = glue("{pdf}"), 
@@ -15,8 +15,8 @@ for(pdf in pdfs) {
 
 setwd(here("dev"))
 
-system("magick.exe convert 2021_22*.png -resize 1598x1040 -gravity center -background black -extent 1598x1040 out-%03d.png")
+system("magick.exe convert 2021_25*.png -resize 1500x1125 -gravity center -background white -extent 1500x1125 out-%03d.png")
 
 
 ## convert png's to gif
-system("magick.exe -delay 25 out*.png -delay 500 out-262.png -loop 0 2021_22_MarioKart.gif")
+system("magick.exe -delay 25 out*.png -delay 500 out-110.png -loop 0 2021_25_DuBoisChallenge.gif")
