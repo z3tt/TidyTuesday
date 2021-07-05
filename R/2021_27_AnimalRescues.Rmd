@@ -187,7 +187,7 @@ p2 <-
   scale_size_manual(values = c(3.8, 1.8), guide = "none") +
   labs(title = "Last year, <b style='color:#b4005973'>Cats Accounted for 45%</b> of London Fire Brigade Animal Rescues, but the Biggest Proportional Increases were among Birds and Foxes.",
        subtitle = "Calls about distressed cats are the most common. Last year 338 were helped compared with 269 in 2019. Not all of them were stuck up trees: some managed to find themselves under floorboards, solar panels and fridges, and up telegraph poles and chimneys.<br><br>The number of incidents involving foxes attended by the LFB last year nearly doubled, from 32 rescues in 2019 to 61 in 2020. The Fox Project, a charity dedicated to protecting foxes in the south-east, said the increase in the number of rescues might be down to people’s growing sympathy towards the animals since the start of the pandemic.",
-       caption = "Data: London Fire Brigade (london.gov) • Visualization: Cédric Scherer • Text: The Guardian (modified)") +
+       caption = "Visualization: Cédric Scherer • Data: London Fire Brigade (london.gov; last update: 31/05/2021 19:00) • Text: The Guardian (modified)") +
   theme(plot.title = element_textbox_simple(size = 22, margin = margin(15, 35, 20, 35), color = "black"),
         plot.subtitle = element_textbox_simple(margin = margin(5, 35, 50, 35)))
 
