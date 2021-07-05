@@ -105,13 +105,14 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
   - 2021/19 [🚰 Water Access Points](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_19)
   - 2021/22 [🍄 Mario Kart 64 World Records](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_22)
   - 2021/25 [✊🏾 #DuBoisChallenge Tweets](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_25)
+  - 2021/27 [👩‍🚒 Animal Rescues](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_27)
 <!-- tocstop -->
 
 </details>
 
 ***
 
-### [2021/27](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_27) 🐈 Animal Rescues by [london.gov](https://data.london.gov.uk/dataset/animal-rescue-incidents-attended-by-lfb)
+### [2021/27](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_27) 👩‍🚒 Animal Rescues by [london.gov](https://data.london.gov.uk/dataset/animal-rescue-incidents-attended-by-lfb)
 
 ![./plots/2021_27/2021_27_AnimalRescues.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2021_27/2021_27_AnimalRescues.png)
 
