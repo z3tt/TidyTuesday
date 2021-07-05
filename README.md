@@ -111,6 +111,12 @@ Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail]
 
 ***
 
+### [2021/27](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_27) 🐈 Animal Rescues by [london.gov](https://data.london.gov.uk/dataset/animal-rescue-incidents-attended-by-lfb)
+
+![./plots/2021_27/2021_27_AnimalRescues.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2021_27/2021_27_AnimalRescues.png)
+
+***
+
 ### [2021/25](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_25) ✊🏾 #DuBoisChallenge Tweets by [Anthony Starks, Allen Hillery & Sekou Tyler](https://public.tableau.com/app/profile/sekou.tyler/viz/DuBoisChalllenge2021TwitterMetrics/DuBoisChallenge2021TwitterActivity)
 
 ![./plots/2021_25/2021_25_DuBoisChallenge_mod.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2021_25/2021_25_DuBoisChallenge_mod.png)
