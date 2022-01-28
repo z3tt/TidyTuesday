@@ -20,7 +20,7 @@ mod_trend_ui <- function(id){
       ),
       shinycssloaders::withSpinner(echarts4r::echarts4rOutput(ns("trend"), height = "50vh")),
       br(), br(), br(),
-      p("Shiny App: ", tags$a(href="cedricscherer.netlify.com/", "Cédric Scherer"), "  •  Data Source: ", tags$a(href="https://ourworldindata.org/crop-yields", "Our World in Data"))
+      p("Shiny App: ", tags$a(href="https://www.cedricscherer.com", "Cédric Scherer"), "  •  Data Source: ", tags$a(href="https://ourworldindata.org/crop-yields", "Our World in Data"))
     )
   )
 }
@@ -113,6 +113,6 @@ mod_trend_server <- function(input, output, session) {
       echarts4r::e_legend(type = "scroll") %>% 
       echarts4r::e_toolbox(bottom = 0) %>% 
       echarts4r::e_toolbox_feature(feature = "dataZoom") %>% 
-      echarts4r::e_toolbox_feature(feature = "dataView") 
+      echarts4r::e_toolbox_feature(feature = "dataView")
   })
 }	

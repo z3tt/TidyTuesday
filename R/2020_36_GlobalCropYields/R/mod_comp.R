@@ -32,7 +32,7 @@ mod_comp_ui <- function(id){
       ),
       shinycssloaders::withSpinner(echarts4r::echarts4rOutput(ns("comp"), height = "50vh")),
       br(), br(), br(),
-      p("Shiny App: ", tags$a(href="cedricscherer.netlify.com/", "Cédric Scherer"), "  •  Data Source: ", tags$a(href="https://ourworldindata.org/crop-yields", "Our World in Data"))
+      p("Shiny App: ", tags$a(href="https://www.cedricscherer.com/", "Cédric Scherer"), "  •  Data Source: ", tags$a(href="https://ourworldindata.org/crop-yields", "Our World in Data"))
     )
   )
 }

@@ -22,7 +22,7 @@ mod_map_ui <- function(id){
       br(), br(),
       p("Note: Values for the former USSR (1961–2018) have been assigned to Russia.", style = "font-size:.9vw;font-style:italic;"), 
       br(),
-      p("Shiny App: ", tags$a(href="cedricscherer.netlify.com/", "Cédric Scherer"), "  •  Data Source: ", tags$a(href="https://ourworldindata.org/crop-yields", "Our World in Data"))
+      p("Shiny App: ", tags$a(href="https://www.cedricscherer.com", "Cédric Scherer"), "  •  Data Source: ", tags$a(href="https://ourworldindata.org/crop-yields", "Our World in Data"))
     )
   )
 }
