@@ -27,7 +27,7 @@ library(ggraph)
 library(cowplot)
 library(showtext)
 
-font_add_google("Lobster", "Lobster")
+font_add_google("Paytone One", "Paytone One")
 font_add_google("Overpass", "Overpass")
 font_add_google("Overpass Mono", "Overpass Mono")
 
@@ -39,7 +39,7 @@ theme_set(theme_void(base_family = "Overpass"))
 theme_update(
   plot.margin = margin(15, 15, 15, 15),
   plot.background = element_rect(fill = "grey20", color = "grey20"),
-  plot.title = element_text(family = "Lobster", color = "#E8DCAD", size = 34),
+  plot.title = element_text(family = "Paytone One", color = "#E8DCAD", size = 29),
   plot.subtitle = element_text(color = "grey50", size = 13, lineheight = 1.1, margin = margin(t = 15)),
   plot.caption = element_text(color = "#7851C8", size = 10, hjust = .5, margin = margin(b = 0))
 )
@@ -129,7 +129,7 @@ graph_tbl <-
 ```
 
 ```{r plots, fig.width = 17, fig.height = 12}
-set.seed(1) #202022
+set.seed(12345) #202022
 layout <- create_layout(graph_tbl, layout = 'igraph', algorithm = 'nicely')
 
 net <-
@@ -154,7 +154,7 @@ net <-
         color = as.numeric(name) > 29,
         label = as.numeric(name)
       ), 
-      family = "Lobster",
+      family = "Paytone One",
       fontface = "bold",
       size = 3.5,
       vjust = .5, 
@@ -226,7 +226,7 @@ ggdraw(net) +
   draw_plot(title, .03, .985, 0, .7, hjust = 0, vjust = 1)
 
 ggsave(here::here("plots", "2020_22", "2020_22_Cocktails.pdf"), 
-       width = 17, height = 12, device = cairo_pdf)
+       width = 17, height = 12.5, device = cairo_pdf)
 
 pdftools::pdf_convert(here::here("plots", "2020_22", "2020_22_Cocktails.pdf"),
                       format = "png", dpi = 200)
