@@ -1,0 +1,376 @@
+---
+title: "TidyTuesday 2022/12 - Baby Names by SSA"
+author: "Cedric Scherer"
+date: "25th of March 2022"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor_options:
+  chunk_output_type: console
+---
+  
+```{r setup, include=FALSE}
+ragg_png = function(..., res = 150) {
+  ragg::agg_png(..., res = res, units = "in")
+}
+
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
+                      dev = "ragg_png", res = 500, retina = 1)
+```
+
+```{r prep, message=FALSE, warning=FALSE}
+## packages
+library(tidyverse)
+library(colorspace)
+library(ggtext)
+library(systemfonts)
+library(pdftools)
+
+theme_set(theme_minimal(base_size = 24, base_family = "Sentient"))
+theme_update(
+  text = element_text(color = "#212121"),
+  axis.text.x = element_text(family = "Sentient-Light", size = 21),
+  axis.text.y = element_text(family = "Sentient-Medium", hjust = 0, size = 21),
+  axis.ticks.x = element_line(color = "grey55", size = .5),
+  axis.ticks.length.x = unit(.75, "lines"),
+  panel.grid.major = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.background = element_rect(fill = "grey67", color = "grey55", size = .01),
+  panel.border = element_rect(fill = "transparent", color = "grey55", size = .45),
+  panel.spacing.x = unit(5, "lines"),
+  panel.spacing.y = unit(2.3, "lines"),
+  legend.position = "bottom",
+  legend.title = element_markdown(),
+  legend.text = element_markdown(size = 16, color = "grey55", lineheight = 1.25),
+  legend.box.margin = margin(t = 15, b = 5),
+  strip.text = element_markdown(family = "Sentient-BoldItalic", size = 36, hjust = 0),
+  plot.title = element_textbox_simple(
+    family = "Sentient-BoldItalic",  size = 50, lineheight = .95,
+    margin = margin(t = 5, b = 10), padding = margin(b = 25)
+  ),
+  plot.subtitle = element_textbox_simple(
+    family = "Sentient-Regular", size = 25, color = "grey35", lineheight = 1.5, 
+    margin = margin(t = 0, b = 15), padding = margin(b = 35)
+  ),
+  plot.caption = element_text(
+    family = "Sentient-Italic", size = 16, color = "grey35", hjust = 0,
+    margin = margin(t = 10, b = 0)
+  ),
+  plot.title.position = "plot",
+  plot.caption.position = "plot",
+  plot.margin = margin(60, 60, 30, 60)
+)
+```
+
+## Data
+
+```{r data}
+rds <- here::here("data", "2022_12", "df_names_div_sex_letter.Rds")
+
+if(!file.exists(rds)) {
+  df_names <- 
+    readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-03-22/babynames.csv') %>% 
+    filter(name != "Unknown")
+  
+  df_names_div_sex_letter <-
+    df_names %>% 
+    mutate(first_letter = str_sub(name, 0, 1)) %>% 
+    group_by(year, sex, first_letter) %>% 
+    mutate(total = sum(n)) %>% 
+    group_by(year, sex, first_letter, name) %>% 
+    mutate(
+      #simpson_n = n * (n - 1),
+      shannon_n = (n / total) * log(n / total)
+    ) %>% 
+    group_by(year, sex, first_letter) %>% 
+    summarize(
+      unique_names = n(),
+      #simpson_div = (1 - sum(simpson_n) / (unique(total)*(unique(total) - 1))),
+      shannon_div = -sum(shannon_n)
+    ) %>% 
+    group_by(year, first_letter, sex) %>% 
+    mutate(
+      shannon_eve = shannon_div / log(unique_names)
+    )
+  
+  saveRDS(df_names_div_sex_letter, "df_names_div_sex_letter.Rds")
+} else {
+  df_names_div_sex_letter <- readRDS(rds)
+}
+
+rds <- here::here("data", "2022_12", "df_names_div_sex.Rds")
+
+if(!file.exists(rds)) {
+  df_names_div_sex <-
+    df_names %>%
+    group_by(year, sex) %>%
+    mutate(total = sum(n)) %>%
+    group_by(year, sex, name) %>%
+    mutate(shannon_n = (n / total) * log(n / total)) %>%
+    group_by(year, sex) %>%
+    summarize(
+      unique_names = n(),
+      shannon_div = -sum(shannon_n)
+    ) %>%
+    group_by(year, sex) %>%
+    mutate(
+      shannon_eve = shannon_div / log(unique_names)
+    )
+  
+  saveRDS(df_names_div_sex, "df_names_div_sex.Rds")
+} else {
+  df_names_div_sex <- readRDS(rds)
+}
+```
+
+```{r data-shannon-diversity-std-across}
+## standardized across sexes
+df_names_div_std <- 
+  df_names_div_sex_letter %>% 
+  bind_rows(df_names_div_sex %>% mutate(first_letter = "\u2211") %>% 
+              dplyr::select(year, sex, first_letter, everything())) %>% 
+  group_by(first_letter) %>% 
+  mutate(
+    avg = mean(shannon_div),
+    sd = sd(shannon_div)
+  ) %>% 
+  ungroup() %>%  
+  mutate(
+    shannon_std = (shannon_div - avg) / sd,
+    first_letter = fct_rev(first_letter),
+    first_letter = fct_relevel(first_letter, "\u2211", after = Inf),
+    first_letter_num = as.numeric(first_letter),
+    sex = ifelse(sex == "F", "<span style='color:#747E38;'>Female Babies</span>", 
+                             "<span style='color:#B88E34;'>Male Babies</span>")
+  )
+
+annotation <-
+  tibble::tribble(
+  ~first_letter_num,  ~year, ~sex,                   ~label,
+                 12,   2003,  "F",       "Olivias dominate",
+                 26,   1885,  "F",                  "Annas",
+                 25,   1938,  "F",      "Barbaras & Bettys",
+                 23,   1918,  "F",     "Dorothys & Dorises",
+                 22,   1981,  "F",             "Elizabeths",
+                 19,   1926,  "F",        "Helens & Hazels",
+                 19,   1975,  "F",               "Heathers",
+                 18,   1883,  "F",                   "Idas",
+                 15,   1947,  "F",                 "Lindas",
+                 13,   1950,  "F",                 "Nancys",
+                 10,   1887,  "F",                 "Queens",
+                 10,   1937,  "F",    "... and more Queens",
+                 10,   2013,  "F",                 "Quinns",
+                  8,   1936,  "F",               "Shirleys",
+                  6,   1950,  "F",                "Ursulas",
+                  5,   1992,  "F",              "Victorias",
+                  4,   1968,  "F",                 "Wendys",
+                  4,   1987,  "F",               "Whitneys",
+                  2,   1940,  "F",                "Yvonnes",
+                  3,   1923,  "F",                 "Xenias",
+                  2,   1890,  "F",               "Yolandas",
+                 24,   1893,  "M",  "Charleses & Clarences",
+                 24,   1938,  "M",      "Charleses & Carls",
+                 22,   1967,  "M",                  "Erics",
+                 21,   1885,  "M",                 "Franks",
+                 20,   1886,  "M",                "Georges",
+                 18,   1986,  "M",         "Ians & Isaacsʼ",
+                 17,   1905,  "M",        "Johns & Jameses",
+                 16,   1930,  "M",      "Kenneths & Keiths",
+                 15,   1947,  "M",                  "Larys",
+                 14,   1962,  "M",       "Michaels & Marks",
+                 13,   1989,  "M",   "Nicholases & Nathans",
+                 10,   1892,  "M",                "Quincys",
+                  9,   1939,  "M",     "Roberts & Richards",
+                  8,   1957,  "M",     "Stevens & Stephens",
+                  7,   1888,  "M",               "Thomases",
+                  6,   1895,  "M",     "Ulysseses & Urbans",
+                  5,   1962,  "M",               "Vincents",
+                  5,   1990,  "M",                "Victors",
+                  3,   1940,  "M",                "Xaviers",
+                  2,   1898,  "M",                 "Youngs",
+                  1,   1893,  "M",                  "Zacks",
+                  1,   1986,  "M",               "Zacharys"
+  ) %>% 
+  mutate(sex = ifelse(sex == "F", "<span style='color:#747E38;'>Female Babies</span>", 
+                                  "<span style='color:#B88E34;'>Male Babies</span>")) %>% 
+  left_join(df_names_div_std)
+```
+
+
+## Plot
+
+```{r plot-shannon-diversity-std-across, fig.width=24, fig.height=15}
+plot_names_div_blank <-
+  ggplot(df_names_div_std,
+       aes(x = year, y = first_letter_num)) + 
+  geom_tile(
+    aes(fill = shannon_std, color = after_scale(fill)),
+    size = .01
+  ) + 
+  geom_hline(
+    yintercept = 26.5, 
+    color = "white", size = .7
+  ) + 
+  coord_cartesian(expand = FALSE, clip = "off") +
+  scale_x_continuous(
+    breaks = seq(1880, 2015, by = 15)
+  ) +
+  scale_y_continuous(
+    breaks = 1:27,
+    labels = levels(df_names_div_std$first_letter),
+    sec.axis = dup_axis()
+  ) +
+  scico::scale_color_scico(
+    palette = "batlow", direction = -1,
+    limits = range(df_names_div_std$shannon_std), guide = "none"
+  ) +
+  scico::scale_fill_scico(
+    palette = "batlow", direction = -1,
+    name = "<b>Diversity of Names</b><br><i style='font-size:18pt;'>standardized per first letter across sexes</i>",
+    breaks = seq(min(df_names_div_std$shannon_std), max(df_names_div_std$shannon_std), length.out = 7),
+    labels = c("<b style='font-size:20pt;color:#212121;'>Low</b><br>One name is<br>dominating", "", "", "<b style='font-size:20pt;color:#212121;'>Medium</b>", "", "", "<b style='font-size:20pt;color:#212121;'>High</b><br>Many names of<br>similar frequency")
+  ) +
+  labs(x = NULL, y = NULL) +
+  guides(fill = guide_colorbar(
+    title.position = "top", title.hjust = .5,
+    barwidth = unit(35, "lines"), barheight = unit(.8, "lines"),
+    ticks.colour = "transparent")
+  ) +
+  facet_wrap(~ sex) +
+  labs(
+    title = "Baby Names in the U.S. Are Becoming More Diverse Every Year",
+    subtitle = "Even though <b style='font-family:Sentient-Medium;color:#001959'>female baby names are overall more diverse</b>, the most diverse names by first letter are male ones starting with *J*. Afterwards follow female names, starting with *M*, *A*, *L*, and *J*. Names with *J* as the first letter is also the most diverse across sexes.<br>The diversity of names increased steadily across and within sexes. However, some letter–sex combinations exhibit different trends: <span style='color:#DC4BC1;'>since 1990, of all female babies born in the U.S. <b style='font-family:Sentient-Medium;color:#DC4BC1;'>83% where named *Olivia*</b> in case the name starts with an *O*</span>. Overall, names with *X* are scarce with *Xenia* and *Xavier* being by far the most common.",
+    caption = "Graphic: Cédric Scherer  •  Data: U.S. Social Security Administration (SSA)\nDiversity of baby names in the U.S. from 1880 to 2017 was estimated as Shannon diversity per sex and first letter and standardized across both sexes afterwards."
+  )
+
+ggsave(here::here("plots", "2022_12", "2022_12_Babynames_Diversity_blank.pdf"), 
+       width = 31, height = 18, device = cairo_pdf)
+
+
+plot_names_div_olivia <- 
+  plot_names_div_blank +
+  geom_text(
+    data = annotation[1,],
+    aes(label = label, color = stage(shannon_std, after_scale = darken(color, .5))),
+    family = "Sentient-BoldItalic", size = 5.2
+  )
+
+ggsave(here::here("plots", "2022_12", "2022_12_Babynames_Diversity_olivia.pdf"), 
+       width = 31, height = 18, device = cairo_pdf)
+
+
+plot_names_div_labs <- 
+  plot_names_div_blank +
+  geom_text(
+    data = annotation,
+    aes(label = label, color = stage(shannon_std, after_scale = darken(color, .5))),
+    family = "Sentient-BoldItalic", size = 5.2
+  )
+
+ggsave(here::here("plots", "2022_12", "2022_12_Babynames_Diversity_labs.pdf"), 
+       width = 31, height = 18, device = cairo_pdf)
+
+
+plot_names_div_period <-
+  plot_names_div_blank +
+  geom_vline(
+    xintercept = c(1930, 1990, 2000), size = .6,
+    linetype = "13"
+  ) +
+  geom_text(
+    data = tibble(
+      year = c(1930, 1986, 2002),
+      first_letter_num = 27.5,
+      label = c("Rise of\ntelevision", "Birth of the\nWorld Wide Web", "Rise of the\ninternet")
+    ),
+    aes(label = label),
+    family = "Sentient-Medium",
+    size = 6, color = "#212121",
+    lineheight = .85, vjust = -.2
+  ) +
+  theme(strip.text = element_markdown(margin = margin(b = 16, t = 5)))
+
+ggsave(here::here("plots", "2022_12", "2022_12_Babynames_Diversity_period.pdf"), 
+       width = 31, height = 18, device = cairo_pdf)
+
+
+plot_names_div_all <-
+  plot_names_div_period +
+  geom_text(
+    data = annotation,
+    aes(label = label, color = stage(shannon_std, after_scale = darken(color, .5))),
+    family = "Sentient-BoldItalic", size = 5.2
+  )
+
+ggsave(here::here("plots", "2022_12", "2022_12_Babynames_Diversity_all.pdf"), 
+       width = 31, height = 18, device = cairo_pdf)
+```
+
+```{r long-versions}
+plot_names_div_blank +
+  facet_wrap(~ sex, ncol = 1, scales = "free_x")  +
+  labs(caption = "\n\nGraphic: Cédric Scherer  •  Data: U.S. Social Security Administration (SSA)\nDiversity of baby names in the U.S. from 1880 to 2017 was estimated as Shannon diversity per sex and first letter and standardized across both sexes.") +
+  theme(legend.position = "top")
+
+ggsave(here::here("plots", "2022_12", "long_version", "2022_12_Babynames_Diversity_blank_long.pdf"), 
+       width = 18, height = 31, device = cairo_pdf)
+
+
+plot_names_div_olivia +
+  facet_wrap(~ sex, ncol = 1, scales = "free_x")  +
+  labs(caption = "\n\nGraphic: Cédric Scherer  •  Data: U.S. Social Security Administration (SSA)\nDiversity of baby names in the U.S. from 1880 to 2017 was estimated as Shannon diversity per sex and first letter and standardized across both sexes.") +
+  theme(legend.position = "top")
+
+ggsave(here::here("plots", "2022_12", "long_version", "2022_12_Babynames_Diversity_olivia_long.pdf"), 
+       width = 18, height = 31, device = cairo_pdf)
+
+
+plot_names_div_labs +
+  facet_wrap(~ sex, ncol = 1, scales = "free_x")  +
+  labs(caption = "\n\nGraphic: Cédric Scherer  •  Data: U.S. Social Security Administration (SSA)\nDiversity of baby names in the U.S. from 1880 to 2017 was estimated as Shannon diversity per sex and first letter and standardized across both sexes.") +
+  theme(legend.position = "top")
+
+ggsave(here::here("plots", "2022_12", "long_version", "2022_12_Babynames_Diversity_labs_long.pdf"), 
+       width = 18, height = 31, device = cairo_pdf)
+
+
+plot_names_div_period +
+  facet_wrap(~ sex, ncol = 1, scales = "free_x")  +
+  labs(caption = "\n\nGraphic: Cédric Scherer  •  Data: U.S. Social Security Administration (SSA)\nDiversity of baby names in the U.S. from 1880 to 2017 was estimated as Shannon diversity per sex and first letter and standardized across both sexes.") +
+  theme(legend.position = "top")
+
+ggsave(here::here("plots", "2022_12", "long_version", "2022_12_Babynames_Diversity_period_long.pdf"), 
+       width = 18, height = 31, device = cairo_pdf)
+
+
+plot_names_div_all +
+  facet_wrap(~ sex, ncol = 1, scales = "free_x")  +
+  labs(caption = "\n\nGraphic: Cédric Scherer  •  Data: U.S. Social Security Administration (SSA)\nDiversity of baby names in the U.S. from 1880 to 2017 was estimated as Shannon diversity per sex and first letter and standardized across both sexes.") +
+  theme(legend.position = "top")
+
+ggsave(here::here("plots", "2022_12", "long_version", "2022_12_Babynames_Diversity_all_long.pdf"), 
+       width = 18, height = 31, device = cairo_pdf)
+```
+
+
+```{r save-and-convert}
+## convert PDF to PNG
+path <- here::here("plots", "2022_12")
+
+pdfs <- list.files(path, pattern = "*.pdf", recursive = TRUE)
+
+for(pdf in pdfs) {
+  pdf_convert(pdf = glue::glue("{path}/{pdf}"), 
+              filenames = glue::glue("{path}/{str_remove(pdf, '.pdf')}.png"),
+              format = "png", dpi = 500)
+}
+```
+
+***
+
+```{r session}
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
