@@ -118,7 +118,7 @@ p_research <- ggdraw(p2) +
             hjust = 0, vjust = 1, size = 20, family = "Open Sans ExtraBold") +
   draw_text("Women among researchers with papers published", 
             x = 0.02, y = 0.91, hjust = 0, vjust = 1, size = 14, family = "Open Sans") +
-   draw_text("(indexed in Scopus from 2011 to 2015, % of total)", 
+  draw_text("(indexed in Scopus from 2011 to 2015, % of total)", 
             x = 0.02, y = 0.86, hjust = 0, vjust = 1, size = 11, family = "Open Sans")
 ```
 
