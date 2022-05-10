@@ -26,8 +26,6 @@ My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascie
 ❌ no Illustrator or Photoshop was harmed during the making of these visualizations.  
 💯 certified ggplot quality.
 
-Feedback is very welcome via [Twitter](https://twitter.com/cedscherer) or [mail](mailto:cedricphilippscherer@gmail.com).
-
 <details>
   <summary>Contributions in chronological order (click to expand)</summary>
 
