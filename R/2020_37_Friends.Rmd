@@ -256,7 +256,7 @@ ggplot(df_friends_relations,
   labs(
     title = "Chats about Friends and their Past, Present, and Future Partners",
     subtitle = "Mentions of the main characters and their most popular partners in dialogues<sup>*</sup> during the ten seasons of Friends.",
-    caption = "<sup>*</sup> For each of the 67,373 dialogues in 236 episodes it was determined whether the two names occur in the same text.<br>The area and luminence of the squares is mapped to the number of overall mentions of the two names per season.<br><br>Visualization by Cédric Scherer • Data by Emil Hvitfeldt via the {friends} R package"
+    caption = "<sup>*</sup> For each of the 67,373 dialogues in 236 episodes it was determined whether the two names occur in the same text.<br>The area and lumiance of the squares are mapped to the number of overall mentions of the two names per season.<br><br>Visualization by Cédric Scherer • Data by Emil Hvitfeldt via the {friends} R package"
   ) #+
   #ggsave(here::here("dev", glue::glue("2020_37___{format(Sys.time(), '%Y%m%d_%H%M%S')}.pdf")),
   #       width = 25, height = 16, device = cairo_pdf)
