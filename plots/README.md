@@ -7,6 +7,18 @@ The full versions of all my contributions can be found [here](https://github.com
 
 ***
 
+### [2022/36](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_36) 🟥 LEGO Database by [rebrickable](https://rebrickable.com/downloads/)
+
+![./plots/2022_36/2022_36_LEGO_bricks.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2022_36/2022_36_LEGO_bricks.png)
+
+***
+
+### [2022/12](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2022_12) 👶 Baby Names by [SSA](https://hadley.github.io/babynames/)
+
+![./plots/2022_12/2022_12_Babynames_Diversity_all.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2022_12/2022_12_Babynames_Diversity_all.png)
+
+***
+
 ### [2021/27](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_27) 👩‍🚒 Animal Rescues by [london.gov](https://data.london.gov.uk/dataset/animal-rescue-incidents-attended-by-lfb)
 
 ![./plots/2021_27/2021_27_AnimalRescues.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2021_27/2021_27_AnimalRescues.png)
