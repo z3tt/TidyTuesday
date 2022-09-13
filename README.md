@@ -115,7 +115,7 @@ My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascie
 
 ***
 
-### [2022/36](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2021_36) 🟥 LEGO Database by [rebrickable](https://rebrickable.com/downloads/)
+### [2022/36](https://github.com/Z3tt/TidyTuesday/tree/master/plots/2022_36) 🟥 LEGO Database by [rebrickable](https://rebrickable.com/downloads/)
 
 ![./plots/2022_36/2022_36_LEGO_bricks.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2022_36/2022_36_LEGO_bricks.png)
 
