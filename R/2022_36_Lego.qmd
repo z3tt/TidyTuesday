@@ -1,0 +1,210 @@
+---
+title: "TidyTuesday 2022/36 - LEGO database by rebrickable"
+author: "Cedric Scherer"
+date: "2022-09-12"
+output:
+  html_document:
+  theme: paper
+highlight: kate
+editor: source
+knitr:
+  opts_chunk:
+    dev: "ragg_png"
+    retina: 2
+    dpi: 600
+execute:
+  freeze: auto
+  echo: true
+  fig-width: 5
+  fig-height: 6
+---
+
+```{r}
+#| label: prep
+#| message: false
+#| warning: false
+library(tidyverse)
+library(ggsankey)
+library(ggtext)
+library(colorspace)
+library(patchwork)
+library(systemfonts)
+
+col_dark   <- "#353548" #3d3d53, 373759
+col_light  <- "#f3efeb"
+col_dark2  <- darken(col_dark, .2)
+col_light2 <- darken(col_light, .15)
+
+theme_set(theme_void(base_size = 18, base_family = "Pally"))
+theme_update(
+  axis.text.x = element_text(
+    color = col_dark2, face = "bold", margin = margin(15, 0, 15, 0)
+  ),
+  panel.grid.major.x = element_line(
+    color = col_dark2, linetype = "13", size = .9
+  ),
+  legend.position = "none",
+  panel.background = element_rect(fill = col_dark, color = col_dark),
+  plot.background = element_rect(fill = col_light, color = col_light),
+  plot.margin = margin(0, 0, 0, 0)
+)
+```
+
+## Data
+
+```{r}
+#| label: data
+df_colors <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-09-06/colors.csv.gz')
+df_inventory_parts <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-09-06/inventory_parts.csv.gz')
+df_inventories <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-09-06/inventories.csv.gz')
+df_sets <-  readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-09-06/sets.csv.gz')
+```
+
+```{r}
+#| label: data-prep
+## code snippet partly by Cara Thompson
+## https://github.com/cararthompson/tidytuesdays/blob/master/scripts/202209_lego.R
+df_lego <- 
+  df_inventory_parts %>% 
+  left_join(df_colors, by = c("color_id" = "id")) %>%
+  left_join(df_inventories, by = c("inventory_id" = "id")) %>%
+  left_join(
+    df_sets %>% 
+      rename(set_name = name) %>%
+      filter(!stringr::str_detect(set_name, "Modulex|modulex")) %>% 
+      select(set_num, set_name, year, theme_id), 
+    by = "set_num"
+  ) %>%
+  left_join(
+    tibble(
+      name = c(df_colors %>% pull("name")),
+      basic_name = c(df_colors %>% pull("name") %>% 
+        stringr::word(., -1) %>% 
+        gsub("Trans-|Black-|DBGray|-", "", .))
+    )
+  ) %>%
+  mutate(hex = paste0("#", rgb)) %>%
+  filter(!is.na(year)) %>% 
+  group_by(hex, year) %>% 
+  summarize(quantity = sum(quantity)) %>% 
+  ungroup() %>% 
+  complete(year = full_seq(year, 1), hex, fill = list(quantity = 0)) %>% 
+  group_by(hex) %>% 
+  mutate(n = sum(quantity)) %>% 
+  ungroup()
+
+threshold <- 100000
+
+df_lego_main <- 
+  df_lego %>%
+  mutate(group = if_else(n < threshold, "#13e727", hex)) %>% 
+  #filter(year > 1958, year < 2022) %>%
+  filter(year < 2022) %>% 
+  group_by(group, year) %>% 
+  summarize(quantity = sum(quantity))
+
+df_lego_rare <- 
+  df_lego %>%
+  filter(n < threshold) %>% 
+  filter(year > 1977 & year < 2022)
+```
+
+
+## Plot
+
+```{r}
+#| label: camcorder
+#| include: false
+# camcorder::gg_record(
+#   dir = here::here("dev"),
+#   device = "png",
+#   width = 16,
+#   height = 10
+# )
+# 
+# camcorder::gg_resize_film(
+#   width = 17,
+#   height = 11
+# )
+```
+
+```{r}
+#| label: plots
+#| fig.width: 17
+#| fig.height: 11
+annotation <- tibble(
+  x = 1952, y = 135000, 
+  label = "Bricks with <b style='color:#13e727;'>rare colors</b> became much more common over the last two decades."
+)
+
+p_main <-
+  df_lego_main %>% 
+  ggplot(aes(x = year, node = group, value = quantity, fill = group)) +
+  annotate(
+    geom = "rect", xmin = -Inf, xmax = Inf, ymin = 30000, ymax = Inf,
+    fill = col_dark, color = col_dark
+  ) +
+  geom_sankey_bump(color = "transparent", smooth = 4) +
+  geom_sankey_bump(color = "transparent", smooth = 4, alpha = .5) +
+  geom_textbox(
+    data = annotation, aes(x = x, y = y, label = label), 
+    color = NA, fill = NA, text.colour = col_light2,
+    family = "Pally", size = 5.3, fontface = "plain", lineheight = .95,
+    width = unit(4.3, "inch"), hjust = 0, halign = 0, 
+    inherit.aes = FALSE, stat = "unique"
+  ) +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(1950, 2020, by = 10)) +
+  scale_fill_identity() + 
+  theme(
+    axis.text.x = element_text(color = col_light2, size = 9, margin = margin(8, 0, 8, 0)),
+    panel.grid.major.x = element_line(size = .6),
+    plot.background = element_rect(fill = col_dark2, color = col_dark2),
+    plot.margin = margin(10, 10, 0, 10)
+  )
+
+title <- tibble(
+  x = 1979, y = 57000, 
+  label = paste0('<b style="color:', col_light, ';font-size:62pt;">The LEGO Color Explosion</b><br><br>While in the early days LEGO bricks were limited to a few main colors, the variety of unique colors increased remarkably over the last two decades as the company started releasing a larger number of sets and themes.<br>The main visualization shows the number of parts with "rare colors" across all LEGO sets over time, ranked by the share of parts featured in all newly released sets. The inset plot shows the share of these rare colors in comparison to the most common main colors.<br><br><b style="font-size:11pt;">Graphic: Cédric Scherer • Data: rebrickable</b>')
+)
+
+p_rare <- 
+  df_lego_rare %>% 
+  ggplot(aes(x = year, node = hex, value = quantity, fill = hex)) +
+  annotate(
+    geom = "rect", xmin = -Inf, xmax = Inf, ymin = 11500, ymax = Inf,
+    fill = col_dark, color = col_dark
+  ) +
+  geom_sankey_bump(color = "transparent") +
+  geom_sankey_bump(color = "transparent", alpha = .5) +
+  geom_textbox(
+    data = title, aes(x = x, y = y, label = label), 
+    color = NA, fill = NA, text.colour = col_light2,
+    family = "Pally", size = 5.3, lineheight = 1.25,
+    width = unit(9.8, "inch"), hjust = 0, halign = 0, vjust = 1, 
+    inherit.aes = FALSE, stat = "unique"
+  ) +
+  scale_x_continuous(expand = c(0, 0), breaks = seq(1980, 2020, by = 5)) +
+  scale_y_continuous(expand = c(0, 0), limits = c(NA, 64000)) +
+  scale_fill_identity()
+
+panel <- p_rare + inset_element(p_main, left = .03, bottom = .06, right = .41, top = .41)
+
+panel
+```
+
+```{r}
+#| label: save-plot
+path <- here::here("plots", "2022_36", "2022_36_LEGO_bricks")
+
+ggsave(paste0(path, ".png"), width = 17, height = 11, dpi = 600)
+ggsave(paste0(path, ".pdf"), width = 17, height = 11, device = cairo_pdf)
+```
+
+---
+
+```{r}
+#| label: session
+Sys.time()
+git2r::repository()
+sessionInfo()
+```
