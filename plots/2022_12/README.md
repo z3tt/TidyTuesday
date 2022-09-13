@@ -2,7 +2,10 @@
 
 ![./plots/2022_12/2022_12_Babynames_Diversity_all.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2022_12/2022_12_Babynames_Diversity_all.png)
 
-![./plots/2022_12/2022_12_Babynames_Diversity_anim.gif](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2022_12/2022_12_Babynames_Diversity_anim.gif)
+*WSJ Color Style Edition:*
+![./plots/2022_12/WJS_edition/2022_12_Babynames_Diversity_WSJ_all.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2022_12/2022_12_Babynames_Diversity_anim.gif)
+
+---
 
 *Version with name labels only:*
 ![./plots/2022_12/2022_12_Babynames_Diversity_labs.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2022_12/2022_12_Babynames_Diversity_labs.png)
