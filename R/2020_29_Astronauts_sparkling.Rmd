@@ -51,16 +51,31 @@ df_labs <-
 df_text <-
   df_missions %>% 
   arrange(-hours) %>% 
-  slice(1:11) %>% 
+  slice(c(1:11, 29)) %>% 
   mutate(
     first_name = str_remove(name, ".*, "),
     last_name = str_remove(name, "(?<=),.*"),
     name_short = glue::glue("{str_sub(first_name, 0, 1)}. {last_name}"),
     era = glue::glue("'{str_sub(abs(year), 3, 4)}–'{str_sub(max_year, 3, 4)}"),
-    label = glue::glue("<b style='font-size:13pt;'>{name_short}</b>  <span style='font-size:10pt;'>({era})</span><br><i style='color:#646464;'>{format(floor(hours), big.mark = ',')} hours ~ {round(hours / 8760, 1)} years</i>"),
-    vjust = c(-.4, -.3, -.3, -.3, -.25, 1.15, 1.1, -.2, -.2, 1.2, 1.15),
-    hjust = c(.5, .5, .6, .4, .5, .5, .6, .6, .6, .5, .7)
-  ) 
+    label = glue::glue("<b style='font-size:13pt;'>{name_short}</b>  <span style='font-size:10pt;'>({era})</span><br><span style='color:#909090;'>{format(floor(hours), big.mark = ',')} hours ~ {round(hours / 8760, 1)} years</span>"),
+    vjust = c(-.55, -.55, -.55, -.55, -.55, 1.55, .55, -.55, -.4, 1.55, 1.55, 1.55)
+  ) %>% 
+  ungroup() %>% 
+  mutate(
+    hours = case_when(
+      last_name == "Yurchikhin" ~ hours + 650,
+      last_name == "Borisenko" ~ hours + 220,
+      last_name == "Kaleri" ~ hours + 100,
+      last_name == "Padalka" ~ hours - 500,
+      TRUE ~ hours
+    ),
+    id = case_when(
+      last_name == "Kaleri" ~ id + 10L,
+      last_name == "Borisenko" ~ id - 18L,
+      last_name == "Padalka" ~ id - 60L,
+      TRUE ~ id
+    )
+  )
 ```
 
 ## colorful blurs
@@ -143,10 +158,10 @@ p <-
         y = hours,
         label = label
       ),
-      inherit.aes = F,
+      inherit.aes = FALSE,
       size = 7.3,
       family = "Oswald",
-      color = "grey70",
+      color = "#c0c0c0",
       lineheight = 1.3,
       width = unit(6.2, "inch"),
       hjust = 0,
@@ -158,31 +173,30 @@ p <-
     annotate(
       "text", 
       x = 555, y = 16600,
-      label = "Visualization by Cédric Scherer  •  Data by Stavnichuk & Corlett 2020 (DOI: 10.17632/86tsnnbv2w.1)", 
+      label = c("Visualization by Cédric Scherer  •  Data by Stavnichuk & Corlett 2020 (DOI: 10.17632/86tsnnbv2w.1)", "The distance and the size of the points encode the cumulative travel time. The cosmo- and astronauts are sorted by the year of their first travel  and are placed equidistant; thus the width of a decade depends on the number of cosmo- and astronauts during that period."), 
       family = "Oswald",
-      size = 5.6, 
-      color = "grey50"
+      size = c(6.3, 5.7), 
+      vjust = c(-.65, .8), 
+      color = c("#909090", "#777777")
     ) +
     coord_polar(theta = "y", start = 4.71, clip = "off") +
     scale_x_continuous(limits = c(-250, NA), expand = c(0, 0)) +#limits = c(-2040, NA)) +
     scale_y_continuous(limits = c(0, 22000), expand = c(0, 0)) + #limits = c(0, 156091.8)
-    scico::scale_color_scico(palette = "hawaii", guide = F, direction = -1) +
-    scico::scale_fill_scico(palette = "hawaii", guide = F, direction = -1) +
-    scale_blur_size_continuous(range = c(1, 15), guide = F) +
-    scale_size(range = c(.001, 3), guide = F) +
-    scale_alpha(range = c(.33, 1), guide = F) +
+    scico::scale_color_scico(palette = "hawaii", guide = "none", direction = -1) +
+    scico::scale_fill_scico(palette = "hawaii", guide = "none", direction = -1) +
+    scale_blur_size_continuous(range = c(1, 15), guide = "none") +
+    scale_size(range = c(.001, 3), guide = "none") +
+    scale_alpha(range = c(.33, 1), guide = "none") +
     theme_void() +
     theme(
       plot.background = element_rect(fill = "black"),
       plot.margin = margin(-260, -260, -300, -200)
     )
 
-p
-
-ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_clean.pdf"), 
+ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_clean_IIB.pdf"), 
       width = 25, height = 23.63, device = cairo_pdf)
 
-pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_clean.pdf"),
+pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_clean_IIB.pdf"),
             format = "png", dpi = 120)
 ```
 
@@ -194,40 +208,41 @@ p +
     data = df_text,
     aes(
       label = label, 
-      hjust = hjust, 
       vjust = vjust
     ),
     size = 3.2,
     family = "Oswald",
+    hjust = .5, 
     lineheight = 1.2,
     fill = NA,
     label.color = NA
   ) +
   ## annotations
-  geom_text(
+  ggtext::geom_richtext(
     data = tibble(
-      id = c(395, 240), hours = rep(21950, 2),
+      id = c(395, 246), hours = rep(21965, 2),
       label = c(
-        "On January 28, 1986 G. Jarvis,\nS.C.C. McAuliffe & M.J. Smith\ndied during the Challenger\ndisaster when the Space Shuttle\nbroke up during launch.",
-        "1990 to 2000 was the decade with\nthe most cosmo-/astronauts\nparticipating in their first\nspace mission ever."
+        "On Jan 28 1986 **G. Jarvis,<br>S.C.C. McAuliffe &<br>M.J. Smith** died during<br>the <b style='color:#9b7f1f;'>Challenger disaster</b><br>when the Space Shuttle<br>broke up during launch.",
+        "<b style='color:#9b951b;'>1990</b> <b style='color:#a6bc48;'>to</b> <b style='color:#7fc561;'>2000</b> was the<br>decade with the **most<br>cosmo- and astronauts**<br>participating in their **first<br>space mission ever**."
       )
     ),
     aes(
       x = id, y = hours, 
       label = label
     ),
-    inherit.aes = F,
+    inherit.aes = FALSE,
     family = "Oswald",
-    size = 2.7,
-    color = "grey50",
-    lineheight = .9,
+    size = 3.3,
+    color = "#909090",
+    fill = NA, label.color = NA,
+    lineheight = 1.05,
     vjust = 1
   )
 
-ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_color.pdf"), 
+ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_IIB.pdf"), 
       width = 25, height = 23.63, device = cairo_pdf)
 
-pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_color.pdf"),
+pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_IIB.pdf"),
             format = "png", dpi = 120)
 ```
 
@@ -314,7 +329,7 @@ p <-
       inherit.aes = F,
       size = 7.3,
       family = "Oswald",
-      color = "grey70",
+      color = "#c0c0c0",
       lineheight = 1.3,
       width = unit(6.2, "inch"),
       hjust = 0,
@@ -326,19 +341,20 @@ p <-
     annotate(
       "text", 
       x = 555, y = 16600,
-      label = "Visualization by Cédric Scherer  •  Data by Stavnichuk & Corlett 2020 (DOI: 10.17632/86tsnnbv2w.1)", 
+      label = c("Visualization by Cédric Scherer  •  Data by Stavnichuk & Corlett 2020 (DOI: 10.17632/86tsnnbv2w.1)", "The distance and the size of the points encode the cumulative travel time. The cosmo- and astronauts are sorted by the year of their first travel  and are placed equidistant; thus the width of a decade depends on the number of cosmo- and astronauts during that period."), 
       family = "Oswald",
-      size = 5.6, 
-      color = "grey50"
+      size = c(6.3, 5.7), 
+      vjust = c(-.65, .8), 
+      color = c("#909090", "#777777")
     ) +
     coord_polar(theta = "y", start = 4.71, clip = "off") +
     scale_x_continuous(limits = c(-250, NA), expand = c(0, 0)) +#limits = c(-2040, NA)) +
     scale_y_continuous(limits = c(0, 22000), expand = c(0, 0)) + #limits = c(0, 156091.8)
-    scico::scale_color_scico(palette = "hawaii", guide = F, direction = -1) +
-    scico::scale_fill_scico(palette = "hawaii", guide = F, direction = -1) +
-    scale_blur_size_continuous(range = c(1, 15), guide = F) +
-    scale_size(range = c(.001, 3), guide = F) +
-    scale_alpha(range = c(.33, 1), guide = F) +
+    scico::scale_color_scico(palette = "hawaii", guide = "none", direction = -1) +
+    scico::scale_fill_scico(palette = "hawaii", guide = "none", direction = -1) +
+    scale_blur_size_continuous(range = c(1, 15), guide = "none") +
+    scale_size(range = c(.001, 3), guide = "none") +
+    scale_alpha(range = c(.33, 1), guide = "none") +
     theme_void() +
     theme(
       plot.background = element_rect(fill = "black"),
@@ -347,11 +363,11 @@ p <-
 
 p
 
-ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_clean.pdf"), 
+ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_clean_IIB.pdf"), 
       width = 25, height = 23.63, device = cairo_pdf)
 
-pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_clean.pdf"),
-            format = "png", dpi = 500)
+pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_clean_IIB.pdf"),
+            format = "png", dpi = 120)
 ```
 
 ```{r plot-with-annotations-white, fig.width = 25, fig.height = 23.63}
@@ -362,41 +378,42 @@ p +
     data = df_text,
     aes(
       label = label, 
-      hjust = hjust, 
       vjust = vjust
     ),
     size = 3.2,
     family = "Oswald",
+    hjust = .5,
     lineheight = 1.2,
     fill = NA,
     label.color = NA
   ) +
   ## annotations
-  geom_text(
+  ggtext::geom_richtext(
     data = tibble(
-      id = c(395, 240), hours = rep(21950, 2),
+      id = c(395, 246), hours = rep(21965, 2),
       label = c(
-        "On January 28, 1986 G. Jarvis,\nS.C.C. McAuliffe & M.J. Smith\ndied during the Challenger\ndisaster when the Space Shuttle\nbroke up during launch.",
-        "1990 to 2000 was the decade with\nthe most cosmo-/astronauts\nparticipating in their first\nspace mission ever."
+        "On Jan 28 1986 **G. Jarvis,<br>S.C.C. McAuliffe &<br>M.J. Smith** died during<br>the <b style='color:#9b7f1f;'>Challenger disaster</b><br>when the Space Shuttle<br>broke up during launch.",
+        "<b style='color:#9b951b;'>1990</b> <b style='color:#a6bc48;'>to</b> <b style='color:#7fc561;'>2000</b> was the<br>decade with the **most<br>cosmo- and astronauts**<br>participating in their **first<br>space mission ever**."
       )
     ),
     aes(
       x = id, y = hours, 
       label = label
     ),
-    inherit.aes = F,
+    inherit.aes = FALSE,
     family = "Oswald",
-    size = 2.7,
-    color = "grey50",
-    lineheight = .9,
+    size = 3.3,
+    color = "#909090",
+    fill = NA, label.color = NA,
+    lineheight = 1.05,
     vjust = 1
   )
 
-ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_white.pdf"), 
+ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_IIB.pdf"), 
       width = 25, height = 23.63, device = cairo_pdf)
 
-pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_white.pdf"),
-            format = "png", dpi = 500)
+pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_IIB.pdf"),
+            format = "png", dpi = 120)
 ```
 
 ***
