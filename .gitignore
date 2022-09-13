@@ -6,6 +6,7 @@
 *.pdf
 *_secret.Rmd
 *_secret.png
+*_old.Rmd
 /data/2020_26/*
 /dev/*
 misc/html/*
