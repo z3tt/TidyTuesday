@@ -193,10 +193,10 @@ p <-
       plot.margin = margin(-260, -260, -300, -200)
     )
 
-ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_clean_IIB.pdf"), 
+ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_clean.pdf"), 
       width = 25, height = 23.63, device = cairo_pdf)
 
-pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_clean_IIB.pdf"),
+pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_clean.pdf"),
             format = "png", dpi = 120)
 ```
 
@@ -239,10 +239,10 @@ p +
     vjust = 1
   )
 
-ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_IIB.pdf"), 
+ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_color.pdf"), 
       width = 25, height = 23.63, device = cairo_pdf)
 
-pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_color_IIB.pdf"),
+pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_color.pdf"),
             format = "png", dpi = 120)
 ```
 
@@ -363,10 +363,10 @@ p <-
 
 p
 
-ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_clean_IIB.pdf"), 
+ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_clean.pdf"), 
       width = 25, height = 23.63, device = cairo_pdf)
 
-pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_clean_IIB.pdf"),
+pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_clean.pdf"),
             format = "png", dpi = 120)
 ```
 
@@ -409,10 +409,10 @@ p +
     vjust = 1
   )
 
-ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_IIB.pdf"), 
+ggsave(here::here("plots", "2020_29", "2020_29_Astronauts_blur_white.pdf"), 
       width = 25, height = 23.63, device = cairo_pdf)
 
-pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_white_IIB.pdf"),
+pdf_convert(pdf = here::here("plots", "2020_29", "2020_29_Astronauts_blur_white.pdf"),
             format = "png", dpi = 120)
 ```
 
