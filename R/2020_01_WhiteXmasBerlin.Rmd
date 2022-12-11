@@ -11,19 +11,16 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 ```
 
 
 ```{r libraries}
 library(tidyverse)
 library(lubridate)
-library(showtext)
+library(systemfonts)
 library(emojifont)
 library(ggtext)
-
-font_add_google("Roboto", "Roboto")
-font_add_google("Merriweather", "Merriweather")
 ```
 
 
@@ -39,7 +36,8 @@ data <- purrr::map2_dfr(
       x,
       station_id = STATIONS_ID,
       date = MESS_DATUM,
-      snow_cm = "SHK_TAG"
+      t_avg = TMK,
+      snow_cm = SHK_TAG
     ) %>%
     mutate_all(as.numeric)
   )
@@ -157,14 +155,14 @@ df_first_snow %>%
               fontface = "bold",
               size = 4.5,
               color = "grey65") +
-    geom_richtext(data = labs,
-                  aes(label = label,
-                      angle = angle),
-                  fill = NA,
-                  color = "grey50",
-                  size = 2.3,
-                  family = "Merriweather",
-                  label.color = NA) +
+    # geom_richtext(data = labs,
+    #               aes(label = label,
+    #                   angle = angle),
+    #               fill = NA,
+    #               color = "grey50",
+    #               size = 2.3,
+    #               family = "Merriweather",
+    #               label.color = NA) +
     geom_curve(data = arrows,
                aes(x, y, xend = xend, yend = yend),
                color = "grey35",
@@ -220,8 +218,8 @@ df_first_snow %>%
           panel.grid.major.y = element_line(color = "grey15",
                                             size = 0.15))
 
-ggsave(here::here("plots", "2020_01", "2020_01_WhiteXmasBerlin.pdf"),
-       width = 18, height = 9.5, device = cairo_pdf)
+ggsave(here::here("plots", "2020_01", "2020_01_WhiteXmasBerlin.svg"),
+       width = 18, height = 9.5)
 ```
 
 ***
