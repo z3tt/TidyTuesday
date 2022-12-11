@@ -141,11 +141,11 @@ p_main <-
   df_lego_main %>% 
   ggplot(aes(x = year, node = group, value = quantity, fill = group)) +
   annotate(
-    geom = "rect", xmin = -Inf, xmax = Inf, ymin = 30000, ymax = Inf,
+    geom = "rect", xmin = -Inf, xmax = Inf, ymin = 12000, ymax = Inf,
     fill = col_dark, color = col_dark
   ) +
-  geom_sankey_bump(color = "transparent", smooth = 4) +
-  geom_sankey_bump(color = "transparent", smooth = 4, alpha = .5) +
+  geom_sankey_bump(color = "transparent", space = 2000, smooth = 8) +
+  geom_sankey_bump(color = "transparent", space = 2000, smooth = 8, alpha = .5) +
   geom_textbox(
     data = annotation, aes(x = x, y = y, label = label), 
     color = NA, fill = NA, text.colour = col_light2,
@@ -197,7 +197,11 @@ panel
 path <- here::here("plots", "2022_36", "2022_36_LEGO_bricks")
 
 ggsave(paste0(path, ".png"), width = 17, height = 11, dpi = 600)
+ggsave(paste0(path, "_sd.png"), width = 17, height = 11, dpi = 250)
 ggsave(paste0(path, ".pdf"), width = 17, height = 11, device = cairo_pdf)
+
+ggsave(plot = p_rare, paste0(path, "_no_inset.png"), width = 17, height = 11, dpi = 250)
+ggsave(plot = p_main, paste0(path, "_inset.png"), width = 7, height = 4.5, dpi = 250)
 ```
 
 ---
