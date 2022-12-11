@@ -93,23 +93,23 @@ p_stellar <-
     facet_wrap(~ country, ncol = 5) +
     scale_x_continuous(limits = c(0, 27), breaks = seq(0, 25, by = 5)) +
     scale_y_continuous(limits = c(0, 27), breaks = seq(0, 25, by = 5)) +
-    rcartocolor::scale_color_carto_c(palette = "Emrld", direction = -1, guide = F) +
+    rcartocolor::scale_color_carto_c(palette = "Emrld", direction = -1, guide = "none") +
     coord_capped_cart(bottom = "both", left = "both") +
-    theme(axis.text = element_text(color = "grey20", family = "Roboto Mono"),
-          axis.title.x = element_text(size = 18, hjust = 0, 
+    theme(axis.text = element_text(color = "grey27", family = "Roboto Mono"),
+          axis.title.x = element_text(size = 18, hjust = .98, 
                                       family = "Passion One", 
-                                      color = "grey30", face = "plain"),
-          axis.title.y = element_text(size = 18, hjust = 0, 
+                                      color = "grey40", face = "plain"),
+          axis.title.y = element_text(size = 18, hjust = .985, 
                                       family = "Passion One", 
-                                      color = "grey30", face = "plain"),
-          axis.ticks = element_line(color = "grey20"),
-          axis.line = element_line(color = "grey20"),
-          strip.text = element_text(size = 18, vjust = 1, face = "plain", 
-                                    family = "Passion One", color = "grey30"),
+                                      color = "grey40", face = "plain"),
+          axis.ticks = element_line(color = "grey27"),
+          axis.line = element_line(color = "grey27"),
+          strip.text = element_text(size = 24, vjust = 1, face = "plain", 
+                                    family = "Passion One", color = "grey40"),
           panel.border = element_blank(),
           plot.caption = element_text(size = 15, family = "Passion One", 
-                                      color = "grey20")) +
-    labs(x = "\nPoints scored →", y = "\nGoals scored →",
+                                      color = "grey40")) +
+    labs(x = "\nPoints scored", y = "Goals scored\n",
          caption = "\nVisualization by Cédric Scherer  |  Data: data.world     \n\n\n\n\n")
 
 ## colored text legend  
@@ -121,7 +121,7 @@ p_legend <-
     ), aes(x, y, color = year, label = as.character(year))) +
     geom_text(size = 10, family = "Roboto Mono", fontface = "bold") +
     rcartocolor::scale_color_carto_c(palette = "Emrld", 
-                                     direction = -1, guide = F) +
+                                     direction = -1, guide = "none") +
     scale_x_continuous(limits = c(2.5, 29)) +
     theme(line = element_blank(),
           axis.title = element_blank(),
@@ -136,18 +136,18 @@ p_legend <-
 p_title <- ggplot(data.frame(x = 1:2, y = 1:10)) +
   labs(x = NULL, y = NULL,
        title = "\n\n\nThe Stellar Map of the FIFA Women's World Cup\n",
-       subtitle = "Number of goals and points scored per national team and FIFA World Cup.\n",
+       subtitle = "Number of goals versus points scored per national team and FIFA World Cup.\n",
        caption = "\nStats are shown for all tournament matches excluding third place playoffs.\nStars indicate world champions, scored points are calculated based on the 3-1-0 scheme.") +
   theme(line = element_blank(),
         plot.title = element_text(size = 50, hjust = 0.5, 
                                   family = "Passion One", 
                                   lineheight = 0.5, face = "bold"),
-        plot.subtitle = element_text(size = 25, hjust = 0.5, 
+        plot.subtitle = element_text(size = 32, hjust = 0.5, 
                                      family = "Passion One", 
                                      lineheight = 0.5, 
                                      color = "grey60"),
-        plot.caption = element_text(size = 15, hjust = 0.5, 
-                                    color = "grey30", 
+        plot.caption = element_text(size = 24, hjust = 0.5, 
+                                    color = "grey40", 
                                     family = "Passion One"),
         panel.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", 
@@ -176,18 +176,18 @@ p_stellar_clean <-
                    filter(winner == 1), 
                aes(points_sum, scores), size = 15, shape = "★") +
     facet_wrap(~ country, ncol = 5) +
-    scale_x_continuous(limits = c(0, 27), breaks = seq(0, 25, by = 5), expand = c(0.05, 0.05)) +
-    scale_y_continuous(limits = c(0, 27), breaks = seq(0, 25, by = 5), expand = c(0.05, 0.05)) +
-    rcartocolor::scale_color_carto_c(palette = "Emrld", direction = -1, guide = F) +
-    coord_capped_cart(bottom = "both", left = "both") +
+    scale_x_continuous(limits = c(0, 27), expand = c(0.05, 0.05)) +
+    scale_y_continuous(limits = c(0, 27), expand = c(0.05, 0.05)) +
+    rcartocolor::scale_color_carto_c(palette = "Emrld", direction = -1, guide = "none") +
+    #coord_capped_cart(bottom = "both", left = "both") +
     theme(axis.text = element_blank(),
-          axis.title.x = element_text(size = 18, hjust = 0, family = "Passion One", color = "grey30", face = "plain"),
-          axis.title.y = element_text(size = 18, hjust = 0, family = "Passion One", color = "grey30", face = "plain"),
+          axis.title.x = element_text(size = 18, hjust = .98, family = "Passion One", color = "grey40", face = "plain"),
+          axis.title.y = element_text(size = 18, hjust = .985, family = "Passion One", color = "grey40", face = "plain"),
           axis.ticks = element_blank(),
-          strip.text = element_text(size = 18, vjust = 1, face = "plain", family ="Passion One", color = "grey30"),
+          strip.text = element_text(size = 24, vjust = 1, face = "plain", family ="Passion One", color = "grey40"),
           panel.border = element_rect(color = "transparent"),
-          plot.caption = element_text(size = 15, family = "Passion One", color = "grey20")) +
-    labs(x = "\nPoints scored →", y = "\nGoals scored →",
+          plot.caption = element_text(size = 15, family = "Passion One", color = "grey40")) +
+    labs(x = "\nPoints scored", y = "Goals scored\n",
          caption = "\nVisualization by Cédric Scherer  |  Data: data.world     \n\n\n\n\n")
 ```
 
