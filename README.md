@@ -456,7 +456,7 @@ My contributions to the [#TidyTuesday challenge](https://github.com/rfordatascie
 
 ### [Week 2019/28](https://github.com/Z3tt/TidyTuesday/tree/main/plots/2019_28)️ ⚽ FIFA Women's World Cups by [data.world](https://data.world/sportsvizsunday/womens-world-cup-data)
 ![./plots/2019_28/2019_28_FIFA_WWCs.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/main/plots/2019_28/2019_28_FIFA_WWCs.png)
-![./plots/2019_28/2019_28_FIFA_WWCs_stellar_teaser.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/main/plots/2019_28/2019_28_FIFA_WWCs_stellar_teaser.png)
+![./plots/2019_28/2019_28_FIFA_WWCs_stellar.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/main/plots/2019_28/2019_28_FIFA_WWCs_stellar.png)
 
 ***
 
