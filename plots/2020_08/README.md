@@ -2,7 +2,7 @@
 ![./plots/2020_08/2020_08_CarbonFoodprint_alt.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_08/2020_08_CarbonFoodprint_alt.png)
 
 **Hiqh Quality Version:**
-![./plots/2020_08/2020_08_CarbonFoodprint_HQ.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_08/2020_08_CarbonFoodprint_HQ.png)
+![./plots/2020_08/2020_08_CarbonFoodprint_HQ.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_08/https://raw.githubusercontent.com/z3tt/TidyTuesday/main/plots/2020_08/2020_08_CarbonFootprint.png)
 
 **Version without individual slices in inter circle:**
 ![./plots/2020_08/2020_08_CarbonFoodprint.png](https://raw.githubusercontent.com/Z3tt/TidyTuesday/master/plots/2020_08/2020_08_CarbonFoodprint.png)
