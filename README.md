@@ -6,7 +6,7 @@
 
 &nbsp;&nbsp;&nbsp;
 <a href="https://www.cedricscherer.com"><img border="0" alt="Blog" src="https://assets.dryicons.com/uploads/icon/svg/4926/home.svg" width="35" height="35"></a>&nbsp;&nbsp;&nbsp;
-<a href="mailto:hello@cedricscherer"><img border="0" alt="Email" src="https://assets.dryicons.com/uploads/icon/svg/8009/02dc3a5c-6504-4347-85fb-3f510cfecc45.svg" width="35" height="35"></a>&nbsp;&nbsp;&nbsp;
+<a href="mailto:hello@cedricscherer.com"><img border="0" alt="Email" src="https://assets.dryicons.com/uploads/icon/svg/8009/02dc3a5c-6504-4347-85fb-3f510cfecc45.svg" width="35" height="35"></a>&nbsp;&nbsp;&nbsp;
 <a href="https://twitter.com/CedScherer"><img border="0" alt="Twitter" src="https://assets.dryicons.com/uploads/icon/svg/8385/c23f7ffc-ca8d-4246-8978-ce9f6d5bcc99.svg" width="35" height="35"></a>&nbsp;&nbsp;&nbsp;
 <a href="https://www.instagram.com/cedscherer/"><img border="0" alt="Instagram" src="https://assets.dryicons.com/uploads/icon/svg/8330/62263227-bb78-4b42-a9a9-e222e0cc7b97.svg" width="35" height="35"></a>&nbsp;&nbsp;&nbsp;
 <a href="https://www.behance.net/cedscherer"><img border="0" alt="Behance" src="https://assets.dryicons.com/uploads/icon/svg/8264/04073ce3-5b98-4f32-88d3-82b2ef828066.svg" width="35" height="35"></a>&nbsp;&nbsp;&nbsp;
