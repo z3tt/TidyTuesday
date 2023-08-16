@@ -141,20 +141,20 @@ moon_chart <-
     ) +
     annotate(
       "text",
-      x = 1877,
-      y = 5.15*10^6,
+      x = 1874,
+      y = 5.2*10^6,
       label = "        Black\n  Population",
       family = "Copse",
       color = "grey40",
-      size = 4.5,
-      lineheight = .8,
+      size = 5.5,
+      lineheight = .9,
       hjust = 0,
       vjust = 0
     ) +
     coord_cartesian(clip = "off") +
     scale_x_continuous(
       expand = c(.03, .03),
-      limits = c(1789.7, 1877),
+      limits = c(1789.7, 1875),
       breaks = seq(1790, 1870, by = 10)
     ) +
     scale_y_continuous(
@@ -164,31 +164,32 @@ moon_chart <-
       position = "right"
     ) +
     scale_color_manual(
-      values = c("grey65", "grey20"),
-      guide = F
+      values = c("grey55", "grey20"),
+      guide = "none"
     ) +
     scale_fill_manual(
       values = c("#FFD54E", "#A80002"),
-      guide = F
+      guide = "none"
     ) +
     labs(
       # text partly from https://www.history.com/news/slavery-profitable-southern-economy
       title = 'An Economy Built on <b style="color:#A80002">Slavery</b>—A Future Build on <b style="color:#FFC91B">Freedom</b>?',
-      subtitle = 'By 1680, property owners in the south of North America began establishing plantation farms for cash crops like tobacco, cotton, and sugar cane—enterprises that required<br>increasing amounts of labor. To meet the need, wealthy planters became slave traders and imported ever more individuals to the colonies, the vast majority from West Africa.<br>While the "Emancipation Proclamation" was made law as of 1863, slave owners in the South, namely Texas, still maintained slavery until <b>June 19<sup>th</sup> 1865</b> when Union soldiers<br>were able to enforce the law abolishing slavery in the region. The graphic below shows the share of <b style="color:#A80002">black people in slavery</b>, <b style="color:#333333">most of them enslaved in the Southern states</b>, and<br><b style="color:#FFC91B">black people living in freedom</b> per decade from 1790 to 1870—the first U.S. census after the Liberation Day known as "Juneteenth".',
+      # subtitle = 'The graphic shows the share of <b style="color:#A80002">black people in slavery</b>, <b style="color:#333333">most of them enslaved in the Southern states</b>, and <b style="color:#D6A80C">black people living in freedom</b> per decade from 1790 to 1870—the first U.S. census after the Liberation Day known as "Juneteenth".<br><br>By 1680, property owners in the south of North America began establishing plantation farms for cash crops like tobacco, cotton, and sugar cane—enterprises that required increasing amounts of labor. To meet the need, wealthy planters became slave traders and imported ever more individuals to the colonies, the vast majority from West Africa. While the "Emancipation Proclamation" was made law as of 1863, slave owners in the South, namely Texas, still maintained slavery until <b>June 19<sup>th</sup> 1865</b> when Union soldiers were able to enforce the law abolishing slavery in the region.',
+      subtitle = 'The graphic shows the black population per region and, within each point, the share of <b style="color:#A80002">black people in slavery</b> and <b style="color:#D6A80C">black people living in freedom</b> from 1790 to 1870—the first U.S. census after the Liberation Day known as "Juneteenth".<br><br>By 1680, property owners in the south of North America began establishing plantation farms for cash crops like tobacco, cotton, and sugar cane—enterprises that required increasing amounts of labor. To meet the need, wealthy planters turned into slave traders and imported ever more individuals to the colonies, the vast majority from West Africa. While the "Emancipation Proclamation" was made law as of 1863, slave owners in the South, namely Texas, still maintained slavery until <b>June 19<sup>th</sup> 1865</b> when Union soldiers were able to enforce the law abolishing slavery in the region.',
       caption = '<b style="font-size:20pt;color:#333333;font-family:Staatliches">#JUNETEENTH #BLACKLIVESMATTER</b><br>Graphic: Cédric Scherer  •  Source: U.S. Census Bureau'
     )  +
     theme(
-      axis.text.x = element_text(color = "grey40", size = 15, face = "bold"),
-      axis.text.y = element_text(color = "grey40", size = 11, hjust = 0),
+      axis.text.x = element_text(color = "grey40", size = 14.5, face = "bold"),
+      axis.text.y = element_text(color = "grey40", size = 14.5, hjust = 0),
       panel.grid.major.y = element_line(color = "grey92", size = .5),
       plot.background = element_rect(color = "#333333", size = 2, fill = "white"),
       plot.margin = margin(20, 50, 20, 60),
       plot.title = element_markdown(family = "Staatliches", color = "#333333", 
                                     size = 40, face = "bold",
-                                    margin = margin(t = 15, b = 10)),
-      plot.subtitle = element_markdown(color = "grey65", size = 11, lineheight = 1.5,
-                                       margin = margin(t = 0, b = -3)),
-      plot.caption = element_markdown(color = "grey65", size = 10, 
+                                    margin = margin(t = 10, b = 30)),
+      plot.subtitle = element_textbox_simple(color = "grey55", size = 16.15, lineheight = 1.4,
+                                       margin = margin(t = 0, b = 10)),
+      plot.caption = element_markdown(color = "grey55", size = 10, 
                                       hjust = .5, vjust = .5, lineheight = 1.5,
                                       margin = margin(t = 35, b = 0)),
       plot.title.position = "plot"
@@ -280,26 +281,26 @@ map_regions <-
     coord_map() +
     #fifty_states_inset_boxes() +
     scale_color_manual(
-      values = c("grey65", "grey20"),
-      guide = F
+      values = c("grey55", "grey20"),
+      guide = "none"
     ) +
     scale_fill_manual(
-      values = c("grey65", "grey20"),
-      guide = F
+      values = c("grey55", "grey20"),
+      guide = "none"
     ) +
     theme_void()
 ```
 
-```{r panel, fig.width = 13.8, fig.height = 10.5}
+```{r panel, fig.width=13.8, fig.height=12.3}
 moon_chart + 
   annotation_custom(
     ggplotGrob(map_regions), 
     xmin = 1782.5, xmax = 1824.5, 
-    ymin = 2.3*10^6, ymax = 4.3*10^6
+    ymin = 2.3*10^6, ymax = 4.4*10^6
   )
 
 ggsave(here::here("plots", "2020_25", "2020_25_AmericanSlavery.pdf"), 
-       width = 13.8, height = 10.5, device = cairo_pdf)
+       width = 13.8, height = 12.3, device = cairo_pdf)
 
 pdftools::pdf_convert(here::here("plots", "2020_25", "2020_25_AmericanSlavery.pdf"),
                       format = "png", dpi = 500)
